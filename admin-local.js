@@ -66,14 +66,26 @@
     const categorySubmit = $('categoryForm') && $('categoryForm').querySelector('[type="submit"]');
     const projectSubmit = $('projectForm') && $('projectForm').querySelector('[type="submit"]');
     const projectCategories = data.categories[$('projectType').value] || [];
-    if (categorySubmit) categorySubmit.disabled = !root || saving;
-    if (projectSubmit) projectSubmit.disabled = !root || saving || !projectCategories.length;
+
+    // Keep actions clickable before folder selection so the user gets an explanation
+    // instead of a disabled cursor. Actual writes are still guarded in submit/delete handlers.
+    if (categorySubmit) {
+      categorySubmit.disabled = saving;
+      categorySubmit.title = saving ? 'Trwa zapisywanie zmian.' : '';
+    }
+    if (projectSubmit) {
+      projectSubmit.disabled = saving || !projectCategories.length;
+      projectSubmit.title = !projectCategories.length
+        ? 'Najpierw dodaj kategorię w wybranej sekcji.'
+        : (saving ? 'Trwa zapisywanie zmian.' : '');
+    }
+
     const categorySelect = $('projectCategory');
     if (categorySelect) categorySelect.disabled = !projectCategories.length;
+
     document.querySelectorAll('.admin-list-actions button').forEach(button => {
-      button.disabled = !root || saving;
-      if (!root) button.title = 'Najpierw podłącz lokalny folder projektu.';
-      else if (saving) button.title = 'Trwa zapisywanie zmian.';
+      button.disabled = saving;
+      if (saving) button.title = 'Trwa zapisywanie zmian.';
       else button.removeAttribute('title');
     });
   }
