@@ -254,6 +254,13 @@
     reveals.forEach(el=>el.classList.add('is-visible'));
   }
   const progress=$('#scrollProgress');if(progress)window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=`${max>0?window.scrollY/max*100:0}%`;},{passive:true});
+  // The footer control should always return to the document's true top,
+  // rather than relying on anchor alignment around the sticky header.
+  queryAll('.back-top').forEach(link=>link.addEventListener('click',event=>{
+    event.preventDefault();
+    const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({top:0,behavior:reducedMotion?'auto':'smooth'});
+  }));
   const year=$('#year');if(year)year.textContent=new Date().getFullYear();
   async function copy(value){try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);return true;}}catch(_){ }try{const input=document.createElement('textarea');input.value=value;input.setAttribute('readonly','');input.style.position='fixed';input.style.opacity='0';document.body.append(input);input.select();const ok=document.execCommand('copy');input.remove();return ok;}catch(_){return false;}}
   let toastTimer;function toast(msg){const el=$('#toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
