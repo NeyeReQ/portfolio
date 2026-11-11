@@ -479,3 +479,62 @@ body.modal-open{overflow:hidden}
   .credential-diploma .credential-code{font-size:14px}
   .credential-diploma .credential-label{max-width:100%}
 }
+
+
+/* Make the English proficiency stand out as a compact, framed skill card. */
+.language-level{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:grid;grid-template-columns:50px minmax(0,1fr) auto;
+  align-items:center;column-gap:15px;
+  margin-top:24px;padding:16px 18px;
+  border:1px solid rgba(114,234,217,.3);border-top:1px solid rgba(114,234,217,.3);
+  border-radius:12px;
+  background:
+    radial-gradient(ellipse at 5% 50%,rgba(114,234,217,.1),transparent 45%),
+    linear-gradient(112deg,rgba(22,36,48,.96),rgba(13,20,31,.98) 68%,rgba(24,28,43,.96));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.018),0 12px 28px rgba(0,0,0,.14);
+}
+.language-level:before{
+  content:"";position:absolute;z-index:-1;left:0;top:13px;bottom:13px;width:2px;
+  background:linear-gradient(180deg,transparent,var(--aqua),transparent);opacity:.9;
+}
+.language-mark{
+  display:grid;place-items:center;width:50px;height:50px;
+  border:1px solid rgba(114,234,217,.28);border-radius:10px;
+  background:linear-gradient(145deg,rgba(114,234,217,.16),rgba(114,234,217,.045));
+  color:#b7fff4;font:700 16px 'DM Mono',monospace;letter-spacing:-.8px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 5px 16px rgba(0,0,0,.16);
+}
+.language-copy{display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:6px}
+.language-label{font-size:14px;font-weight:800;line-height:1.3;letter-spacing:.1px;color:#f0f6f8}
+.language-value{
+  display:inline-flex;align-items:center;max-width:100%;width:max-content;
+  margin:0;padding:5px 9px;border:1px solid rgba(114,234,217,.23);
+  border-radius:5px;background:rgba(114,234,217,.075);
+  color:#b8f8ed;font-size:12.5px;font-weight:600;line-height:1.45;
+}
+.language-meter{
+  display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
+  gap:8px;min-height:42px;padding-left:17px;border-left:1px solid rgba(157,177,195,.16);
+}
+.language-meter-caption{color:#8397a7;font:600 9px 'DM Mono',monospace;letter-spacing:1.35px}
+.language-bars{display:grid;grid-template-columns:repeat(10,12px);gap:4px;margin:0}
+.language-bars i{display:block;width:12px;height:5px;border-radius:3px;background:linear-gradient(90deg,#72ead9,#a1f6e9);box-shadow:0 0 8px rgba(114,234,217,.16)}
+.language-bars i.muted{background:#293745;box-shadow:none}
+@media(max-width:720px){
+  .language-level{grid-template-columns:43px minmax(0,1fr);gap:10px 12px;margin-top:21px;padding:14px}
+  .language-mark{width:43px;height:43px;font-size:14px}
+  .language-copy{gap:5px}
+  .language-label{font-size:13.5px}
+  .language-value{font-size:11.5px;padding:5px 8px}
+  .language-meter{grid-column:2;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;min-height:0;padding:2px 0 0;border:0}
+  .language-bars{grid-template-columns:repeat(10,10px);gap:3px}
+  .language-bars i{width:10px;height:4px}
+}
+@media(max-width:390px){
+  .language-level{grid-template-columns:38px minmax(0,1fr);column-gap:10px;padding:12px}
+  .language-mark{width:38px;height:38px;font-size:13px}
+  .language-label{font-size:12.5px}
+  .language-value{font-size:10.75px}
+  .language-meter{grid-column:1/-1;padding-left:2px}
+}
