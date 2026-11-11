@@ -599,3 +599,18 @@ html[lang="en"] #tools .tools-title-question{display:none}
 @media(prefers-reduced-motion:reduce){
   #work .portfolio-choice .choice-background img{transition:none}
 }
+
+
+/* Brand logo: no silver sweep, only a restrained scale-up on hover. */
+.brand-mark{overflow:visible}
+.brand-mark img{
+  transform:scale(1);
+  transform-origin:center;
+  transition:transform .28s cubic-bezier(.2,.75,.2,1);
+}
+.brand:hover .brand-mark img,
+.brand:focus-visible .brand-mark img{transform:scale(1.09)}
+.brand>.ui-metal-sheen{display:none!important}
+@media(prefers-reduced-motion:reduce){
+  .brand-mark img{transition:none}
+}
