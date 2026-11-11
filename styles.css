@@ -584,3 +584,18 @@ html[lang="en"] #tools .tools-title-question{display:none}
 #work .portfolio-choice:before,
 #work .portfolio-choice:after{content:none!important;display:none!important}
 #work .portfolio-choice .choice-background{background:none!important}
+
+
+/* Subtle photo-only zoom inside the two portfolio category tiles. */
+#work .portfolio-choice .choice-background img{
+  transform:scale(1);
+  transition:transform .65s cubic-bezier(.2,.75,.2,1);
+  will-change:transform;
+}
+#work .portfolio-choice:hover .choice-background img,
+#work .portfolio-choice:focus-visible .choice-background img{
+  transform:scale(1.055);
+}
+@media(prefers-reduced-motion:reduce){
+  #work .portfolio-choice .choice-background img{transition:none}
+}
