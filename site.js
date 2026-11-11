@@ -170,6 +170,40 @@
     if(target)playUiSound('click');
   },true);
 
+  // Preserve accent spans while wrapping heading characters for the typewriter entrance.
+  function refreshTypewriterTargets(){
+    queryAll('.hero-title, .section-heading h2, .subpage-heading h1').forEach(element=>{
+      element.querySelectorAll('.typewriter-char').forEach(span=>{
+        span.replaceWith(document.createTextNode(span.textContent||''));
+      });
+      element.normalize();
+      const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
+      const textNodes=[];
+      while(walker.nextNode())textNodes.push(walker.currentNode);
+      let characterIndex=0;
+      textNodes.forEach(node=>{
+        const value=node.nodeValue||'';
+        if(!value.trim())return;
+        const fragment=document.createDocumentFragment();
+        for(const character of value){
+          if(/\s/.test(character)){
+            fragment.append(document.createTextNode(character));
+          }else{
+            const span=document.createElement('span');
+            span.className='typewriter-char';
+            span.textContent=character;
+            span.style.animationDelay=(characterIndex*17)+'ms';
+            characterIndex++;
+            fragment.append(span);
+          }
+        }
+        node.parentNode?.replaceChild(fragment,node);
+      });
+      element.classList.add('typewriter-target');
+    });
+  }
+  document.addEventListener('neyer:language',refreshTypewriterTargets);
+
   function applyLanguage(){
     const t=translations[lang];document.documentElement.lang=lang;
     if($('title')) { const pageType=document.body.dataset.portfolioType; $('title').textContent=pageType?(pageType==='graphics'?`NeyeR — ${t.pageGraphics}`:`NeyeR — ${t.pageEditing}`):'NeyeR — Visual Designer & Video Editor'; }
@@ -196,11 +230,13 @@
     const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
       if(entry.isIntersecting){
         entry.target.classList.add('is-visible');
-        io.unobserve(entry.target);
+      }else{
+        // Reset the state when a target leaves so it replays on the next scroll-in.
+        entry.target.classList.remove('is-visible');
       }
-    }),{threshold:0,rootMargin:'0px 0px -4% 0px'});
+    }),{threshold:0,rootMargin:'0px 0px -7% 0px'});
     reveals.forEach(el=>{
-      if(el.dataset.delay)el.style.setProperty('--delay',`${el.dataset.delay}ms`);
+      if(el.dataset.delay)el.style.setProperty('--delay',el.dataset.delay+'ms');
       el.classList.add('reveal-pending');
       io.observe(el);
     });
