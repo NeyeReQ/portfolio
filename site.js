@@ -47,12 +47,6 @@
         ? [{frequency:523.25,level:.024,duration:.16,delay:0},{frequency:659.25,level:.014,duration:.19,delay:.045}]
         : [{frequency:392.00,level:.040,duration:.22,delay:0},{frequency:493.88,level:.027,duration:.24,delay:.018},{frequency:587.33,level:.018,duration:.20,delay:.036}];
 
-      const filter=context.createBiquadFilter();
-      filter.type='lowpass';
-      filter.frequency.setValueAtTime(2100,now);
-      filter.Q.setValueAtTime(.45,now);
-      filter.connect(context.destination);
-
       notes.forEach(note=>{
         const start=now+note.delay;
         const oscillator=context.createOscillator();
@@ -65,11 +59,10 @@
         envelope.gain.exponentialRampToValueAtTime(note.level*.48,start+.075);
         envelope.gain.exponentialRampToValueAtTime(.0001,start+note.duration);
         oscillator.connect(envelope);
-        envelope.connect(filter);
+        envelope.connect(context.destination);
         oscillator.start(start);
         oscillator.stop(start+note.duration+.03);
       });
-      filter.disconnect();
     };
 
     if(context.state==='suspended'){
