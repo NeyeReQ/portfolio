@@ -578,3 +578,9 @@ html[lang="en"] #tools .tools-title-question{display:none}
 @media(prefers-reduced-motion:reduce){
   .portfolio-choice .choice-background{transition:none}
 }
+
+
+/* Category tiles: show only the artwork uploaded by the site owner. */
+#work .portfolio-choice:before,
+#work .portfolio-choice:after{content:none!important;display:none!important}
+#work .portfolio-choice .choice-background{background:none!important}
