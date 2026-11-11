@@ -549,3 +549,8 @@ body.modal-open{overflow:hidden}
   .language-value{font-size:10.75px}
   .language-meter{grid-column:1/-1;padding-left:2px}
 }
+
+
+/* Keep the question mark white, separate from the per-letter accent colors. */
+#tools .tools-title-question{display:inline;color:#fff;-webkit-text-fill-color:#fff}
+html[lang="en"] #tools .tools-title-question{display:none}
