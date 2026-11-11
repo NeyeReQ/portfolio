@@ -351,3 +351,83 @@ body.modal-open{overflow:hidden}
     opacity:1;transform:none;clip-path:none;transition:none
   }
 }
+
+
+/* === Readability pass: clearer, calmer body copy === */
+:root{--copy-font:"Segoe UI Variable","Segoe UI",system-ui,sans-serif;--copy-color:#bdc8d4;--copy-muted:#aab8c7}
+.hero-description,
+.about-layout-single .about-paragraph,
+.work-intro,
+.credential-label,
+.tool-card-copy p,
+.choice-bottom small,
+.contact-hint,
+.subpage-heading p,
+.project-card-body>span,
+.project-empty p,
+.modal-content p,
+.language-value,
+.footer-copyright-note{
+  font-family:var(--copy-font);
+  letter-spacing:0;
+  text-wrap:pretty;
+}
+.hero-description{
+  font-size:16px;line-height:1.85;color:var(--copy-color);font-weight:400;
+}
+.about-layout-single .about-paragraph{
+  max-width:950px;font-size:16px;line-height:1.95;color:var(--copy-color);font-weight:400;
+}
+.work-intro{
+  max-width:390px;font-size:14px;line-height:1.85;color:var(--copy-muted);font-weight:400;
+}
+.credential-label{
+  font-size:12.5px;line-height:1.7;color:#b4c1ce;font-weight:400;
+}
+.tool-card-copy p{
+  max-width:255px;font-size:12.5px;line-height:1.75;color:#b3c0ce;font-weight:400;
+}
+.choice-bottom small{
+  font-size:12.5px;line-height:1.7;color:#b4c1ce;font-weight:400;
+}
+.contact-hint{
+  font-size:12px;line-height:1.75;color:#a5b3c2;
+}
+.subpage-heading p{
+  font-size:15px;line-height:1.85;color:var(--copy-color);font-weight:400;
+}
+.project-card-body>span{
+  font-size:10.5px;line-height:1.65;color:#a2b0bf;
+}
+.project-empty p,.modal-content p{
+  font-size:14px;line-height:1.85;color:#b2bfcd;font-weight:400;
+}
+.language-value{font-size:12px;color:#a6b4c3}
+.credentials-source{font-size:11px}
+.footer-copyright-note{
+  font-size:11.5px;line-height:1.85;color:#9eacbb;font-weight:400;
+}
+.section-side-note{font-size:13px;line-height:1.85;color:#aab8c7}
+
+/* Small screens: keep descriptions readable without crowding cards. */
+@media(max-width:720px){
+  .hero-description{font-size:15px;line-height:1.8}
+  .about-layout-single .about-paragraph{font-size:14.5px;line-height:1.9}
+  .work-intro{font-size:13.5px;line-height:1.8}
+  .credential-label{font-size:11.5px;line-height:1.65}
+  .tool-card-copy p{font-size:11.5px;line-height:1.65}
+  .choice-bottom small{font-size:11px;line-height:1.6}
+  .contact-hint{font-size:11.5px}
+  .subpage-heading p{font-size:14px;line-height:1.8}
+  .project-card-body>span{font-size:10px}
+  .project-empty p,.modal-content p{font-size:13px;line-height:1.75}
+  .footer-copyright-note{font-size:10.5px}
+  .section-side-note{font-size:11.5px}
+}
+@media(max-width:440px){
+  .hero-description{font-size:14.5px}
+  .about-layout-single .about-paragraph{font-size:14px}
+  .tool-card-copy p{font-size:11px}
+  .choice-bottom small{font-size:10.5px}
+  .subpage-heading p{font-size:13.5px}
+}
