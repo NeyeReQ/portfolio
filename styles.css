@@ -554,3 +554,27 @@ body.modal-open{overflow:hidden}
 /* Keep the question mark white, separate from the per-letter accent colors. */
 #tools .tools-title-question{display:inline;color:#fff;-webkit-text-fill-color:#fff}
 html[lang="en"] #tools .tools-title-question{display:none}
+
+
+/* User-uploaded artwork behind the two portfolio category tiles. */
+.portfolio-choice .choice-background{
+  position:absolute;inset:0;z-index:0;display:block;overflow:hidden;
+  pointer-events:none;opacity:.26;
+  background:radial-gradient(ellipse at 50% 40%,rgba(114,234,217,.08),transparent 68%);
+  transition:opacity .45s ease;
+}
+.portfolio-choice .choice-background img{
+  display:block;width:100%;height:100%;object-fit:cover;object-position:center;
+  filter:saturate(.84) contrast(1.04);
+}
+.portfolio-choice .choice-art{z-index:1}
+.portfolio-choice:hover .choice-background,
+.portfolio-choice:focus-visible .choice-background{opacity:.35}
+
+/* Explicitly keep the hero's two-line heading on the same typewriter entrance. */
+.hero-title.reveal.is-visible.typewriter-target .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
+}
+@media(prefers-reduced-motion:reduce){
+  .portfolio-choice .choice-background{transition:none}
+}
