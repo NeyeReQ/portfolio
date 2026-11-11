@@ -1,0 +1,21 @@
+{
+  "categories": {
+    "graphics": [
+      {"id":"3d","title":{"pl":"Grafika 3D","en":"3D Graphics"},"description":{"pl":"Modele, sceny i wizualizacje 3D","en":"3D models, scenes and visualisations"}},
+      {"id":"banner","title":{"pl":"Banery","en":"Banners"},"description":{"pl":"Banery i grafiki promocyjne","en":"Promotional banners and graphics"}},
+      {"id":"overlay","title":{"pl":"Overlay","en":"Overlays"},"description":{"pl":"Oprawa streamów i transmisji","en":"Stream and broadcast visual packages"}},
+      {"id":"avatars","title":{"pl":"Awatary","en":"Avatars"},"description":{"pl":"Awatary i zdjęcia profilowe","en":"Avatars and profile pictures"}},
+      {"id":"thumbnails","title":{"pl":"Miniaturki i plakaty","en":"Thumbnails & Posters"},"description":{"pl":"Miniatury wideo i plakaty","en":"Video thumbnails and posters"}},
+      {"id":"header","title":{"pl":"Nagłówki","en":"Headers"},"description":{"pl":"Grafiki nagłówkowe i grafiki w tle","en":"Header graphics and background artwork"}},
+      {"id":"photo","title":{"pl":"Przeróbka zdjęcia na ilustrację","en":"Photo to Illustration"},"description":{"pl":"Artystyczne transformacje fotografii","en":"Artistic photo transformations"}},
+      {"id":"logo","title":{"pl":"Logo","en":"Logos"},"description":{"pl":"Znaki graficzne i identyfikacja","en":"Graphic marks and visual identity"}}
+    ],
+    "video": [
+      {"id":"episodes","title":{"pl":"Odcinki","en":"Episodes"},"description":{"pl":"Montaż pełnych materiałów wideo","en":"Full-length video editing"}},
+      {"id":"inserts","title":{"pl":"Wstawki","en":"Video Inserts"},"description":{"pl":"Krótkie wstawki i segmenty","en":"Short inserts and video segments"}},
+      {"id":"animations","title":{"pl":"Animacje","en":"Animations"},"description":{"pl":"Animacje i motion design","en":"Animation and motion design"}},
+      {"id":"transitions","title":{"pl":"Przejścia","en":"Transitions"},"description":{"pl":"Przejścia i efekty montażowe","en":"Transitions and editing effects"}}
+    ]
+  },
+  "projects": []
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0a0d14">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+  <meta name="description" content="Portfolio graficzne NeyeR — grafika 3D, banery, overlay, awatary, miniaturki, nagłówki i logo.">
+  <title>NeyeR — Grafika</title><link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="styles.css"><script src="site.js" defer></script><script src="portfolio-page.js" defer></script>
+</head>
+<body data-portfolio-type="graphics"><div class="noise" aria-hidden="true"></div><div class="scroll-progress"><span id="scrollProgress"></span></div>
+<header class="site-header" id="top"><div class="header-inner wrap">
+  <a class="brand" href="index.html#home"><span class="brand-mark"><img src="assets/logo-mark.png" alt=""></span><span class="brand-word">NeyeR</span></a>
+  <nav class="main-nav" id="mainNav"><a href="index.html#home" class="nav-link" data-i18n="navHome">Start</a><a href="index.html#about" class="nav-link" data-i18n="navAbout">Kim jestem?</a><a href="index.html#work" class="nav-link active" data-i18n="navWork">Moje prace</a><a href="index.html#contact" class="nav-link" data-i18n="navContact">Kontakt</a></nav>
+  <div class="header-actions"><button class="lang-switch" id="langSwitch" type="button"><span class="lang-option selected" data-lang="pl">PL</span><span class="lang-divider">/</span><span class="lang-option" data-lang="en">EN</span></button><a href="index.html#work" class="header-cta"><span data-i18n="backToWork">Wróć do portfolio</span> <span aria-hidden="true">↗</span></a><button class="menu-toggle" id="menuToggle" type="button" aria-label="Otwórz menu" aria-expanded="false"><span></span><span></span></button></div>
+</div></header>
+<main>
+  <section class="portfolio-subpage section-shell"><div class="wrap">
+    <a class="back-link reveal" href="index.html#work"><span>←</span><span data-i18n="backToWork">Wróć do portfolio</span></a>
+    <div class="subpage-heading reveal"><div class="eyebrow"><span class="eyebrow-line"></span><span>01 / VISUAL DESIGN</span></div><h1 data-i18n="pageGraphics">Grafika</h1><p data-i18n="pageIntroGraphics">Projekty graficzne — od koncepcji i kompozycji po gotowe materiały wizualne.</p></div>
+    <div class="gallery-toolbar"><div class="gallery-toolbar-label" data-i18n="filterLabel">WYBIERZ KATEGORIĘ</div><div class="gallery-filters" id="categoryFilters" aria-label="Kategorie grafiki"></div><div class="gallery-result-count" id="projectCount">00 / 00</div></div>
+    <div class="project-grid" id="projectGrid" aria-live="polite"><div class="project-empty"><span class="empty-mark">✳</span><h2 data-i18n="emptyTitle">Ta galeria czeka na Twoje realizacje</h2><p data-i18n="emptyText">W tej kategorii nie ma jeszcze opublikowanych prac.</p></div></div>
+  </div></section>
+</main>
+<footer class="site-footer"><div class="wrap footer-main"><a class="footer-brand" href="index.html#home"><img src="assets/logo-mark.png" alt=""><span>NeyeR</span></a><p data-i18n="footerStatement">Dobre projekty zostają w pamięci.</p><a class="back-top" href="#top"><span data-i18n="backTop">Wróć na górę</span><span>↑</span></a></div><div class="wrap footer-copyright-note" data-i18n="copyrightNotice">Projekty ukazane na stronie objęte są prawami autorskimi i nie zezwalam na wykorzystywanie ich we wszelkich projektach.</div><div class="wrap footer-bottom"><span>© <span id="year"></span> NEYER. <span data-i18n="rights">WSZELKIE PRAWA ZASTRZEŻONE.</span></span><span class="footer-made">DESIGNED WITH INTENTION <i>✳</i></span></div></footer>
+<div class="media-modal" id="mediaModal" aria-hidden="true"><button class="modal-close" type="button" aria-label="Close">×</button><div class="modal-content" id="modalContent"></div></div>
+</body></html>
