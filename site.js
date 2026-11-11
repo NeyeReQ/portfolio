@@ -179,7 +179,13 @@
       element.normalize();
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
-      while(walker.nextNode())textNodes.push(walker.currentNode);
+      while(walker.nextNode()){
+        const node=walker.currentNode;
+        // Keep gradient title accents as uninterrupted text so background-clip:text
+        // can paint the full word instead of disappearing behind per-letter spans.
+        if(node.parentElement?.closest('.title-accent'))continue;
+        textNodes.push(node);
+      }
       let characterIndex=0;
       textNodes.forEach(node=>{
         const value=node.nodeValue||'';
