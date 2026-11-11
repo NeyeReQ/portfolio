@@ -32,46 +32,70 @@
   let uiAudioContext=null;
   let lastHoverSoundAt=0;
 
+  // Soft, familiar UI sounds: a tiny hover tick and a muted button click.
+  let uiNoiseBuffer=null;
+  function getUiNoiseBuffer(context){
+    if(uiNoiseBuffer)return uiNoiseBuffer;
+    const length=Math.ceil(context.sampleRate*.09);
+    const buffer=context.createBuffer(1,length,context.sampleRate);
+    const data=buffer.getChannelData(0);
+    for(let i=0;i<length;i++){
+      const fade=1-(i/length);
+      data[i]=(Math.random()*2-1)*fade;
+    }
+    uiNoiseBuffer=buffer;
+    return buffer;
+  }
+
   function playUiSound(kind){
     const AudioContextClass=window.AudioContext||window.webkitAudioContext;
     if(!AudioContextClass)return;
     if(!uiAudioContext){
       try{uiAudioContext=new AudioContextClass();}catch(_){return;}
     }
+
     const context=uiAudioContext;
     const play=()=>{
       if(context.state!=='running')return;
       const now=context.currentTime;
-      // Inharmonic sine partials create a short, metallic bell-like tap.
-      const partials=kind==='hover'
-        ? [
-            {frequency:1480,level:.095,duration:.145,delay:0,tail:.16},
-            {frequency:3710,level:.052,duration:.125,delay:.004,tail:.12},
-            {frequency:5520,level:.026,duration:.105,delay:.008,tail:.10}
-          ]
-        : [
-            {frequency:988,level:.125,duration:.235,delay:0,tail:.20},
-            {frequency:2640,level:.074,duration:.205,delay:.006,tail:.17},
-            {frequency:4490,level:.046,duration:.17,delay:.012,tail:.14},
-            {frequency:6610,level:.022,duration:.14,delay:.018,tail:.12}
-          ];
-      partials.forEach(partial=>{
-        const start=now+partial.delay;
-        const oscillator=context.createOscillator();
-        const envelope=context.createGain();
-        oscillator.type='sine';
-        oscillator.frequency.setValueAtTime(partial.frequency*1.008,start);
-        oscillator.frequency.exponentialRampToValueAtTime(partial.frequency*.985,start+partial.duration*.2);
-        envelope.gain.setValueAtTime(.0001,start);
-        envelope.gain.exponentialRampToValueAtTime(partial.level,start+.004);
-        envelope.gain.exponentialRampToValueAtTime(partial.level*partial.tail,start+partial.duration*.22);
-        envelope.gain.exponentialRampToValueAtTime(.0001,start+partial.duration);
-        oscillator.connect(envelope);
-        envelope.connect(context.destination);
-        oscillator.start(start);
-        oscillator.stop(start+partial.duration+.025);
-      });
+      const isHover=kind==='hover';
+      // Keep hover noticeably quieter; clicks are slightly fuller, never sharp.
+      const tone=context.createOscillator();
+      const toneGain=context.createGain();
+      const toneFilter=context.createBiquadFilter();
+      tone.type='triangle';
+      tone.frequency.setValueAtTime(isHover?920:1120,now);
+      tone.frequency.exponentialRampToValueAtTime(isHover?620:470,now+(isHover?.045:.075));
+      toneFilter.type='lowpass';
+      toneFilter.frequency.setValueAtTime(isHover?2300:2800,now);
+      toneFilter.Q.setValueAtTime(.55,now);
+      toneGain.gain.setValueAtTime(.0001,now);
+      toneGain.gain.exponentialRampToValueAtTime(isHover?.008:.018,now+.004);
+      toneGain.gain.exponentialRampToValueAtTime(.0001,now+(isHover?.052:.085));
+      tone.connect(toneFilter);
+      toneFilter.connect(toneGain);
+      toneGain.connect(context.destination);
+      tone.start(now);
+      tone.stop(now+(isHover?.06:.095));
+
+      // A very short filtered-noise transient gives it the familiar button "tap".
+      const noise=context.createBufferSource();
+      const noiseFilter=context.createBiquadFilter();
+      const noiseGain=context.createGain();
+      noise.buffer=getUiNoiseBuffer(context);
+      noiseFilter.type='bandpass';
+      noiseFilter.frequency.setValueAtTime(isHover?1850:1450,now);
+      noiseFilter.Q.setValueAtTime(isHover?1.2:.8,now);
+      noiseGain.gain.setValueAtTime(.0001,now);
+      noiseGain.gain.exponentialRampToValueAtTime(isHover?.004:.009,now+.002);
+      noiseGain.gain.exponentialRampToValueAtTime(.0001,now+(isHover?.018:.028));
+      noise.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(context.destination);
+      noise.start(now);
+      noise.stop(now+.035);
     };
+
     if(context.state==='suspended'){
       context.resume().then(play).catch(()=>{});
     }else{
