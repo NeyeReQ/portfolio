@@ -246,13 +246,13 @@ body.modal-open{overflow:hidden}
 .tool-card:hover .tool-card-corner{transform:translate(3px,-3px) rotate(45deg);opacity:1}
 
 /* === Scroll entrances: safe progressive reveal === */
-/* Without a working script, content stays visible instead of disappearing. */
-.reveal{opacity:1;transform:none;clip-path:none;transition:opacity .62s ease,transform .82s cubic-bezier(.16,1,.3,1),clip-path .82s cubic-bezier(.16,1,.3,1)}
-.reveal.reveal-pending:not(.is-visible){opacity:0;transform:translate3d(0,34px,0) scale(.985);clip-path:inset(0 0 100% 0);transition-delay:var(--delay,0ms)}
-.reveal.reveal-pending.is-visible{opacity:1;transform:translate3d(0,0,0) scale(1);clip-path:inset(0 0 0 0)}
-.section-heading.reveal.reveal-pending:not(.is-visible){transform:translate3d(-24px,16px,0)}
+/* Keep the layout box measurable: clip-path would give IntersectionObserver a zero-area target. */
+.reveal{opacity:1;transform:none;clip-path:none;transition:opacity .62s ease,transform .82s cubic-bezier(.16,1,.3,1)}
+.reveal.reveal-pending:not(.is-visible){opacity:0;transform:translate3d(0,28px,0) scale(.99);clip-path:none;transition-delay:var(--delay,0ms);will-change:opacity,transform}
+.reveal.reveal-pending.is-visible{opacity:1;transform:translate3d(0,0,0) scale(1);clip-path:none;will-change:auto}
+.section-heading.reveal.reveal-pending:not(.is-visible){transform:translate3d(-18px,12px,0)}
 .section-heading.reveal.reveal-pending.is-visible{transform:translate3d(0,0,0)}
-.tool-card.reveal.reveal-pending:not(.is-visible){clip-path:none;transform:perspective(850px) translate3d(0,42px,0) rotateX(7deg) scale(.965);transform-origin:center bottom}
+.tool-card.reveal.reveal-pending:not(.is-visible){clip-path:none;transform:perspective(850px) translate3d(0,34px,0) rotateX(5deg) scale(.98);transform-origin:center bottom}
 .tool-card.reveal.reveal-pending.is-visible{transform:perspective(850px) translate3d(0,0,0) rotateX(0) scale(1)}
 @media(max-width:980px){
   .tools-section{padding:92px 0 98px}
