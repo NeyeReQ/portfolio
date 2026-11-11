@@ -283,3 +283,16 @@ body.modal-open{overflow:hidden}
   .tool-card:hover,.tool-card:focus-within{transform:none}
   .reveal,.tool-card.reveal{opacity:1;clip-path:none;transform:none;transition:none}
 }
+
+/* Preserve the interactive lift after a reveal has completed. */
+.portfolio-choice.reveal.is-visible:hover,
+.portfolio-choice.reveal.is-visible:focus-visible{transform:translate3d(0,-8px,0) scale(1)}
+.tool-card.reveal.is-visible:hover,
+.tool-card.reveal.is-visible:focus-within{transform:perspective(850px) translate3d(0,-7px,0) rotateX(0) scale(1)}
+.credential-card.reveal.is-visible:hover,
+.contact-card.reveal.is-visible:hover{transform:translateY(-3px)}
+@media(prefers-reduced-motion:reduce){
+  .portfolio-choice.reveal.is-visible:hover,.portfolio-choice.reveal.is-visible:focus-visible,
+  .tool-card.reveal.is-visible:hover,.tool-card.reveal.is-visible:focus-within,
+  .credential-card.reveal.is-visible:hover,.contact-card.reveal.is-visible:hover{transform:none}
+}
