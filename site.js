@@ -224,7 +224,10 @@
   const sw=$('#langSwitch');if(sw)sw.addEventListener('click',()=>{lang=lang==='pl'?'en':'pl';try{localStorage.setItem('neyer-language',lang);}catch(_){ }applyLanguage();});
   const menu=$('#menuToggle'),nav=$('#mainNav');
   if(menu&&nav){menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);});queryAll('.nav-link').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');}));}
-  applyLanguage();window.NeyeR={get lang(){return lang;},get translations(){return translations;},applyLanguage};
+  applyLanguage();
+  // Build the initial typewriter spans explicitly so the hero title animates on first load too.
+  refreshTypewriterTargets();
+  window.NeyeR={get lang(){return lang;},get translations(){return translations;},applyLanguage};
   // Stagger cards inside each section so each group lands with a clear rhythm.
   ['#about .credential-card','#tools .tool-card','#contact .contact-card'].forEach(selector=>{
     queryAll(selector).forEach((el,index)=>{
