@@ -27,16 +27,26 @@
   try{lang=localStorage.getItem('neyer-language')==='en'?'en':'pl';}catch(_){ }
   const $=(s,p=document)=>p.querySelector(s), queryAll=(s,p=document)=>[...p.querySelectorAll(s)];
 
-  // Warm, rounded UI sounds generated locally with Web Audio.
-  const soundableSelector='a[href],button:not(:disabled),[role="button"]';
+  // Consistent, soft UI ticks for every interactive control and hoverable card.
+  const soundableSelector=[
+    'a[href]','button:not(:disabled)','input:not(:disabled)','select:not(:disabled)',
+    'textarea:not(:disabled)','summary','[role="button"]','[role="link"]','[role="tab"]',
+    '[tabindex]:not([tabindex="-1"])','.credential-card','.tool-card','.portfolio-choice',
+    '.contact-card','.project-card','.gallery-card','.main-tab','.subtab','.gallery-filter'
+  ].join(',');
+  const metalSurfaceSelector=[
+    'a[href]','button:not(:disabled)','summary','[role="button"]','[role="link"]','[role="tab"]',
+    '.credential-card','.tool-card','.portfolio-choice','.contact-card','.project-card',
+    '.gallery-card','.main-tab','.subtab','.gallery-filter'
+  ].join(',');
   let uiAudioContext=null;
-  let lastHoverSoundAt=0;
-
-  // Soft, familiar UI sounds: a tiny hover tick and a muted button click.
   let uiNoiseBuffer=null;
+  let uiMasterGain=null;
+  const lastHoverByTarget=new WeakMap();
+
   function getUiNoiseBuffer(context){
     if(uiNoiseBuffer)return uiNoiseBuffer;
-    const length=Math.ceil(context.sampleRate*.09);
+    const length=Math.ceil(context.sampleRate*.08);
     const buffer=context.createBuffer(1,length,context.sampleRate);
     const data=buffer.getChannelData(0);
     for(let i=0;i<length;i++){
@@ -53,49 +63,54 @@
     if(!uiAudioContext){
       try{uiAudioContext=new AudioContextClass();}catch(_){return;}
     }
-
     const context=uiAudioContext;
     const play=()=>{
       if(context.state!=='running')return;
+      if(!uiMasterGain){
+        uiMasterGain=context.createGain();
+        uiMasterGain.gain.value=.82;
+        uiMasterGain.connect(context.destination);
+      }
       const now=context.currentTime;
-      const isHover=kind==='hover';
-      // Keep hover noticeably quieter; clicks are slightly fuller, never sharp.
+      const hover=kind==='hover';
+      const duration=hover ? .052 : .067;
+
+      // Identical peak levels for hover and click; pitch and decay provide the distinction.
       const tone=context.createOscillator();
-      const toneGain=context.createGain();
+      const toneEnvelope=context.createGain();
       const toneFilter=context.createBiquadFilter();
       tone.type='triangle';
-      tone.frequency.setValueAtTime(isHover?920:1120,now);
-      tone.frequency.exponentialRampToValueAtTime(isHover?620:470,now+(isHover?.045:.075));
+      tone.frequency.setValueAtTime(hover ? 1080 : 900,now);
+      tone.frequency.exponentialRampToValueAtTime(hover ? 790 : 610,now+duration);
       toneFilter.type='lowpass';
-      toneFilter.frequency.setValueAtTime(isHover?2300:2800,now);
+      toneFilter.frequency.setValueAtTime(2600,now);
       toneFilter.Q.setValueAtTime(.55,now);
-      toneGain.gain.setValueAtTime(.0001,now);
-      toneGain.gain.exponentialRampToValueAtTime(isHover?.008:.018,now+.004);
-      toneGain.gain.exponentialRampToValueAtTime(.0001,now+(isHover?.052:.085));
+      toneEnvelope.gain.setValueAtTime(.0001,now);
+      toneEnvelope.gain.exponentialRampToValueAtTime(.022,now+.003);
+      toneEnvelope.gain.exponentialRampToValueAtTime(.0001,now+duration);
       tone.connect(toneFilter);
-      toneFilter.connect(toneGain);
-      toneGain.connect(context.destination);
+      toneFilter.connect(toneEnvelope);
+      toneEnvelope.connect(uiMasterGain);
       tone.start(now);
-      tone.stop(now+(isHover?.06:.095));
+      tone.stop(now+duration+.012);
 
-      // A very short filtered-noise transient gives it the familiar button "tap".
+      // A tiny filtered transient adds a familiar tactile button tick.
       const noise=context.createBufferSource();
       const noiseFilter=context.createBiquadFilter();
-      const noiseGain=context.createGain();
+      const noiseEnvelope=context.createGain();
       noise.buffer=getUiNoiseBuffer(context);
       noiseFilter.type='bandpass';
-      noiseFilter.frequency.setValueAtTime(isHover?1850:1450,now);
-      noiseFilter.Q.setValueAtTime(isHover?1.2:.8,now);
-      noiseGain.gain.setValueAtTime(.0001,now);
-      noiseGain.gain.exponentialRampToValueAtTime(isHover?.004:.009,now+.002);
-      noiseGain.gain.exponentialRampToValueAtTime(.0001,now+(isHover?.018:.028));
+      noiseFilter.frequency.setValueAtTime(hover ? 1750 : 1420,now);
+      noiseFilter.Q.setValueAtTime(.9,now);
+      noiseEnvelope.gain.setValueAtTime(.0001,now);
+      noiseEnvelope.gain.exponentialRampToValueAtTime(.0105,now+.002);
+      noiseEnvelope.gain.exponentialRampToValueAtTime(.0001,now+(hover ? .021 : .028));
       noise.connect(noiseFilter);
-      noiseFilter.connect(noiseGain);
-      noiseGain.connect(context.destination);
+      noiseFilter.connect(noiseEnvelope);
+      noiseEnvelope.connect(uiMasterGain);
       noise.start(now);
       noise.stop(now+.035);
     };
-
     if(context.state==='suspended'){
       context.resume().then(play).catch(()=>{});
     }else{
@@ -103,18 +118,47 @@
     }
   }
 
+  // Add one shared silver light-sweep layer to static and dynamically-created surfaces.
+  function decorateMetalSurface(element){
+    if(!(element instanceof Element)||!element.matches(metalSurfaceSelector))return;
+    element.classList.add('ui-metal-hover');
+    const hasSheen=Array.from(element.children).some(child=>child.classList.contains('ui-metal-sheen'));
+    if(!hasSheen){
+      const sheen=document.createElement('span');
+      sheen.className='ui-metal-sheen';
+      sheen.setAttribute('aria-hidden','true');
+      element.append(sheen);
+    }
+  }
+  function decorateMetalSurfaces(root){
+    if(!(root instanceof Element||root instanceof Document))return;
+    decorateMetalSurface(root);
+    root.querySelectorAll(metalSurfaceSelector).forEach(decorateMetalSurface);
+  }
+  decorateMetalSurfaces(document.body);
+  if('MutationObserver'in window&&document.body){
+    const surfaceObserver=new MutationObserver(records=>{
+      records.forEach(record=>record.addedNodes.forEach(node=>{
+        if(node instanceof Element)decorateMetalSurfaces(node);
+      }));
+    });
+    surfaceObserver.observe(document.body,{childList:true,subtree:true});
+  }
+
   document.addEventListener('pointerover',event=>{
     if(event.pointerType!=='mouse'&&event.pointerType!=='pen')return;
     const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
     if(!target||(event.relatedTarget instanceof Node&&target.contains(event.relatedTarget)))return;
     const now=Date.now();
-    if(now-lastHoverSoundAt<170)return;
-    lastHoverSoundAt=now;
+    const previous=lastHoverByTarget.get(target)||0;
+    if(now-previous<100)return;
+    lastHoverByTarget.set(target,now);
     playUiSound('hover');
   },true);
 
-  // Play before navigation so the click sound is not cut off by page loading.
+  // Play on primary-pointer press so navigation does not cut off the click sound.
   document.addEventListener('pointerdown',event=>{
+    if(event.button!==0||!event.isPrimary)return;
     const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
     if(target)playUiSound('click');
   },true);
