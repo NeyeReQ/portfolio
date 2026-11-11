@@ -31,15 +31,15 @@
   }
   function mediaMarkup(project){
     const preview=asset(project.image||project.thumbnail);
-    if(preview)return `<img src="${esc(preview)}" alt="${esc(text(project.title))}" loading="lazy">`;
+    if(preview)return `<img src="${esc(preview)}" alt="${esc(text(project.title))}" loading="lazy" draggable="false">`;
     if(project.video)return `<div class="project-placeholder project-placeholder-video"><span>▶</span><small>VIDEO / PREVIEW</small></div>`;
     return `<div class="project-placeholder"><span>N/R</span><small>NEYER VISUAL STUDY</small></div>`;
   }
   function openProject(project){
     const modal=$('#mediaModal'),content=$('#modalContent');if(!modal||!content)return;
     content.innerHTML='';
-    if(project.video){const video=document.createElement('video');video.src=asset(project.video);if(project.image||project.thumbnail)video.poster=asset(project.image||project.thumbnail);video.controls=true;video.autoplay=true;video.playsInline=true;content.append(video);}
-    else if(project.image||project.thumbnail){const img=document.createElement('img');img.src=asset(project.image||project.thumbnail);img.alt=text(project.title);content.append(img);}
+    if(project.video){const video=document.createElement('video');video.src=asset(project.video);if(project.image||project.thumbnail)video.poster=asset(project.image||project.thumbnail);video.controls=true;video.controlsList='nodownload';video.disablePictureInPicture=true;video.disableRemotePlayback=true;video.autoplay=true;video.playsInline=true;content.append(video);}
+    else if(project.image||project.thumbnail){const img=document.createElement('img');img.src=asset(project.image||project.thumbnail);img.alt=text(project.title);img.draggable=false;content.append(img);}
     else {const placeholder=document.createElement('div');placeholder.className='project-placeholder modal-placeholder';placeholder.textContent='N/R';content.append(placeholder);}
     const title=document.createElement('h2');title.textContent=text(project.title);content.append(title);
     const description=text(project.description);if(description){const p=document.createElement('p');p.textContent=description;content.append(p);}
@@ -65,6 +65,18 @@
       body.append(heading,meta);card.append(media,body);card.addEventListener('click',()=>openProject(project));grid.append(card);
     });
   }
+  // Discourage casual saving of portfolio media (not a hard download barrier).
+  document.addEventListener('contextmenu', event => {
+    if (event.target.closest('.project-card-media img, .modal-content img, .modal-content video')) {
+      event.preventDefault();
+    }
+  });
+  document.addEventListener('dragstart', event => {
+    if (event.target.closest('.project-card-media img, .modal-content img, .modal-content video')) {
+      event.preventDefault();
+    }
+  });
+
   renderFilters();renderProjects();
   document.addEventListener('neyer:language',()=>{renderFilters();renderProjects();});
   $('#mediaModal')?.addEventListener('click',e=>{if(e.target.id==='mediaModal'||e.target.classList.contains('modal-close'))closeModal();});
