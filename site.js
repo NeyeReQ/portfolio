@@ -2,7 +2,7 @@
   const translations={
     pl:{
       navHome:'Start',navAbout:'Kim jestem?',navWork:'Moje prace',navContact:'Kontakt',headerCta:'Zobacz portfolio',
-      heroEyebrow:'Niezależny twórca wizualny',heroLine1:'Twórca',heroLine2:'z',heroLine3:'Pasją.',heroDescription:'Projektuję grafiki, które przyciągają uwagę, i montuję filmy, które zatrzymują ją na dłużej. Łączę estetykę z pomysłem, dbając o każdy detal.',heroButton:'Poznaj moje prace',heroSecondary:'Dowiedz się więcej',heroStatus:'Grafika komputerowa & montaż wideo',scrollLabel:'PRZEWIŃ, ABY POZNAĆ WIĘCEJ',heroBottomNote:'Każdy projekt zaczyna się od pomysłu.',
+      heroEyebrow:'Niezależny twórca wizualny',heroLine1:'Twórca',heroLine2:'z',heroLine3:'Pasją',heroDescription:'Projektuję grafiki, które przyciągają uwagę, i montuję filmy, które zatrzymują ją na dłużej. Łączę estetykę z pomysłem, dbając o każdy detal.',heroButton:'Poznaj moje prace',heroSecondary:'Dowiedz się więcej',heroStatus:'Grafika komputerowa & montaż wideo',scrollLabel:'PRZEWIŃ, ABY POZNAĆ WIĘCEJ',heroBottomNote:'Każdy projekt zaczyna się od pomysłu.',
       aboutEyebrow:'Kilka słów o mnie',aboutTitle:'Kim jestem',aboutSide:'Kreatywność spotyka\nsię z precyzją.',aboutBody:'Nazywam się NeyeR. Od kilku lat zajmuję się projektowaniem grafiki komputerowej oraz montażem materiałów wideo. W swojej pracy łączę kreatywne podejście z dbałością o detale i spójność wizualną. Ukończyłem technikum na kierunku technik grafiki i poligrafii cyfrowej. Posiadam certyfikaty potwierdzające kwalifikacje PGF.04 i PGF.05, uzyskane po zdaniu egzaminów zawodowych, a także dyplom zawodowy w tym kierunku. Posługuję się językiem angielskim na poziomie średnio zaawansowanym.',
       credential1:'Przygotowywanie oraz wykonywanie prac graficznych i publikacji cyfrowych. Obejmuje opracowywanie materiałów graficznych, przygotowanie ich do druku oraz publikacji elektronicznych.',credential2:'Drukowanie cyfrowe i obróbka druków. Obejmuje przygotowanie, realizację i kontrolę procesów drukowania cyfrowego oraz obróbkę wydrukowanych materiałów.',diplomaTitle:'DYPLOM ZAWODOWY',credential3:'Potwierdza uzyskanie kwalifikacji w zawodzie technik grafiki i poligrafii cyfrowej.',credentialsSource:'Oficjalny opis kwalifikacji ↗',englishLabel:'Język angielski',englishLevel:'Poziom średnio zaawansowany',
       workEyebrow:'Wybrane obszary twórczości',workTitle:'Moje',workTitleAccent:'prace',workIntro:'Wybierz obszar twórczości i przejdź do osobnej galerii z kategoriami.',graphics:'Grafika',video:'Montaż',graphicsSub:'Projektowanie, kompozycja, identyfikacja wizualna',videoSub:'Montaż wideo, animacja i opowiadanie obrazem',
@@ -12,7 +12,7 @@
     },
     en:{
       navHome:'Home',navAbout:'About me',navWork:'My work',navContact:'Contact',headerCta:'View portfolio',
-      heroEyebrow:'Independent visual creator',heroLine1:'Creator',heroLine2:'with',heroLine3:'Passion.',heroDescription:'I create graphics that draw attention and edit videos that keep viewers engaged. I combine aesthetics with ideas, paying attention to every detail.',heroButton:'Explore my work',heroSecondary:'Discover more',heroStatus:'Graphic design & video editing',scrollLabel:'SCROLL TO DISCOVER MORE',heroBottomNote:'Every project starts with an idea.',
+      heroEyebrow:'Independent visual creator',heroLine1:'Creator',heroLine2:'with',heroLine3:'Passion',heroDescription:'I create graphics that draw attention and edit videos that keep viewers engaged. I combine aesthetics with ideas, paying attention to every detail.',heroButton:'Explore my work',heroSecondary:'Discover more',heroStatus:'Graphic design & video editing',scrollLabel:'SCROLL TO DISCOVER MORE',heroBottomNote:'Every project starts with an idea.',
       aboutEyebrow:'A few words about me',aboutTitle:'Who am I',aboutSide:'Where creativity meets\nprecision.',aboutBody:'My name is NeyeR. I have been working in computer graphic design and video editing for several years, combining a creative approach with attention to detail and visual consistency. I graduated from a technical secondary school with a specialisation in Digital Graphics and Printing. My professional qualifications are confirmed by the PGF.04 and PGF.05 certificates, obtained after passing the relevant vocational examinations, as well as a diploma in this field. I have an intermediate level of English.',
       credential1:'Preparing and producing graphic work and digital publications. This includes developing graphic assets and preparing them for print and digital publishing.',credential2:'Digital printing and print finishing. This qualification covers the preparation, execution and control of digital printing processes and the finishing of printed materials.',diplomaTitle:'VOCATIONAL DIPLOMA',credential3:'Confirms vocational qualifications as a Digital Graphics and Printing Technician.',credentialsSource:'Official qualification overview ↗',englishLabel:'English language',englishLevel:'Intermediate level',
       workEyebrow:'Selected creative disciplines',workTitle:'My',workTitleAccent:'work',workIntro:'Choose a creative discipline to open its dedicated gallery and browse its categories.',graphics:'Graphics',video:'Video Editing',graphicsSub:'Design, composition and visual identity',videoSub:'Video editing, animation and visual storytelling',
@@ -23,7 +23,67 @@
   };
   let lang='pl';
   try{lang=localStorage.getItem('neyer-language')==='en'?'en':'pl';}catch(_){ }
-  const $=(s,p=document)=>p.querySelector(s), $$=(s,p=document)=>[...p.querySelectorAll(s)];
+  const $=(s,p=document)=>p.querySelector(s), $=(s,p=document)=>[...p.querySelectorAll(s)];
+
+  // Soft original UI chimes. AudioContext is resumed only after a real user gesture.
+  const soundableSelector='a[href],button:not(:disabled),[role="button"]';
+  let uiAudioContext=null;
+  let lastHoverSoundAt=0;
+  function playUiSound(kind){
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass)return;
+    if(!uiAudioContext){
+      try{uiAudioContext=new AudioContextClass();}catch(_){return;}
+    }
+    const context=uiAudioContext;
+    const play=()=>{
+      if(context.state!=='running')return;
+      const now=context.currentTime;
+      const notes=kind==='hover'
+        ? [{frequency:880,level:.0065,duration:.085,delay:0},{frequency:1174.66,level:.0032,duration:.105,delay:.012}]
+        : [{frequency:523.25,level:.010,duration:.15,delay:0},{frequency:659.25,level:.007,duration:.17,delay:.012},{frequency:783.99,level:.0038,duration:.14,delay:.024}];
+      notes.forEach(note=>{
+        const start=now+note.delay;
+        const oscillator=context.createOscillator();
+        const envelope=context.createGain();
+        oscillator.type='sine';
+        oscillator.frequency.setValueAtTime(note.frequency,start);
+        envelope.gain.setValueAtTime(.0001,start);
+        envelope.gain.exponentialRampToValueAtTime(note.level,start+.012);
+        envelope.gain.exponentialRampToValueAtTime(.0001,start+note.duration);
+        oscillator.connect(envelope);
+        envelope.connect(context.destination);
+        oscillator.start(start);
+        oscillator.stop(start+note.duration+.025);
+      });
+    };
+    if(context.state==='suspended'){
+      context.resume().then(play).catch(()=>{});
+    }else{
+      play();
+    }
+  }
+  document.addEventListener('pointerover',event=>{
+    if(event.pointerType!=='mouse'&&event.pointerType!=='pen')return;
+    const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
+    if(!target||(event.relatedTarget instanceof Node&&target.contains(event.relatedTarget)))return;
+    const now=Date.now();
+    if(now-lastHoverSoundAt<140)return;
+    lastHoverSoundAt=now;
+    playUiSound('hover');
+  },true);
+  // pointerdown fires before link navigation, so the click chime is not cut off by page load.
+  document.addEventListener('pointerdown',event=>{
+    const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
+    if(target)playUiSound('click');
+  },true);
+  // Keyboard and assistive-technology activation has no pointerdown event.
+  document.addEventListener('click',event=>{
+    if(event.detail!==0)return;
+    const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
+    if(target)playUiSound('click');
+  },true);
+
   function applyLanguage(){
     const t=translations[lang];document.documentElement.lang=lang;
     if($('title')) { const pageType=document.body.dataset.portfolioType; $('title').textContent=pageType?(pageType==='graphics'?`NeyeR — ${t.pageGraphics}`:`NeyeR — ${t.pageEditing}`):'NeyeR — Visual Designer & Video Editor'; }
