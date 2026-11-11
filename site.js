@@ -182,6 +182,7 @@
       while(walker.nextNode())textNodes.push(walker.currentNode);
       let characterIndex=0;
       textNodes.forEach(node=>{
+        let accentLetterIndex=0;
         const value=node.nodeValue||'';
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
@@ -191,7 +192,12 @@
           }else{
             const span=document.createElement('span');
             span.className='typewriter-char';
-            if(node.parentElement?.closest('.title-accent'))span.classList.add('typewriter-gradient-char');
+            const accent=node.parentElement?.closest('.title-accent');
+            if(accent){
+              const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
+              span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
+              accentLetterIndex++;
+            }
             span.textContent=character;
             span.style.animationDelay=(characterIndex*17)+'ms';
             characterIndex++;
