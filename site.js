@@ -36,7 +36,7 @@
   ].join(',');
   const metalSurfaceSelector=[
     'a[href]','button:not(:disabled)','summary','[role="button"]','[role="link"]','[role="tab"]',
-    '.credential-card','.tool-card','.portfolio-choice','.contact-card','.project-card',
+    '.credential-card','.tool-card','.contact-card','.project-card',
     '.gallery-card','.main-tab','.subtab','.gallery-filter'
   ].join(',');
   let uiAudioContext=null;
