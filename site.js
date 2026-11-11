@@ -35,7 +35,7 @@
     '.contact-card','.project-card','.gallery-card','.main-tab','.subtab','.gallery-filter'
   ].join(',');
   const metalSurfaceSelector=[
-    'a[href]','button:not(:disabled)','summary','[role="button"]','[role="link"]','[role="tab"]',
+    'a[href]:not(.brand)','button:not(:disabled)','summary','[role="button"]','[role="link"]','[role="tab"]',
     '.credential-card','.tool-card','.contact-card','.project-card',
     '.gallery-card','.main-tab','.subtab','.gallery-filter'
   ].join(',');
