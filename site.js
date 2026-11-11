@@ -27,9 +27,7 @@
   function applyLanguage(){
     const t=translations[lang];document.documentElement.lang=lang;
     if($('title')) { const pageType=document.body.dataset.portfolioType; $('title').textContent=pageType?(pageType==='graphics'?`NeyeR — ${t.pageGraphics}`:`NeyeR — ${t.pageEditing}`):'NeyeR — Visual Designer & Video Editor'; }
-    $('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(t[key]!==undefined)el.textContent=t[key];});
-    const workAccent=$('[data-i18n="workTitleAccent"]',$('#work-section-title'));
-    if(workAccent)workAccent.textContent=workAccent.textContent.replace(/[.!?…]+$/u,'');
+    $$('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(t[key]!==undefined)el.textContent=t[key];});
     const side=$('.section-side-note');if(side)side.innerHTML=t.aboutSide.replace('\n','<br>');
     $$('.lang-option').forEach(el=>el.classList.toggle('selected',el.dataset.lang===lang));
     const sw=$('#langSwitch');if(sw)sw.setAttribute('aria-label',lang==='pl'?'Switch language to English':'Przełącz język na polski');
