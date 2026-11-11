@@ -207,3 +207,23 @@ body.modal-open{overflow:hidden}
   }
   .portfolio-choice:before{transition:none;}
 }
+
+/* Replace the old moving sweep on the two homepage portfolio tiles with a calm glow. */
+.portfolio-choice:before{
+  background:
+    radial-gradient(ellipse at 52% 58%,rgba(114,234,217,.13),transparent 58%),
+    linear-gradient(135deg,rgba(255,255,255,.03),transparent 46%);
+  background-size:auto;
+  background-position:center;
+  transition:opacity .55s ease,filter .55s ease;
+  opacity:.82;
+}
+.portfolio-choice:hover:before{
+  background-position:center;
+  opacity:1;
+  filter:brightness(1.32) saturate(1.08);
+}
+.hero-title-final-line{
+  display:inline-block;
+  white-space:nowrap;
+}
