@@ -227,3 +227,35 @@ body.modal-open{overflow:hidden}
   display:inline-block;
   white-space:nowrap;
 }
+
+
+/* Brand mark rises gently from the bottom of each portfolio tile on hover/focus. */
+.choice-hover-logo{
+  position:absolute;
+  z-index:2;
+  left:50%;
+  bottom:-155px;
+  width:clamp(112px,14vw,154px);
+  max-height:148px;
+  height:auto;
+  object-fit:contain;
+  opacity:0;
+  pointer-events:none;
+  transform:translateX(-50%) translateY(24px) scale(.92);
+  filter:drop-shadow(0 0 18px rgba(114,234,217,.24));
+  transition:bottom .72s cubic-bezier(.2,.7,.2,1),opacity .42s ease,transform .72s cubic-bezier(.2,.7,.2,1);
+}
+.portfolio-choice:hover .choice-hover-logo,
+.portfolio-choice:focus-visible .choice-hover-logo{
+  bottom:102px;
+  opacity:.78;
+  transform:translateX(-50%) translateY(0) scale(1);
+}
+@media(max-width:720px){
+  .choice-hover-logo{width:122px;max-height:120px}
+  .portfolio-choice:hover .choice-hover-logo,
+  .portfolio-choice:focus-visible .choice-hover-logo{bottom:88px}
+}
+@media(prefers-reduced-motion:reduce){
+  .choice-hover-logo{transition:none}
+}
