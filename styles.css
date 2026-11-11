@@ -294,3 +294,60 @@ body.modal-open{overflow:hidden}
   .tool-card.reveal.is-visible:hover,.tool-card.reveal.is-visible:focus-within,
   .credential-card.reveal.is-visible:hover,.contact-card.reveal.is-visible:hover{transform:none}
 }
+
+/* === Unified silver hover for every interactive / hoverable surface === */
+.ui-metal-hover{position:relative;isolation:isolate}
+.ui-metal-sheen{
+  position:absolute;z-index:30;inset:0;overflow:hidden;pointer-events:none;
+  border-radius:inherit;
+}
+.ui-metal-sheen:before{
+  content:"";position:absolute;top:-65%;left:-52%;width:31%;height:230%;
+  transform:translateX(0) skewX(-22deg);opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(195,207,219,.12) 27%,rgba(244,248,252,.34) 50%,rgba(177,191,205,.16) 73%,transparent);
+  filter:blur(3px);
+  transition:transform .78s cubic-bezier(.16,1,.3,1),opacity .24s ease;
+}
+.ui-metal-hover:hover>.ui-metal-sheen:before,
+.ui-metal-hover:focus-visible>.ui-metal-sheen:before,
+.ui-metal-hover:focus-within>.ui-metal-sheen:before{
+  transform:translateX(520%) skewX(-22deg);opacity:1;
+}
+/* Use one neutral silver reflection instead of stacked coloured sweeps. */
+.choice-hover-sheen{display:none!important}
+.tool-card:after{display:none!important}
+
+/* === Repeating section entrances and typewriter headings === */
+.reveal.reveal-pending:not(.is-visible){
+  opacity:0;transform:translate3d(0,25px,0) scale(.99);
+  clip-path:none;transition-delay:var(--delay,0ms);
+}
+.reveal.reveal-pending.is-visible{
+  opacity:1;transform:translate3d(0,0,0) scale(1);clip-path:none;
+}
+.section-heading.reveal.reveal-pending:not(.is-visible){transform:translate3d(-16px,10px,0)}
+.section-heading.reveal.reveal-pending.is-visible{transform:translate3d(0,0,0)}
+.tool-card.reveal.reveal-pending:not(.is-visible){
+  transform:perspective(850px) translate3d(0,30px,0) rotateX(4deg) scale(.985);
+}
+.tool-card.reveal.reveal-pending.is-visible{
+  transform:perspective(850px) translate3d(0,0,0) rotateX(0) scale(1);
+}
+.typewriter-target .typewriter-char{
+  display:inline-block;opacity:0;transform:translate3d(0,.28em,0);
+  filter:blur(2px);white-space:pre;
+}
+.reveal.is-visible .typewriter-target .typewriter-char,
+.reveal.is-visible.typewriter-target .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
+}
+@keyframes neyerTypeChar{
+  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .ui-metal-sheen:before{display:none}
+  .typewriter-target .typewriter-char{opacity:1;transform:none;filter:none;animation:none!important}
+  .reveal.reveal-pending:not(.is-visible),.reveal.reveal-pending.is-visible{
+    opacity:1;transform:none;clip-path:none;transition:none
+  }
+}
