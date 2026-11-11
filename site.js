@@ -130,7 +130,7 @@
         entry.target.classList.add('is-visible');
         io.unobserve(entry.target);
       }
-    }),{threshold:.14,rootMargin:'0px 0px -7% 0px'});
+    }),{threshold:0,rootMargin:'0px 0px -4% 0px'});
     reveals.forEach(el=>{
       if(el.dataset.delay)el.style.setProperty('--delay',`${el.dataset.delay}ms`);
       el.classList.add('reveal-pending');
