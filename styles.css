@@ -431,3 +431,51 @@ body.modal-open{overflow:hidden}
   .choice-bottom small{font-size:10.5px}
   .subpage-heading p{font-size:13.5px}
 }
+
+
+/* Highlight the vocational diploma as the main formal qualification. */
+.credential-diploma{
+  position:relative;
+  overflow:hidden;
+  padding:21px 23px;
+  border-color:rgba(114,234,217,.38);
+  background:
+    radial-gradient(ellipse at 92% 12%,rgba(114,234,217,.13),transparent 42%),
+    linear-gradient(115deg,rgba(25,43,55,.98),rgba(15,24,35,.97) 62%,rgba(24,28,48,.96));
+  box-shadow:inset 3px 0 0 rgba(114,234,217,.7),0 12px 34px rgba(0,0,0,.12);
+}
+.credential-diploma:after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(112deg,transparent 45%,rgba(255,255,255,.035) 50%,transparent 56%);
+}
+.credential-diploma-badge{
+  position:relative;z-index:1;
+  display:inline-flex;align-items:center;gap:7px;align-self:flex-start;
+  margin:0 0 5px;padding:6px 9px;
+  border:1px solid rgba(114,234,217,.27);
+  background:rgba(114,234,217,.08);
+  color:#9df2e5;
+  font:600 9px 'DM Mono',monospace;letter-spacing:.75px;
+}
+.credential-diploma-badge>span:first-child{
+  display:grid;place-items:center;width:15px;height:15px;
+  border-radius:50%;background:rgba(114,234,217,.17);color:#b9fff4;font-size:10px;
+}
+.credential-diploma .credential-code{
+  position:relative;z-index:1;margin:2px 0 3px;
+  font-size:16px;letter-spacing:.7px;color:#f2fffd;
+}
+.credential-diploma .credential-label{
+  position:relative;z-index:1;max-width:88%;color:#c2d0dc;
+}
+.credential-diploma .credential-no{color:#8ca5b2}
+.credential-diploma .credential-arrow{color:#9cefe3;font-size:18px}
+.contact-brand-icon svg{display:block;width:25px;height:25px;overflow:visible}
+.contact-gmail svg{width:26px;height:26px}
+.contact-discord svg{width:25px;height:25px}
+@media(max-width:720px){
+  .credential-diploma{padding:18px 17px}
+  .credential-diploma-badge{font-size:8px;letter-spacing:.45px}
+  .credential-diploma .credential-code{font-size:14px}
+  .credential-diploma .credential-label{max-width:100%}
+}
