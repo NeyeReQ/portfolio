@@ -25,59 +25,77 @@
   try{lang=localStorage.getItem('neyer-language')==='en'?'en':'pl';}catch(_){ }
   const $=(s,p=document)=>p.querySelector(s), queryAll=(s,p=document)=>[...p.querySelectorAll(s)];
 
-  // Soft original UI chimes. AudioContext is resumed only after a real user gesture.
+  // Warm, rounded UI sounds generated locally with Web Audio.
   const soundableSelector='a[href],button:not(:disabled),[role="button"]';
   let uiAudioContext=null;
   let lastHoverSoundAt=0;
+
   function playUiSound(kind){
     const AudioContextClass=window.AudioContext||window.webkitAudioContext;
     if(!AudioContextClass)return;
     if(!uiAudioContext){
       try{uiAudioContext=new AudioContextClass();}catch(_){return;}
     }
+
     const context=uiAudioContext;
     const play=()=>{
       if(context.state!=='running')return;
       const now=context.currentTime;
-      const notes=kind==='hover'
-        ? [{frequency:880,level:.0065,duration:.085,delay:0},{frequency:1174.66,level:.0032,duration:.105,delay:.012}]
-        : [{frequency:523.25,level:.010,duration:.15,delay:0},{frequency:659.25,level:.007,duration:.17,delay:.012},{frequency:783.99,level:.0038,duration:.14,delay:.024}];
+      const isHover=kind==='hover';
+      // Lower, warmer intervals replace the thin high-pitched beeps.
+      const notes=isHover
+        ? [{frequency:523.25,level:.024,duration:.16,delay:0},{frequency:659.25,level:.014,duration:.19,delay:.045}]
+        : [{frequency:392.00,level:.040,duration:.22,delay:0},{frequency:493.88,level:.027,duration:.24,delay:.018},{frequency:587.33,level:.018,duration:.20,delay:.036}];
+
+      const filter=context.createBiquadFilter();
+      filter.type='lowpass';
+      filter.frequency.setValueAtTime(2100,now);
+      filter.Q.setValueAtTime(.45,now);
+      filter.connect(context.destination);
+
       notes.forEach(note=>{
         const start=now+note.delay;
         const oscillator=context.createOscillator();
         const envelope=context.createGain();
         oscillator.type='sine';
-        oscillator.frequency.setValueAtTime(note.frequency,start);
+        oscillator.frequency.setValueAtTime(note.frequency*1.012,start);
+        oscillator.frequency.exponentialRampToValueAtTime(note.frequency,start+.075);
         envelope.gain.setValueAtTime(.0001,start);
         envelope.gain.exponentialRampToValueAtTime(note.level,start+.012);
+        envelope.gain.exponentialRampToValueAtTime(note.level*.48,start+.075);
         envelope.gain.exponentialRampToValueAtTime(.0001,start+note.duration);
         oscillator.connect(envelope);
-        envelope.connect(context.destination);
+        envelope.connect(filter);
         oscillator.start(start);
-        oscillator.stop(start+note.duration+.025);
+        oscillator.stop(start+note.duration+.03);
       });
+      filter.disconnect();
     };
+
     if(context.state==='suspended'){
       context.resume().then(play).catch(()=>{});
     }else{
       play();
     }
   }
+
   document.addEventListener('pointerover',event=>{
     if(event.pointerType!=='mouse'&&event.pointerType!=='pen')return;
     const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
     if(!target||(event.relatedTarget instanceof Node&&target.contains(event.relatedTarget)))return;
     const now=Date.now();
-    if(now-lastHoverSoundAt<140)return;
+    if(now-lastHoverSoundAt<170)return;
     lastHoverSoundAt=now;
     playUiSound('hover');
   },true);
-  // pointerdown fires before link navigation, so the click chime is not cut off by page load.
+
+  // Play before navigation so the click sound is not cut off by page loading.
   document.addEventListener('pointerdown',event=>{
     const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
     if(target)playUiSound('click');
   },true);
-  // Keyboard and assistive-technology activation has no pointerdown event.
+
+  // Keyboard activation does not produce pointerdown.
   document.addEventListener('click',event=>{
     if(event.detail!==0)return;
     const target=event.target instanceof Element?event.target.closest(soundableSelector):null;
@@ -98,7 +116,27 @@
   const menu=$('#menuToggle'),nav=$('#mainNav');
   if(menu&&nav){menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);});queryAll('.nav-link').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');}));}
   applyLanguage();window.NeyeR={get lang(){return lang;},get translations(){return translations;},applyLanguage};
-  const reveals=queryAll('.reveal');if('IntersectionObserver'in window){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target);}}),{threshold:.12});reveals.forEach(el=>{if(el.dataset.delay)el.style.setProperty('--delay',`${el.dataset.delay}ms`);io.observe(el);});}else reveals.forEach(el=>el.classList.add('is-visible'));
+  // Add staggered scroll entrances to individual cards, not only their parent sections.
+  const staggerTargets=queryAll('#about .credential-card, #contact .contact-card');
+  staggerTargets.forEach((el,index)=>{
+    if(!el.classList.contains('reveal'))el.classList.add('reveal');
+    if(!el.dataset.delay)el.dataset.delay=String((index%5)*85+40);
+  });
+  const reveals=queryAll('.reveal');
+  if('IntersectionObserver'in window){
+    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    }),{threshold:.14,rootMargin:'0px 0px -7% 0px'});
+    reveals.forEach(el=>{
+      if(el.dataset.delay)el.style.setProperty('--delay',`${el.dataset.delay}ms`);
+      io.observe(el);
+    });
+  }else{
+    reveals.forEach(el=>el.classList.add('is-visible'));
+  }
   const progress=$('#scrollProgress');if(progress)window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=`${max>0?window.scrollY/max*100:0}%`;},{passive:true});
   const year=$('#year');if(year)year.textContent=new Date().getFullYear();
   async function copy(value){try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);return true;}}catch(_){ }try{const input=document.createElement('textarea');input.value=value;input.setAttribute('readonly','');input.style.position='fixed';input.style.opacity='0';document.body.append(input);input.select();const ok=document.execCommand('copy');input.remove();return ok;}catch(_){return false;}}
