@@ -17,10 +17,10 @@
     frame = 0;
     hero.style.setProperty('--hero-bg-rotate-x', (-targetY * 2.2).toFixed(2) + 'deg');
     hero.style.setProperty('--hero-bg-rotate-y', (targetX * 3.1).toFixed(2) + 'deg');
-    hero.style.setProperty('--glitch-x', (targetX * 7).toFixed(2) + 'px');
-    hero.style.setProperty('--glitch-y', (targetY * 5).toFixed(2) + 'px');
-    hero.style.setProperty('--glitch-anchor-x', (50 + targetX * 17).toFixed(2) + '%');
-    hero.style.setProperty('--glitch-anchor-y', (50 + targetY * 15).toFixed(2) + '%');
+    hero.style.setProperty('--rgb-red-x', (targetX * 7).toFixed(2) + 'px');
+    hero.style.setProperty('--rgb-red-y', (targetY * 4).toFixed(2) + 'px');
+    hero.style.setProperty('--rgb-cyan-x', (-targetX * 7).toFixed(2) + 'px');
+    hero.style.setProperty('--rgb-cyan-y', (-targetY * 4).toFixed(2) + 'px');
   }
 
   function scheduleTilt(){
