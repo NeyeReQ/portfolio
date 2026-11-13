@@ -778,3 +778,33 @@
 @media(prefers-reduced-motion:reduce){
   .case-project-description .typewriter-char{opacity:1!important;animation:none!important}
 }
+
+
+/* Project pages use exactly the same letter-by-letter entrance as other titles. */
+.typewriter-target .typewriter-char{
+  display:inline-block!important;
+  opacity:0;
+  transform:translate3d(0,.28em,0)!important;
+  filter:blur(2px)!important;
+  white-space:pre;
+  animation:none;
+}
+.typewriter-target.typewriter-active .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
+}
+.typewriter-block-target{
+  opacity:0;
+  transform:translate3d(0,12px,0);
+  filter:blur(1px);
+}
+.typewriter-block-target.typewriter-active{
+  animation:neyerTypeBlockIn .55s cubic-bezier(.2,.75,.25,1) both!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .typewriter-target .typewriter-char{
+    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
+  }
+  .typewriter-block-target{
+    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
+  }
+}
