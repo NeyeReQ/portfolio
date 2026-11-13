@@ -821,3 +821,64 @@ html[lang="en"] #tools .tools-title-question{display:none}
 @media(max-width:440px){
   #home.hero:before{background-position:center,center,18% center}
 }
+
+
+/* Fill the space exposed by perspective movement with a continuation of the same photograph. */
+#home.hero{
+  background-image:
+    linear-gradient(90deg,rgba(10,13,20,.78) 0%,rgba(10,13,20,.58) 34%,rgba(10,13,20,.12) 72%,rgba(10,13,20,.14) 100%),
+    linear-gradient(180deg,rgba(10,13,20,.16) 0%,rgba(10,13,20,.03) 57%,rgba(10,13,20,.94) 100%),
+    url("assets/hero-workspace.avif?v=20261113-no-logos");
+  background-size:cover;
+  background-position:center bottom;
+  background-repeat:no-repeat;
+}
+#home.hero:before{
+  inset:-88px;
+  background-size:100% 100%,100% 100%,92% auto;
+  background-position:center,center,center bottom;
+}
+#home .hero-rgb-layer{
+  inset:-88px;
+  background-size:92% auto;
+  background-position:center bottom;
+}
+@media(max-width:720px){
+  #home.hero{background-size:cover;background-position:23% center}
+  #home.hero:before{
+    inset:0;
+    background-size:100% 100%,100% 100%,auto 100%;
+    background-position:center,center,23% center;
+  }
+  #home .hero-rgb-layer{display:none}
+}
+@media(max-width:440px){
+  #home.hero{background-position:18% center}
+  #home.hero:before{background-position:center,center,18% center}
+}
+
+/* English hero title uses three deliberate lines: Creator / with / Passion. */
+html[lang="en"] .hero-title-final-line{display:block}
+html[lang="en"] .hero-title-final-line .title-outline,
+html[lang="en"] .hero-title-final-line .title-accent{display:block}
+html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
+
+/* Per-letter motion is shared by headings and descriptive copy on every page. */
+.case-reveal.is-visible .typewriter-target .typewriter-char,
+.case-reveal.is-visible.typewriter-target .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
+}
+.project-card.reveal.reveal-pending:not(.is-visible){
+  opacity:0;transform:translateY(22px)!important;
+}
+.project-card.reveal.reveal-pending.is-visible{
+  opacity:1;transform:translateY(0)!important;
+}
+.project-card.reveal.reveal-pending.is-visible:hover{
+  transform:translateY(-5px)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .case-reveal.is-visible .typewriter-target .typewriter-char{
+    opacity:1;transform:none;filter:none;animation:none!important;
+  }
+}
