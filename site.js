@@ -170,9 +170,27 @@
     if(target)playUiSound('click');
   },true);
 
-  // Preserve accent spans while wrapping heading characters for the typewriter entrance.
-  function refreshTypewriterTargets(){
-    queryAll('.hero-title, .section-heading h2, .subpage-heading h1, .case-title, .case-section-heading h2, .case-gallery-heading h2, .case-related-topline h2, .case-editorial-copy h2, #storyTitle').forEach(element=>{
+  const typewriterSelector=[
+    '.hero-title','.section-heading h2','.subpage-heading h1',
+    '.case-title','.case-section-heading h2','.case-gallery-heading h2',
+    '.case-related-topline h2','.case-editorial-copy h2','#storyTitle',
+    '.hero-description','.about-layout-single .about-paragraph','.work-intro',
+    '.credential-label','.tool-card-copy p','.choice-bottom small',
+    '.contact-hint','.subpage-heading p','.project-card-body strong',
+    '.project-card-body>span:not(.project-card-cta)',
+    '.project-empty h2','.project-empty p',
+    '.case-project-description','.case-editorial-copy p',
+    '.case-section-aside','.case-gallery-heading>p','.case-related-topline>p',
+    '.case-fact-copy dt','.case-fact-copy dd',
+    '.case-related-empty strong','.case-related-empty p',
+    '.case-gallery-item figcaption'
+  ].join(',');
+
+  function refreshTypewriterTargets(root=document){
+    const elements=[];
+    if(root instanceof Element && root.matches(typewriterSelector))elements.push(root);
+    elements.push(...queryAll(typewriterSelector,root));
+    elements.forEach(element=>{
       element.classList.remove('typewriter-gradient');
       element.querySelectorAll('.typewriter-char').forEach(span=>{
         span.replaceWith(document.createTextNode(span.textContent||''));
@@ -188,7 +206,7 @@
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
         for(const character of value){
-          if(/\s/.test(character)){
+          if(/\\s/.test(character)){
             fragment.append(document.createTextNode(character));
           }else{
             const span=document.createElement('span');
@@ -210,50 +228,53 @@
       element.classList.add('typewriter-target');
     });
   }
-  document.addEventListener('neyer:language',refreshTypewriterTargets);
+  document.addEventListener('neyer:language',()=>refreshTypewriterTargets());
 
-  function applyLanguage(){
-    const t=translations[lang];document.documentElement.lang=lang;
-    if($('title')) { const pageType=document.body.dataset.portfolioType; $('title').textContent=pageType?(pageType==='graphics'?`NeyeR — ${t.pageGraphics}`:`NeyeR — ${t.pageEditing}`):'NeyeR — Visual Designer & Video Editor'; }
-    queryAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(t[key]!==undefined)el.textContent=t[key];});
-    const side=$('.section-side-note');if(side)side.innerHTML=t.aboutSide.replace('\n','<br>');
-    queryAll('.lang-option').forEach(el=>el.classList.toggle('selected',el.dataset.lang===lang));
-    const sw=$('#langSwitch');if(sw)sw.setAttribute('aria-label',lang==='pl'?'Switch language to English':'Przełącz język na polski');
-    const m=$('#mainNav');if(m)m.setAttribute('aria-label',lang==='pl'?'Główna nawigacja':'Main navigation');
-    document.dispatchEvent(new CustomEvent('neyer:language',{detail:{lang,translations:t}}));
+  function observeRevealTargets(root=document){
+    const selector='.reveal,.case-reveal';
+    const targets=[];
+    if(root instanceof Element && root.matches(selector))targets.push(root);
+    targets.push(...queryAll(selector,root));
+    const reduceMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion || !('IntersectionObserver' in window)){
+      targets.forEach(element=>element.classList.add('is-visible'));
+      return;
+    }
+    if(!window.__neyerRevealObserver){
+      window.__neyerRevealObserver=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting)entry.target.classList.add('is-visible');
+          else entry.target.classList.remove('is-visible');
+        });
+      },{threshold:0,rootMargin:'0px 0px -7% 0px'});
+    }
+    targets.forEach(element=>{
+      if(element.dataset.revealObserved==='true')return;
+      element.dataset.revealObserved='true';
+      if(element.classList.contains('reveal')){
+        if(element.dataset.delay)element.style.setProperty('--delay',element.dataset.delay+'ms');
+        element.classList.add('reveal-pending');
+      }
+      window.__neyerRevealObserver.observe(element);
+    });
   }
-  const sw=$('#langSwitch');if(sw)sw.addEventListener('click',()=>{lang=lang==='pl'?'en':'pl';try{localStorage.setItem('neyer-language',lang);}catch(_){ }applyLanguage();});
-  const menu=$('#menuToggle'),nav=$('#mainNav');
-  if(menu&&nav){menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);});queryAll('.nav-link').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');}));}
+
   applyLanguage();
-  // Build the initial typewriter spans explicitly so the hero title animates on first load too.
   refreshTypewriterTargets();
-  window.NeyeR={get lang(){return lang;},get translations(){return translations;},applyLanguage,refreshTypewriterTargets};
-  // Stagger cards inside each section so each group lands with a clear rhythm.
+  window.NeyeR={
+    get lang(){return lang;},
+    get translations(){return translations;},
+    applyLanguage,
+    refreshTypewriterTargets,
+    observeRevealTargets
+  };
   ['#about .credential-card','#tools .tool-card','#contact .contact-card'].forEach(selector=>{
     queryAll(selector).forEach((el,index)=>{
       if(!el.classList.contains('reveal'))el.classList.add('reveal');
       if(!el.dataset.delay)el.dataset.delay=String(65+index*105);
     });
   });
-  const reveals=queryAll('.reveal');
-  if('IntersectionObserver'in window){
-    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        entry.target.classList.add('is-visible');
-      }else{
-        // Reset the state when a target leaves so it replays on the next scroll-in.
-        entry.target.classList.remove('is-visible');
-      }
-    }),{threshold:0,rootMargin:'0px 0px -7% 0px'});
-    reveals.forEach(el=>{
-      if(el.dataset.delay)el.style.setProperty('--delay',el.dataset.delay+'ms');
-      el.classList.add('reveal-pending');
-      io.observe(el);
-    });
-  }else{
-    reveals.forEach(el=>el.classList.add('is-visible'));
-  }
+  observeRevealTargets(document);
   const progress=$('#scrollProgress');if(progress)window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=`${max>0?window.scrollY/max*100:0}%`;},{passive:true});
   // The footer control should always return to the document's true top,
   // rather than relying on anchor alignment around the sticky header.
