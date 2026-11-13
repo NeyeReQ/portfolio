@@ -915,3 +915,52 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
       translate3d(var(--rgb-cyan-x,0px),var(--rgb-cyan-y,0px),0);
   }
 }
+
+
+/* === Scroll animation performance pass === */
+.reveal.reveal-pending:not(.is-visible){
+  transform:translate3d(0,16px,0) scale(.995);
+  transition-duration:.46s;
+  will-change:auto;
+}
+.reveal.reveal-pending.is-visible{
+  transform:translate3d(0,0,0) scale(1);
+  transition-duration:.46s;
+  will-change:auto;
+}
+.section-heading.reveal.reveal-pending:not(.is-visible){
+  transform:translate3d(0,12px,0);
+}
+.section-heading.reveal.reveal-pending.is-visible{transform:none}
+.tool-card.reveal.reveal-pending:not(.is-visible){
+  transform:translate3d(0,18px,0) scale(.99);
+  will-change:auto;
+}
+.tool-card.reveal.reveal-pending.is-visible{transform:none}
+.tool-card.reveal.reveal-pending.is-visible:hover,
+.tool-card.reveal.reveal-pending.is-visible:focus-within{
+  transform:translate3d(0,-7px,0);
+}
+
+/* Keep the typewriter cadence, but animate only opacity on inline text. */
+.typewriter-target .typewriter-char{
+  display:inline;
+  opacity:0;
+  transform:none!important;
+  filter:none!important;
+  white-space:pre;
+  will-change:auto;
+}
+.reveal.is-visible .typewriter-target .typewriter-char,
+.reveal.is-visible.typewriter-target .typewriter-char,
+.case-reveal.is-visible .typewriter-target .typewriter-char,
+.case-reveal.is-visible.typewriter-target .typewriter-char{
+  animation:neyerTypeChar .12s steps(1,end) both;
+}
+@keyframes neyerTypeChar{to{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+  .typewriter-target .typewriter-char{opacity:1!important;animation:none!important}
+  .reveal.reveal-pending:not(.is-visible),.reveal.reveal-pending.is-visible{
+    opacity:1;transform:none;transition:none
+  }
+}
