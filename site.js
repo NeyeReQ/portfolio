@@ -206,7 +206,7 @@
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
         for(const character of value){
-          if(/\\s/.test(character)){
+          if(/\s/.test(character)){
             fragment.append(document.createTextNode(character));
           }else{
             const span=document.createElement('span');
