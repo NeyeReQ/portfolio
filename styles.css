@@ -882,3 +882,36 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
     opacity:1;transform:none;filter:none;animation:none!important;
   }
 }
+
+
+/* Restored Start backdrop framing: the earlier closer crop, with a safe overscan margin. */
+@media(min-width:721px){
+  #home.hero:before{
+    inset:-40px;
+    background-size:100% 100%,100% 100%,cover;
+    background-position:center,center,center bottom;
+    transform:perspective(1100px)
+      rotateX(var(--hero-bg-rotate-x,0deg))
+      rotateY(var(--hero-bg-rotate-y,0deg))
+      scale(1.085);
+  }
+  #home .hero-rgb-layer{
+    inset:-40px;
+    background-size:cover;
+    background-position:center bottom;
+  }
+  #home .hero-rgb-red{
+    transform:perspective(1100px)
+      rotateX(var(--hero-bg-rotate-x,0deg))
+      rotateY(var(--hero-bg-rotate-y,0deg))
+      scale(1.085)
+      translate3d(var(--rgb-red-x,0px),var(--rgb-red-y,0px),0);
+  }
+  #home .hero-rgb-cyan{
+    transform:perspective(1100px)
+      rotateX(var(--hero-bg-rotate-x,0deg))
+      rotateY(var(--hero-bg-rotate-y,0deg))
+      scale(1.085)
+      translate3d(var(--rgb-cyan-x,0px),var(--rgb-cyan-y,0px),0);
+  }
+}
