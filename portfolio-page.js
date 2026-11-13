@@ -78,6 +78,10 @@
       grid.innerHTML = '<div class="project-empty reveal"><span class="empty-mark">✳</span><h2>' +
         esc(category ? text(category.title) : tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje') +
         '</h2><p>' + esc(tr.emptyText || 'W tej kategorii nie ma jeszcze opublikowanych prac.') + '</p></div>';
+      if (window.NeyeR) {
+        window.NeyeR.refreshTypewriterTargets(grid);
+        window.NeyeR.observeRevealTargets(grid);
+      }
       return;
     }
 
