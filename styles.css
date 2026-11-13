@@ -942,70 +942,23 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   transform:translate3d(0,-7px,0);
 }
 
-/* Keep the typewriter cadence, but animate only opacity on inline text. */
+/* === One authoritative text entrance animation === */
 .typewriter-target .typewriter-char{
-  display:inline;
-  opacity:0;
-  transform:none!important;
-  filter:none!important;
-  white-space:pre;
-  will-change:auto;
-}
-.reveal.is-visible .typewriter-target .typewriter-char,
-.reveal.is-visible.typewriter-target .typewriter-char,
-.case-reveal.is-visible .typewriter-target .typewriter-char,
-.case-reveal.is-visible.typewriter-target .typewriter-char{
-  animation:neyerTypeChar .12s steps(1,end) both;
-}
-@keyframes neyerTypeChar{to{opacity:1}}
-@media(prefers-reduced-motion:reduce){
-  .typewriter-target .typewriter-char{opacity:1!important;animation:none!important}
-  .reveal.reveal-pending:not(.is-visible),.reveal.reveal-pending.is-visible{
-    opacity:1;transform:none;transition:none
-  }
-}
-
-
-/* Original title animation, unchanged: rise slightly, sharpen, and type letter by letter. */
-.typewriter-title-target .typewriter-char{
   display:inline-block;
   opacity:0;
   transform:translate3d(0,.28em,0);
   filter:blur(2px);
   white-space:pre;
-  will-change:auto;
+  animation:none!important;
 }
-.reveal.is-visible .typewriter-title-target .typewriter-char,
-.reveal.is-visible.typewriter-title-target .typewriter-char,
-.case-reveal.is-visible .typewriter-title-target .typewriter-char,
-.case-reveal.is-visible.typewriter-title-target .typewriter-char{
+.typewriter-target:not(.typewriter-active) .typewriter-char{
+  animation:none!important;
+}
+.typewriter-target.typewriter-active .typewriter-char{
   animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
 }
 @keyframes neyerTypeChar{
   to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
-}
-@media(prefers-reduced-motion:reduce){
-  .typewriter-title-target .typewriter-char{
-    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
-  }
-  .typewriter-target:not(.typewriter-title-target) .typewriter-char{
-    opacity:1!important;animation:none!important
-  }
-}
-
-
-/* === Unified text entrance: titles and selected copy === */
-.typewriter-target .typewriter-char{
-  display:inline-block!important;
-  opacity:0;
-  transform:translate3d(0,.28em,0);
-  filter:blur(2px);
-  white-space:pre;
-  will-change:auto;
-  animation:none;
-}
-.typewriter-target.typewriter-active .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
 }
 .typewriter-block-target{
   opacity:0;
@@ -1015,17 +968,16 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 .typewriter-block-target.typewriter-active{
   animation:neyerTypeBlockIn .55s cubic-bezier(.2,.75,.25,1) both;
 }
-@keyframes neyerTypeChar{
-  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
-}
 @keyframes neyerTypeBlockIn{
   to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
 }
-/* "Grafika" stays crisp and clean; the text animation supplies the entrance. */
+
+/* The Graphics page title has no persistent glow; only the entrance animates. */
 .subpage-heading h1[data-i18n="pageGraphics"],
 .choice-bottom strong[data-i18n="graphics"]{
   text-shadow:none!important;
   filter:none!important;
+  -webkit-filter:none!important;
   -webkit-text-stroke:0!important;
 }
 @media(prefers-reduced-motion:reduce){
@@ -1035,12 +987,4 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   .typewriter-block-target{
     opacity:1!important;transform:none!important;filter:none!important;animation:none!important
   }
-}
-
-/* The Graphics heading uses the text entrance, not a glow treatment. */
-.subpage-heading h1[data-i18n="pageGraphics"],
-.choice-bottom strong[data-i18n="graphics"]{
-  text-shadow:none!important;
-  filter:none!important;
-  -webkit-text-stroke:0!important;
 }
