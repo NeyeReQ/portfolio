@@ -744,3 +744,18 @@
 .case-reveal.is-visible.typewriter-target .typewriter-char{
   animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
 }
+
+
+/* Give the admin-entered project description a more editorial reading size. */
+.case-project-description{
+  font-family:Manrope,"Segoe UI Variable","Segoe UI",sans-serif;
+  font-size:clamp(21px,2.1vw,26px);
+  font-weight:600;
+  line-height:1.72;
+  letter-spacing:-.035em;
+  color:#e5eef2;
+  max-width:680px;
+}
+@media(max-width:720px){
+  .case-project-description{font-size:19px;line-height:1.75}
+}
