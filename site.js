@@ -173,7 +173,7 @@
   const typewriterTitleSelector=[
     'main h1','main h2','main h3',
     '.choice-bottom strong','.credential-code',
-    '.case-facts-heading','.case-story-label','.case-section-kicker',
+    '.project-card-body strong','.case-facts-heading','.case-story-label','.case-section-kicker',
     '.case-related-empty strong'
   ].join(',');
   const typewriterDescriptionSelector=[
@@ -185,6 +185,7 @@
     '.case-editorial-copy p','.case-section-aside',
     '.case-gallery-heading>p','.case-related-topline>p',
     '.case-related-empty p','.case-fact-copy dt','.case-fact-copy dd',
+    '#caseMain .case-visual-note-left','#caseMain .case-visual-note-right',
     '.case-gallery-item figcaption'
   ].join(',');
   const typewriterSelector=[typewriterTitleSelector,typewriterDescriptionSelector].join(',');
@@ -230,7 +231,8 @@
 
       // Long editorial copy uses the same entrance as a single block to avoid
       // hundreds of animated spans competing during fast scrolling.
-      if(!isTitle && totalCharacters>typewriterMaxAnimatedCopy){
+      const isProjectDetailCopy=!!element.closest('#caseMain');
+      if(!isTitle && !isProjectDetailCopy && totalCharacters>typewriterMaxAnimatedCopy){
         element.classList.add('typewriter-block-target');
         if(observer)observer.observe(element);
         else element.classList.add('typewriter-active');
