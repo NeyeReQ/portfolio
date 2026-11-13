@@ -325,7 +325,6 @@
 .case-entry-fade { animation: case-page-in .8s var(--ease) both; }
 
 @keyframes case-page-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes case-title-in { from { opacity: 0; transform: translateY(35px); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); } }
 @keyframes case-image-in { from { opacity: 0; transform: scale(.96); filter: blur(12px) drop-shadow(0 30px 60px rgba(0,0,0,.36)); } to { opacity: 1; transform: scale(1); filter: drop-shadow(0 30px 60px rgba(0,0,0,.36)); } }
 @keyframes case-sheen { to { transform: translateX(110%); } }
 @keyframes case-glow { from { transform: scale(.88) translate3d(-2%, 1%, 0); opacity: .55; } to { transform: scale(1.12) translate3d(2%, -1%, 0); opacity: .9; } }
