@@ -900,32 +900,21 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   transform:translate3d(0,-7px,0);
 }
 
-/* === Typewriter reveal without changing the text's letter layout === */
+/* === Safe sequential text reveal: opacity only, never clips glyphs === */
 .typewriter-target .typewriter-word{
-  display:inline-block;
-  white-space:nowrap;
-  vertical-align:baseline;
-  overflow:visible;
-  /* Leave room around the glyphs: tight heading line-heights must not crop ascenders or descenders. */
-  clip-path:inset(-.34em 100% -.34em -.06em);
-  -webkit-clip-path:inset(-.34em 100% -.34em -.06em);
+  display:inline;
+  white-space:normal;
+  opacity:0;
 }
 .typewriter-target:not(.typewriter-active) .typewriter-word{
   animation:none!important;
+  opacity:0;
 }
 .typewriter-target.typewriter-active .typewriter-word{
-  animation-name:neyerTypeWord!important;
-  animation-duration:var(--typing-duration)!important;
-  animation-delay:var(--typing-delay)!important;
-  animation-timing-function:steps(var(--typing-steps),end)!important;
-  animation-iteration-count:1!important;
-  animation-fill-mode:both!important;
+  animation:neyerTypeWord .09s ease-out var(--typing-delay) both!important;
 }
 @keyframes neyerTypeWord{
-  to{
-    clip-path:inset(-.34em -.06em -.34em -.06em);
-    -webkit-clip-path:inset(-.34em -.06em -.34em -.06em);
-  }
+  to{opacity:1}
 }
 .typewriter-block-target{
   opacity:0;
@@ -948,7 +937,7 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 }
 @media(prefers-reduced-motion:reduce){
   .typewriter-target .typewriter-word{
-    clip-path:none!important;animation:none!important
+    opacity:1!important;animation:none!important
   }
   .typewriter-block-target{
     opacity:1!important;transform:none!important;filter:none!important;animation:none!important
