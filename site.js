@@ -203,13 +203,16 @@
       element.normalize();
 
       const totalCharacters=Array.from(element.textContent||'').filter(character=>character.trim()!=='').length;
+      const isTitle=element.matches(typewriterTitleSelector);
       element.classList.remove('typewriter-target','typewriter-title-target');
 
-      // Long paragraphs are revealed as one block. Per-letter spans are reserved
-      // for concise copy so a long page does not create thousands of animated nodes.
-      if(!totalCharacters || totalCharacters>110) return;
+      // Preserve the exact original title cadence. Only descriptive copy uses
+      // the lighter, capped animation workload.
+      if(!totalCharacters || (!isTitle && totalCharacters>110)) return;
 
-      const characterInterval=Math.min(12,850/totalCharacters);
+      const characterInterval=isTitle
+        ? Math.min(17,Math.max(2.5,1150/totalCharacters))
+        : Math.min(12,850/totalCharacters);
       let characterIndex=0;
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
