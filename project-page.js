@@ -10,10 +10,10 @@
   const lang = function(){ return window.NeyeR ? window.NeyeR.lang : (document.documentElement.lang || 'pl'); };
   const copy = {
     pl: {
-      back: 'Wróć do galerii', headerBack: 'Wróć do portfolio', eyebrow: 'WYBRANA REALIZACJA / CASE STUDY',
+      back: 'Wróć do galerii', headerBack: 'Wróć do portfolio', eyebrow: 'WYBRANA REALIZACJA',
       asideLabel: 'WYBRANA REALIZACJA', asideCopy: 'Każdy projekt ma własną historię. To jej przestrzeń.',
       scroll: 'PRZEWIŃ, ABY ODKRYĆ WIĘCEJ', visualNote: 'WYBRANY PROJEKT / PEŁNA PREZENTACJA',
-      overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'O projekcie', overviewAside: 'Kontekst, forma i najważniejsze informacje o realizacji.',
+      overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'O projekcie', overviewAside: '',
       storyLabel: 'THE IDEA / ZAŁOŻENIE', storyTitle: 'Każdy detal ma znaczenie.', facts: 'INFORMACJE O PROJEKCIE',
       relatedKicker: 'KEEP EXPLORING', relatedTitle: 'Podobne projekty', relatedIntro: 'Kontynuuj przeglądanie wybranych realizacji.',
       relatedEmptyTitle: 'To na razie jedyna opublikowana realizacja w tej galerii.',
@@ -29,10 +29,10 @@
       viewProject: 'Otwórz projekt', noOther: 'Nie ma jeszcze innych opublikowanych projektów w tej galerii.'
     },
     en: {
-      back: 'Back to gallery', headerBack: 'Back to portfolio', eyebrow: 'SELECTED WORK / CASE STUDY',
+      back: 'Back to gallery', headerBack: 'Back to portfolio', eyebrow: 'SELECTED PROJECT',
       asideLabel: 'SELECTED WORK', asideCopy: 'Every project has a story. This is where it unfolds.',
       scroll: 'SCROLL TO DISCOVER MORE', visualNote: 'SELECTED PROJECT / FULL PRESENTATION',
-      overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'About the project', overviewAside: 'The context, visual direction and key project details.',
+      overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'About the project', overviewAside: '',
       storyLabel: 'THE IDEA / OVERVIEW', storyTitle: 'Every detail matters.', facts: 'PROJECT INFORMATION',
       relatedKicker: 'KEEP EXPLORING', relatedTitle: 'Similar projects', relatedIntro: 'Explore more selected work.',
       relatedEmptyTitle: 'This is currently the only published project in this gallery.',
@@ -157,14 +157,23 @@
 
   function buildStory(){
     const labels = tr();
-    const story = project.caseStudy || {};
-    const intro = text(story.intro || project.longDescription || project.description);
-    setText('#storyLabel', text(story.label) || labels.storyLabel);
-    setText('#storyTitle', text(story.headline) || labels.storyTitle);
-    setText('#storyIntro', intro);
+    const description = text(project.description).trim();
+    const storyCard = $('.case-story-card');
+    const storyLabel = $('#storyLabel');
+    const storyIntro = $('#storyIntro');
+    const storyRule = $('.case-story-rule');
+    const overviewAside = $('#overviewAside');
+
+    // The description field in the admin panel is the only copy shown in this section.
+    if (storyCard) storyCard.hidden = !description;
+    if (storyLabel) storyLabel.hidden = true;
+    if (storyIntro) storyIntro.hidden = true;
+    if (storyRule) storyRule.hidden = true;
+    if (overviewAside) overviewAside.hidden = true;
+    setText('#storyTitle', description);
+
     setText('#overviewKicker', labels.overviewKicker);
     setText('#overviewTitle', labels.overviewTitle);
-    setText('#overviewAside', labels.overviewAside);
     setText('#factsHeading', labels.facts);
   }
 
