@@ -138,9 +138,13 @@
   decorateMetalSurfaces(document.body);
   if('MutationObserver'in window&&document.body){
     const surfaceObserver=new MutationObserver(records=>{
+      const roots=new Set();
       records.forEach(record=>record.addedNodes.forEach(node=>{
-        if(node instanceof Element)decorateMetalSurfaces(node);
+        if(!(node instanceof Element))return;
+        if(node.classList.contains('typewriter-char')||node.classList.contains('ui-metal-sheen'))return;
+        if(node.matches(metalSurfaceSelector)||(node.childElementCount&&node.querySelector(metalSurfaceSelector)))roots.add(node);
       }));
+      roots.forEach(node=>decorateMetalSurfaces(node));
     });
     surfaceObserver.observe(document.body,{childList:true,subtree:true});
   }
@@ -171,18 +175,18 @@
   },true);
 
   const typewriterTitleSelector=[
-    'main h1','main h2','main h3',
+    'main h1','main h2','main h3','main h4',
     '.choice-bottom strong','.credential-code','.project-card-body strong','.case-related-card-copy strong',
     '.case-eyebrow','.case-aside-label','.case-facts-heading','.case-story-label',
     '.case-section-kicker','.case-related-empty strong'
   ].join(',');
   const typewriterDescriptionSelector=[
-    '.hero-description','.about-layout-single .about-paragraph',
+    '.hero-description','.section-side-note','.about-layout-single .about-paragraph',
     '.credential-label','.language-label','.language-value',
     '.work-intro','.tool-card-copy p','.choice-bottom small','.contact-hint',
     '.subpage-heading p','.project-card-body>span:not(.project-card-cta)',
-    '.project-empty p',
-    '#caseMain p','#caseMain .case-aside-copy',
+    '.project-empty p','.case-description',
+    '#caseMain p','#caseMain .case-aside-copy','#caseMain .case-section-aside',
     '#caseMain .case-visual-note-left','#caseMain .case-visual-note-right',
     '.case-fact-copy dt','.case-fact-copy dd','.case-gallery-item figcaption'
   ].join(',');
@@ -225,14 +229,16 @@
       // Keep long homepage copy lightweight. Every project-detail paragraph
       // still uses the same per-character typewriter as its headings.
       const isProjectDetailCopy=!!element.closest('#caseMain');
-      if(!isTitle && !isProjectDetailCopy && totalCharacters>typewriterMaxAnimatedCopy){
+      const isPriorityTypingCopy=isProjectDetailCopy||element.matches('.about-layout-single .about-paragraph');
+      if(!isTitle && !isPriorityTypingCopy && totalCharacters>typewriterMaxAnimatedCopy){
         element.classList.add('typewriter-block-target');
         if(observer)observer.observe(element);
         else element.classList.add('typewriter-active');
         return;
       }
 
-      const characterInterval=Math.min(17,Math.max(2.5,1150/totalCharacters));
+      // Preserve a readable keyboard-like cadence while keeping long copy within ~2 seconds.
+      const characterInterval=Math.min(36,Math.max(3,1900/totalCharacters));
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
       while(walker.nextNode())textNodes.push(walker.currentNode);
