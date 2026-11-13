@@ -80,7 +80,7 @@
     $('#caseVisual').classList.add('case-visual-error');
     const media = $('#projectMedia');
     media.innerHTML = '<div class="case-media-fallback"><span>?</span><small>PROJECT NOT AVAILABLE</small></div>';
-    $('#caseRelatedEmpty').hidden = true;
+    $('#relatedEmpty').hidden = true;
     $('#related').hidden = true;
     $('#caseMain').classList.add('case-loaded');
   }
@@ -278,6 +278,7 @@
 
     if (!related.length) {
       empty.hidden = false;
+      empty.classList.add('is-visible');
       return;
     }
     empty.hidden = true;
