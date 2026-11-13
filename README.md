@@ -7,10 +7,11 @@ Statyczne portfolio przygotowane do publikacji w GitHub Pages. Nie wymaga płatn
 - `index.html` — strona główna, opis, kontakt i wybór działu portfolio.
 - `graphics.html` — osobna podstrona grafiki z filtrami kategorii.
 - `editing.html` — osobna podstrona montażu z filtrami kategorii.
+- `project.html` — osobna prezentacja projektu (case study), otwierana po kliknięciu pracy w galerii.
 - `portfolio-data.json` — kategorie i prace. Plik jest publiczny, nie umieszczaj w nim danych prywatnych.
 - `assets/projects/` — miejsce na dodane grafiki, miniatury i filmy.
 - `admin-local.html` — lokalny panel zarządzania treścią.
-- `site.js`, `portfolio-page.js`, `admin-local.js` — logika strony i panelu.
+- `site.js`, `portfolio-page.js`, `project-page.js`, `project-detail.css`, `admin-local.js` — logika strony, prezentacja projektów i panel.
 
 ## Publikacja przez GitHub Pages
 
