@@ -17,8 +17,6 @@
     frame = 0;
     hero.style.setProperty('--hero-bg-rotate-x', (-targetY * 2.2).toFixed(2) + 'deg');
     hero.style.setProperty('--hero-bg-rotate-y', (targetX * 3.1).toFixed(2) + 'deg');
-    hero.style.setProperty('--rgb-layer-x', (targetX * 8).toFixed(2) + 'px');
-    hero.style.setProperty('--rgb-layer-y', (targetY * 5).toFixed(2) + 'px');
     hero.style.setProperty('--rgb-red-x', (targetX * 8).toFixed(2) + 'px');
     hero.style.setProperty('--rgb-red-y', (targetY * 5).toFixed(2) + 'px');
     hero.style.setProperty('--rgb-cyan-x', (-targetX * 8).toFixed(2) + 'px');
