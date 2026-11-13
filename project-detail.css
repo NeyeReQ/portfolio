@@ -633,3 +633,107 @@
   .case-story-card{min-height:0;padding:28px 24px}
   .case-project-description{font-size:16px;line-height:1.8;margin-top:18px}
 }
+
+
+/* One continuous panel for the full project overview: description and data. */
+.case-overview-panel{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(310px,.92fr);
+  align-items:stretch;
+  overflow:hidden;
+  border:1px solid rgba(185,208,230,.17);
+  border-radius:4px;
+  background:
+    radial-gradient(ellipse at 6% 0%,rgba(114,234,217,.085),transparent 42%),
+    radial-gradient(ellipse at 100% 100%,rgba(146,124,255,.045),transparent 44%),
+    linear-gradient(145deg,rgba(20,31,45,.98),rgba(11,17,27,.99));
+  box-shadow:0 26px 70px rgba(0,0,0,.23),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.case-overview-panel::before{
+  content:"";
+  position:absolute;z-index:2;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--aqua) 0%,rgba(146,124,255,.65) 52%,rgba(114,234,217,.08) 100%);
+}
+.case-overview-panel.is-description-empty{grid-template-columns:minmax(0,1fr)}
+.case-story-card{
+  position:relative;
+  min-width:0;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+  padding:clamp(32px,4.2vw,58px);
+  overflow:hidden;
+  border:0;border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.case-story-card::before{
+  content:"";
+  position:absolute;left:0;top:18%;bottom:18%;width:2px;
+  background:linear-gradient(180deg,transparent,rgba(114,234,217,.75),transparent);
+}
+.case-story-card::after{display:none}
+.case-story-label{
+  display:inline-flex;align-items:center;gap:10px;
+  color:#93a7b7;
+  font:600 8px 'DM Mono',monospace;
+  letter-spacing:1.55px;
+}
+.case-story-label::before{
+  content:"";width:17px;height:1px;background:var(--aqua);
+  box-shadow:0 0 12px rgba(114,234,217,.4);
+}
+.case-project-description{
+  max-width:650px;
+  margin:25px 0 0;
+  color:#e0eaef;
+  font-size:clamp(17px,1.85vw,22px);
+  font-weight:550;
+  line-height:1.85;
+  letter-spacing:-.025em;
+  text-wrap:pretty;
+}
+.case-facts-panel{
+  position:relative;min-width:0;height:100%;
+  padding:25px 0 21px;
+  border:0;border-left:1px solid rgba(185,208,230,.14);
+  border-radius:0;background:transparent;
+  box-shadow:none;overflow:visible;
+}
+.case-facts-panel::before{display:none}
+.case-facts-heading{
+  margin:0 25px;
+  padding:0 0 19px;
+  border-bottom:1px solid rgba(213,226,240,.11);
+}
+.case-facts{padding:5px 0 0}
+.case-fact-row{padding:15px 25px}
+.case-fact-row:last-child{padding-bottom:8px}
+.case-fact-row:hover{padding-left:29px}
+.case-overview-panel.is-description-empty .case-facts-panel{border-left:0}
+.case-overview-panel.is-description-empty .case-facts-heading{margin-left:30px;margin-right:30px}
+.case-overview-panel.is-description-empty .case-fact-row{padding-left:30px;padding-right:30px}
+.case-section-heading h2 .title-accent,
+.case-related-topline h2 .title-accent{
+  color:var(--aqua);
+}
+.case-section-heading h2 .title-accent .typewriter-char,
+.case-related-topline h2 .title-accent .typewriter-char{
+  color:var(--aqua)!important;
+  -webkit-text-fill-color:var(--aqua)!important;
+}
+@media(max-width:900px){
+  .case-overview-panel{grid-template-columns:minmax(0,1fr) minmax(280px,.9fr)}
+  .case-story-card{padding:30px}
+  .case-facts-heading{margin-left:20px;margin-right:20px}
+  .case-fact-row{padding:15px 20px}
+}
+@media(max-width:720px){
+  .case-overview-panel{grid-template-columns:1fr}
+  .case-story-card{padding:31px 24px 28px}
+  .case-story-card::before{left:0;top:24px;bottom:24px}
+  .case-project-description{margin-top:18px;font-size:16px;line-height:1.8}
+  .case-facts-panel{height:auto;padding:23px 0 16px;border-left:0;border-top:1px solid rgba(185,208,230,.14)}
+  .case-facts-heading{margin:0 21px;padding-bottom:17px}
+  .case-fact-row{padding:14px 21px}
+  .case-fact-row:hover{padding-left:21px}
+}
