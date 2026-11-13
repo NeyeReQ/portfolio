@@ -251,32 +251,33 @@
         const value=node.nodeValue||'';
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
-        const tokens=value.match(/\\s+|[^\\s]+/gu)||[];
         const accent=node.parentElement?.closest('.title-accent');
         const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
-        tokens.forEach(token=>{
-          if(/^\\s+$/u.test(token)){
-            fragment.append(document.createTextNode(token));
-            return;
+        let word=null;
+        for(const character of value){
+          if(character.trim()===''){
+            word=null;
+            fragment.append(document.createTextNode(character));
+            continue;
           }
           // Keep each complete word together so the browser wraps at spaces,
           // not between the individual animated character spans.
-          const word=document.createElement('span');
-          word.className='typewriter-word';
-          for(const character of token){
-            const span=document.createElement('span');
-            span.className='typewriter-char';
-            if(accent){
-              span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
-              accentLetterIndex++;
-            }
-            span.textContent=character;
-            span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
-            characterIndex++;
-            word.append(span);
+          if(!word){
+            word=document.createElement('span');
+            word.className='typewriter-word';
+            fragment.append(word);
           }
-          fragment.append(word);
-        });
+          const span=document.createElement('span');
+          span.className='typewriter-char';
+          if(accent){
+            span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
+            accentLetterIndex++;
+          }
+          span.textContent=character;
+          span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
+          characterIndex++;
+          word.append(span);
+        }
         node.parentNode?.replaceChild(fragment,node);
       });
 
