@@ -790,3 +790,34 @@
     opacity:1!important;transform:none!important;filter:none!important;animation:none!important
   }
 }
+
+
+/* The case title's old whole-heading entrance must not compete with the shared per-letter effect. */
+.case-title{animation:none!important}
+.typewriter-target .typewriter-char{
+  display:inline-block!important;
+  opacity:0!important;
+  transform:translate3d(0,.28em,0)!important;
+  filter:blur(2px)!important;
+  white-space:pre;
+  animation:none!important;
+}
+.typewriter-target.typewriter-active .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
+}
+.typewriter-block-target{
+  opacity:0;
+  transform:translate3d(0,12px,0);
+  filter:blur(1px);
+}
+.typewriter-block-target.typewriter-active{
+  animation:neyerTypeBlockIn .55s cubic-bezier(.2,.75,.25,1) both!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .typewriter-target .typewriter-char{
+    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
+  }
+  .typewriter-block-target{
+    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
+  }
+}
