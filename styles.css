@@ -1036,3 +1036,11 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
     opacity:1!important;transform:none!important;filter:none!important;animation:none!important
   }
 }
+
+/* The Graphics heading uses the text entrance, not a glow treatment. */
+.subpage-heading h1[data-i18n="pageGraphics"],
+.choice-bottom strong[data-i18n="graphics"]{
+  text-shadow:none!important;
+  filter:none!important;
+  -webkit-text-stroke:0!important;
+}
