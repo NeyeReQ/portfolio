@@ -747,12 +747,7 @@ html[lang="en"] #tools .tools-title-question{display:none}
   #home .hero-rgb-layer{transition:none;transform:none}
 }
 
-/* Keep the Start title's existing outlined first line unchanged. */
-@media(prefers-reduced-motion:reduce){
-  .case-reveal .typewriter-target .typewriter-char{
-    opacity:1;transform:none;filter:none;animation:none!important
-  }
-}
+/* The shared reduced-motion rule below keeps every word visible. */
 
 
 /* Slightly wider view of the Start photograph; bias the crop toward the desk. */
