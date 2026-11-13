@@ -170,24 +170,27 @@
     if(target)playUiSound('click');
   },true);
 
-  const typewriterSelector=[
-    '.hero-title','.hero-description','.hero .eyebrow [data-i18n]',
-    '.section-heading h2','.section-heading .eyebrow [data-i18n]','.section-side-note',
-    '.about-layout-single .about-paragraph','.credential-label','.language-label','.language-value',
-    '.work-intro','.tool-card-copy p','.choice-bottom small','.contact-hint',
-    '.subpage-heading h1','.subpage-heading p','.subpage-heading .eyebrow [data-i18n]',
-    '.back-link [data-i18n]','.project-card-body strong',
-    '.project-card-body>span:not(.project-card-cta)',
-    '.project-empty h2','.project-empty p',
+  const typewriterTitleSelector=[
+    '.hero-title','.section-heading h2','.subpage-heading h1',
+    '.project-card-body strong','.project-empty h2',
     '.case-title','.case-section-heading h2','.case-gallery-heading h2',
     '.case-related-topline h2','.case-editorial-copy h2','#storyTitle',
-    '.case-project-description','.case-editorial-copy p',
-    '.case-section-aside','.case-gallery-heading>p','.case-related-topline>p',
     '.case-facts-heading','.case-story-label','.case-section-kicker',
-    '.case-fact-copy dt','.case-fact-copy dd',
-    '.case-related-empty strong','.case-related-empty p',
-    '.case-gallery-item figcaption'
+    '.case-related-empty strong'
   ].join(',');
+  const typewriterDescriptionSelector=[
+    '.hero-description','.hero .eyebrow [data-i18n]',
+    '.section-heading .eyebrow [data-i18n]','.section-side-note',
+    '.about-layout-single .about-paragraph','.credential-label','.language-label','.language-value',
+    '.work-intro','.tool-card-copy p','.choice-bottom small','.contact-hint',
+    '.subpage-heading p','.subpage-heading .eyebrow [data-i18n]',
+    '.back-link [data-i18n]','.project-card-body>span:not(.project-card-cta)',
+    '.project-empty p','.case-project-description','.case-editorial-copy p',
+    '.case-section-aside','.case-gallery-heading>p','.case-related-topline>p',
+    '.case-fact-copy dt','.case-fact-copy dd',
+    '.case-related-empty p','.case-gallery-item figcaption'
+  ].join(',');
+  const typewriterSelector=[typewriterTitleSelector,typewriterDescriptionSelector].join(',');
 
   function refreshTypewriterTargets(root=document){
     const elements=[];
@@ -200,7 +203,7 @@
       element.normalize();
 
       const totalCharacters=Array.from(element.textContent||'').filter(character=>character.trim()!=='').length;
-      element.classList.remove('typewriter-target');
+      element.classList.remove('typewriter-target','typewriter-title-target');
 
       // Long paragraphs are revealed as one block. Per-letter spans are reserved
       // for concise copy so a long page does not create thousands of animated nodes.
@@ -237,6 +240,7 @@
         node.parentNode?.replaceChild(fragment,node);
       });
       element.classList.add('typewriter-target');
+      if(element.matches(typewriterTitleSelector))element.classList.add('typewriter-title-target');
     });
   }
   document.addEventListener('neyer:language',()=>refreshTypewriterTargets());
