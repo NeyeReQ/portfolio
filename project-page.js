@@ -382,23 +382,24 @@
   }
 
   function refreshReveals(){
-    const elements = document.querySelectorAll('.case-reveal:not([data-case-observed])');
-    if (!('IntersectionObserver' in window) || reduceMotion) {
-      elements.forEach(function(element){ element.classList.add('is-visible'); element.dataset.caseObserved = 'true'; });
+    if (window.NeyeR && typeof window.NeyeR.observeRevealTargets === 'function') {
+      window.NeyeR.observeRevealTargets(document);
       return;
     }
-    const observer = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
-    elements.forEach(function(element){
-      element.dataset.caseObserved = 'true';
-      observer.observe(element);
-    });
+    const elements = document.querySelectorAll('.case-reveal');
+    if (!('IntersectionObserver' in window) || reduceMotion) {
+      elements.forEach(element => element.classList.add('is-visible'));
+      return;
+    }
+    if (!window.__caseRevealObserver) {
+      window.__caseRevealObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting) entry.target.classList.add('is-visible');
+          else entry.target.classList.remove('is-visible');
+        });
+      }, { threshold: 0, rootMargin: '0px 0px -7% 0px' });
+    }
+    elements.forEach(element => window.__caseRevealObserver.observe(element));
   }
 
   function setupVisualInteraction(){
