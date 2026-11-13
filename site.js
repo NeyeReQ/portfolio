@@ -171,14 +171,16 @@
   },true);
 
   const typewriterSelector=[
-    '.hero-title','.section-heading h2','.subpage-heading h1',
-    '.case-title','.case-section-heading h2','.case-gallery-heading h2',
-    '.case-related-topline h2','.case-editorial-copy h2','#storyTitle',
-    '.hero-description','.about-layout-single .about-paragraph','.work-intro',
-    '.credential-label','.tool-card-copy p','.choice-bottom small',
-    '.contact-hint','.subpage-heading p','.project-card-body strong',
+    '.hero-title','.hero-description','.hero .eyebrow [data-i18n]',
+    '.section-heading h2','.section-heading .eyebrow [data-i18n]','.section-side-note',
+    '.about-layout-single .about-paragraph','.credential-label','.language-label','.language-value',
+    '.work-intro','.tool-card-copy p','.choice-bottom small','.contact-hint',
+    '.subpage-heading h1','.subpage-heading p','.subpage-heading .eyebrow [data-i18n]',
+    '.back-link [data-i18n]','.project-card-body strong',
     '.project-card-body>span:not(.project-card-cta)',
     '.project-empty h2','.project-empty p',
+    '.case-title','.case-section-heading h2','.case-gallery-heading h2',
+    '.case-related-topline h2','.case-editorial-copy h2','#storyTitle',
     '.case-project-description','.case-editorial-copy p',
     '.case-section-aside','.case-gallery-heading>p','.case-related-topline>p',
     '.case-facts-heading','.case-story-label','.case-section-kicker',
@@ -192,22 +194,23 @@
     if(root instanceof Element && root.matches(typewriterSelector))elements.push(root);
     elements.push(...queryAll(typewriterSelector,root));
     elements.forEach(element=>{
-      element.classList.remove('typewriter-gradient');
       element.querySelectorAll('.typewriter-char').forEach(span=>{
         span.replaceWith(document.createTextNode(span.textContent||''));
       });
       element.normalize();
+      const totalCharacters=Array.from(element.textContent||'').filter(character=>character.trim()!=='').length;
+      const characterInterval=totalCharacters?Math.min(17,Math.max(2.5,1150/totalCharacters)):0;
+      let characterIndex=0;
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
       while(walker.nextNode())textNodes.push(walker.currentNode);
-      let characterIndex=0;
       textNodes.forEach(node=>{
         let accentLetterIndex=0;
         const value=node.nodeValue||'';
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
         for(const character of value){
-          if(/\s/.test(character)){
+          if(character.trim()===''){
             fragment.append(document.createTextNode(character));
           }else{
             const span=document.createElement('span');
@@ -219,7 +222,7 @@
               accentLetterIndex++;
             }
             span.textContent=character;
-            span.style.animationDelay=(characterIndex*17)+'ms';
+            span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
             characterIndex++;
             fragment.append(span);
           }
@@ -258,6 +261,55 @@
       }
       window.__neyerRevealObserver.observe(element);
     });
+  }
+
+  function applyLanguage(){
+    const t=translations[lang]||translations.pl;
+    document.documentElement.lang=lang;
+    const pageType=document.body?.dataset.portfolioType;
+    const title=$('title');
+    if(title && !document.body?.hasAttribute('data-project-page')){
+      title.textContent=pageType
+        ? 'NeyeR — '+(pageType==='graphics'?t.pageGraphics:t.pageEditing)
+        : 'NeyeR — Visual Designer & Video Editor';
+    }
+    queryAll('[data-i18n]').forEach(element=>{
+      const key=element.dataset.i18n;
+      if(Object.prototype.hasOwnProperty.call(t,key))element.textContent=t[key];
+    });
+    const side=$('.section-side-note');
+    if(side)side.innerHTML=String(t.aboutSide||'').split(String.fromCharCode(10)).join('<br>');
+    queryAll('.lang-switch').forEach(button=>{
+      button.querySelectorAll('.lang-option').forEach(option=>option.classList.toggle('selected',option.dataset.lang===lang));
+      button.setAttribute('aria-label',lang==='pl'?'Switch language to English':'Przełącz język na polski');
+      button.setAttribute('aria-pressed',String(lang==='en'));
+    });
+    const mainNav=$('#mainNav');
+    if(mainNav)mainNav.setAttribute('aria-label',lang==='pl'?'Główna nawigacja':'Main navigation');
+    const menuToggle=$('#menuToggle');
+    if(menuToggle)menuToggle.setAttribute('aria-label',lang==='pl'?'Otwórz menu':'Open menu');
+    document.dispatchEvent(new CustomEvent('neyer:language',{detail:{lang,translations:t}}));
+  }
+
+  queryAll('.lang-switch').forEach(button=>button.addEventListener('click',()=>{
+    lang=lang==='pl'?'en':'pl';
+    try{localStorage.setItem('neyer-language',lang);}catch(_){}
+    applyLanguage();
+  }));
+  const menu=$('#menuToggle');
+  const nav=$('#mainNav');
+  if(menu&&nav){
+    menu.addEventListener('click',()=>{
+      const open=menu.getAttribute('aria-expanded')!=='true';
+      menu.setAttribute('aria-expanded',String(open));
+      nav.classList.toggle('open',open);
+      document.body.classList.toggle('menu-open',open);
+    });
+    queryAll('.nav-link').forEach(link=>link.addEventListener('click',()=>{
+      nav.classList.remove('open');
+      menu.setAttribute('aria-expanded','false');
+      document.body.classList.remove('menu-open');
+    }));
   }
 
   applyLanguage();
