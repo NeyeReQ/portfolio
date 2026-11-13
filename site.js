@@ -181,6 +181,7 @@
     '.project-empty h2','.project-empty p',
     '.case-project-description','.case-editorial-copy p',
     '.case-section-aside','.case-gallery-heading>p','.case-related-topline>p',
+    '.case-facts-heading','.case-story-label','.case-section-kicker',
     '.case-fact-copy dt','.case-fact-copy dd',
     '.case-related-empty strong','.case-related-empty p',
     '.case-gallery-item figcaption'
