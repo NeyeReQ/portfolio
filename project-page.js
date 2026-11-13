@@ -13,9 +13,9 @@
       back: 'Wróć do galerii', headerBack: 'Wróć do portfolio', eyebrow: 'WYBRANA REALIZACJA',
       asideLabel: 'WYBRANA REALIZACJA', asideCopy: 'Każdy projekt ma własną historię. To jej przestrzeń.',
       scroll: 'PRZEWIŃ, ABY ODKRYĆ WIĘCEJ', visualNote: 'WYBRANY PROJEKT / PEŁNA PREZENTACJA',
-      overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'O projekcie', overviewAside: '',
+      overviewKicker: 'PROJECT OVERVIEW', overviewPrefix: 'O ', overviewAccent: 'projekcie', overviewAside: '',
       storyLabel: 'OPIS PROJEKTU', storyTitle: '', facts: 'INFORMACJE O PROJEKCIE',
-      relatedKicker: 'KEEP EXPLORING', relatedTitle: 'Podobne projekty', relatedIntro: 'Kontynuuj przeglądanie wybranych realizacji.',
+      relatedKicker: 'KEEP EXPLORING', relatedPrefix: 'Podobne ', relatedAccent: 'projekty', relatedIntro: 'Kontynuuj przeglądanie wybranych realizacji.',
       relatedEmptyTitle: 'To na razie jedyna opublikowana realizacja w tej galerii.',
       relatedEmptyCopy: 'Gdy pojawią się kolejne projekty, automatycznie zobaczysz je właśnie tutaj.',
       relatedLink: 'Zobacz całą galerię', galleryKicker: 'VISUAL DETAILS', galleryTitle: 'Detale',
@@ -32,9 +32,9 @@
       back: 'Back to gallery', headerBack: 'Back to portfolio', eyebrow: 'SELECTED PROJECT',
       asideLabel: 'SELECTED WORK', asideCopy: 'Every project has a story. This is where it unfolds.',
       scroll: 'SCROLL TO DISCOVER MORE', visualNote: 'SELECTED PROJECT / FULL PRESENTATION',
-      overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'About the project', overviewAside: '',
+      overviewKicker: 'PROJECT OVERVIEW', overviewPrefix: 'About the ', overviewAccent: 'project', overviewAside: '',
       storyLabel: 'PROJECT DESCRIPTION', storyTitle: '', facts: 'PROJECT INFORMATION',
-      relatedKicker: 'KEEP EXPLORING', relatedTitle: 'Similar projects', relatedIntro: 'Explore more selected work.',
+      relatedKicker: 'KEEP EXPLORING', relatedPrefix: 'Similar ', relatedAccent: 'projects', relatedIntro: 'Explore more selected work.',
       relatedEmptyTitle: 'This is currently the only published project in this gallery.',
       relatedEmptyCopy: 'New projects will automatically appear here as they are added.',
       relatedLink: 'Explore the full gallery', galleryKicker: 'VISUAL DETAILS', galleryTitle: 'Details',
@@ -169,6 +169,7 @@
     const labels = tr();
     const description = text(project.description).trim();
     const storyCard = $('.case-story-card');
+    const overviewPanel = $('.case-overview-panel');
     const storyLabel = $('#storyLabel');
     const storyIntro = $('#storyIntro');
     const storyRule = $('.case-story-rule');
@@ -176,6 +177,7 @@
 
     // The description field in the admin panel is the only copy shown in this section.
     if (storyCard) storyCard.hidden = !description;
+    if (overviewPanel) overviewPanel.classList.toggle('is-description-empty', !description);
     if (storyLabel) { storyLabel.hidden = !description; storyLabel.textContent = labels.storyLabel; }
     if (storyIntro) storyIntro.hidden = true;
     if (storyRule) storyRule.hidden = true;
@@ -183,7 +185,8 @@
     setText('#storyTitle', description);
 
     setText('#overviewKicker', labels.overviewKicker);
-    setText('#overviewTitle', labels.overviewTitle);
+    setText('#overviewTitleLead', labels.overviewPrefix);
+    setText('#overviewTitleAccent', labels.overviewAccent);
     setText('#factsHeading', labels.facts);
   }
 
@@ -289,7 +292,8 @@
     const empty = $('#relatedEmpty');
     grid.innerHTML = '';
     setText('#relatedKicker', labels.relatedKicker);
-    setText('#relatedTitle', labels.relatedTitle);
+    setText('#relatedTitleLead', labels.relatedPrefix);
+    setText('#relatedTitleAccent', labels.relatedAccent);
     setText('#relatedIntro', labels.relatedIntro);
     setText('#relatedEmptyTitle', all.length ? '' : labels.relatedEmptyTitle);
     setText('#relatedEmptyCopy', all.length ? '' : labels.noOther);
