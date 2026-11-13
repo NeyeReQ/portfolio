@@ -172,7 +172,9 @@
 
   // Preserve accent spans while wrapping heading characters for the typewriter entrance.
   function refreshTypewriterTargets(){
-    queryAll('.hero-title, .section-heading h2, .subpage-heading h1').forEach(element=>{
+    queryAll('.hero-title, .section-heading h2, .subpage-heading h1, .case-title, .case-section-heading h2, .case-gallery-heading h2, .case-related-topline h2, .case-editorial-copy h2, #storyTitle').forEach(element=>{
+      const fullGradient = element.matches('.case-title, .case-section-heading h2, .case-gallery-heading h2, .case-related-topline h2, .case-editorial-copy h2, #storyTitle') && !element.querySelector('.title-accent');
+      element.classList.toggle('typewriter-gradient', fullGradient);
       element.querySelectorAll('.typewriter-char').forEach(span=>{
         span.replaceWith(document.createTextNode(span.textContent||''));
       });
@@ -192,7 +194,7 @@
           }else{
             const span=document.createElement('span');
             span.className='typewriter-char';
-            const accent=node.parentElement?.closest('.title-accent');
+            const accent=node.parentElement?.closest('.title-accent') || (element.classList.contains('typewriter-gradient') ? element : null);
             if(accent){
               const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
               span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
@@ -227,7 +229,7 @@
   applyLanguage();
   // Build the initial typewriter spans explicitly so the hero title animates on first load too.
   refreshTypewriterTargets();
-  window.NeyeR={get lang(){return lang;},get translations(){return translations;},applyLanguage};
+  window.NeyeR={get lang(){return lang;},get translations(){return translations;},applyLanguage,refreshTypewriterTargets};
   // Stagger cards inside each section so each group lands with a clear rhythm.
   ['#about .credential-card','#tools .tool-card','#contact .contact-card'].forEach(selector=>{
     queryAll(selector).forEach((el,index)=>{
