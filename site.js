@@ -141,7 +141,7 @@
       const roots=new Set();
       records.forEach(record=>record.addedNodes.forEach(node=>{
         if(!(node instanceof Element))return;
-        if(node.classList.contains('typewriter-char')||node.classList.contains('typewriter-word')||node.classList.contains('ui-metal-sheen'))return;
+        if(node.classList.contains('typewriter-word')||node.classList.contains('ui-metal-sheen'))return;
         if(node.matches(metalSurfaceSelector)||(node.childElementCount&&node.querySelector(metalSurfaceSelector)))roots.add(node);
       }));
       roots.forEach(node=>decorateMetalSurfaces(node));
