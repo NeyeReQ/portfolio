@@ -796,13 +796,19 @@ html[lang="en"] #tools .tools-title-question{display:none}
   background-size:96% auto;
   background-position:center bottom;
 }
-#home .hero-rgb-red,
+#home .hero-rgb-red{
+  transform:perspective(1100px)
+    rotateX(var(--hero-bg-rotate-x,0deg))
+    rotateY(var(--hero-bg-rotate-y,0deg))
+    scale(1.015)
+    translate3d(var(--rgb-red-x,0px),var(--rgb-red-y,0px),0);
+}
 #home .hero-rgb-cyan{
   transform:perspective(1100px)
     rotateX(var(--hero-bg-rotate-x,0deg))
     rotateY(var(--hero-bg-rotate-y,0deg))
     scale(1.015)
-    translate3d(var(--rgb-layer-x,0px),var(--rgb-layer-y,0px),0);
+    translate3d(var(--rgb-cyan-x,0px),var(--rgb-cyan-y,0px),0);
 }
 @media(max-width:720px){
   #home.hero:before{
