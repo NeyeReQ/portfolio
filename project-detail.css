@@ -761,24 +761,6 @@
 }
 
 
-/* Project page copy uses the light reveal; headings inherit the original title effect. */
-.case-reveal{transition:opacity .46s var(--ease),transform .46s var(--ease)}
-.case-project-description .typewriter-char{
-  display:inline!important;
-  opacity:0;
-  transform:none!important;
-  filter:none!important;
-  white-space:pre;
-  will-change:auto;
-}
-.case-reveal.is-visible .typewriter-target:not(.typewriter-title-target) .typewriter-char,
-.case-reveal.is-visible.typewriter-target:not(.typewriter-title-target) .typewriter-char{
-  animation:neyerDescriptionReveal .12s steps(1,end) both!important;
-}
-@media(prefers-reduced-motion:reduce){
-  .case-project-description .typewriter-char{opacity:1!important;animation:none!important}
-}
-
 
 /* Project pages use exactly the same letter-by-letter entrance as other titles. */
 .typewriter-target .typewriter-char{
