@@ -173,8 +173,7 @@
   // Preserve accent spans while wrapping heading characters for the typewriter entrance.
   function refreshTypewriterTargets(){
     queryAll('.hero-title, .section-heading h2, .subpage-heading h1, .case-title, .case-section-heading h2, .case-gallery-heading h2, .case-related-topline h2, .case-editorial-copy h2, #storyTitle').forEach(element=>{
-      const fullGradient = element.matches('.case-title, .case-section-heading h2, .case-gallery-heading h2, .case-related-topline h2, .case-editorial-copy h2, #storyTitle') && !element.querySelector('.title-accent');
-      element.classList.toggle('typewriter-gradient', fullGradient);
+      element.classList.remove('typewriter-gradient');
       element.querySelectorAll('.typewriter-char').forEach(span=>{
         span.replaceWith(document.createTextNode(span.textContent||''));
       });
@@ -194,7 +193,7 @@
           }else{
             const span=document.createElement('span');
             span.className='typewriter-char';
-            const accent=node.parentElement?.closest('.title-accent') || (element.classList.contains('typewriter-gradient') ? element : null);
+            const accent=node.parentElement?.closest('.title-accent');
             if(accent){
               const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
               span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
