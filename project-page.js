@@ -83,6 +83,7 @@
     $('#relatedEmpty').hidden = true;
     $('#related').hidden = true;
     $('#caseMain').classList.add('case-loaded');
+    document.querySelectorAll('.case-reveal').forEach(function(element){ element.classList.add('is-visible'); });
   }
 
   function buildMeta(){
