@@ -966,25 +966,46 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 }
 
 
-/* Restore the original, richer per-letter entrance for every title only. */
+/* Description copy stays light; titles use the exact pre-optimization typewriter. */
+.typewriter-target:not(.typewriter-title-target) .typewriter-char{
+  display:inline;
+  opacity:0;
+  transform:none!important;
+  filter:none!important;
+  white-space:pre;
+  will-change:auto;
+}
+.reveal.is-visible .typewriter-target:not(.typewriter-title-target) .typewriter-char,
+.reveal.is-visible.typewriter-target:not(.typewriter-title-target) .typewriter-char,
+.case-reveal.is-visible .typewriter-target:not(.typewriter-title-target) .typewriter-char,
+.case-reveal.is-visible.typewriter-target:not(.typewriter-title-target) .typewriter-char{
+  animation:neyerDescriptionReveal .12s steps(1,end) both!important;
+}
+@keyframes neyerDescriptionReveal{to{opacity:1}}
+
+/* Original title animation, unchanged: rise slightly, sharpen, and type letter by letter. */
 .typewriter-title-target .typewriter-char{
   display:inline-block!important;
-  opacity:0;
+  opacity:0!important;
   transform:translate3d(0,.28em,0)!important;
   filter:blur(2px)!important;
   white-space:pre;
+  will-change:auto;
 }
-.reveal.is-visible .typewriter-title-target.typewriter-target .typewriter-char,
-.reveal.is-visible.typewriter-title-target.typewriter-target .typewriter-char,
-.case-reveal.is-visible .typewriter-title-target.typewriter-target .typewriter-char,
-.case-reveal.is-visible.typewriter-title-target.typewriter-target .typewriter-char{
-  animation:neyerTitleTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
+.reveal.is-visible .typewriter-title-target .typewriter-char,
+.reveal.is-visible.typewriter-title-target .typewriter-char,
+.case-reveal.is-visible .typewriter-title-target .typewriter-char,
+.case-reveal.is-visible.typewriter-title-target .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
 }
-@keyframes neyerTitleTypeChar{
+@keyframes neyerTypeChar{
   to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
 }
 @media(prefers-reduced-motion:reduce){
   .typewriter-title-target .typewriter-char{
     opacity:1!important;transform:none!important;filter:none!important;animation:none!important
+  }
+  .typewriter-target:not(.typewriter-title-target) .typewriter-char{
+    opacity:1!important;animation:none!important
   }
 }
