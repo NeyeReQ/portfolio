@@ -198,8 +198,15 @@
         span.replaceWith(document.createTextNode(span.textContent||''));
       });
       element.normalize();
+
       const totalCharacters=Array.from(element.textContent||'').filter(character=>character.trim()!=='').length;
-      const characterInterval=totalCharacters?Math.min(17,Math.max(2.5,1150/totalCharacters)):0;
+      element.classList.remove('typewriter-target');
+
+      // Long paragraphs are revealed as one block. Per-letter spans are reserved
+      // for concise copy so a long page does not create thousands of animated nodes.
+      if(!totalCharacters || totalCharacters>110) return;
+
+      const characterInterval=Math.min(12,850/totalCharacters);
       let characterIndex=0;
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
@@ -250,7 +257,7 @@
           if(entry.isIntersecting)entry.target.classList.add('is-visible');
           else entry.target.classList.remove('is-visible');
         });
-      },{threshold:0,rootMargin:'0px 0px -7% 0px'});
+      },{threshold:0,rootMargin:'10% 0px 10% 0px'});
     }
     targets.forEach(element=>{
       if(element.dataset.revealObserved==='true')return;
@@ -313,7 +320,6 @@
   }
 
   applyLanguage();
-  refreshTypewriterTargets();
   window.NeyeR={
     get lang(){return lang;},
     get translations(){return translations;},
