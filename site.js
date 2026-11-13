@@ -255,8 +255,6 @@
           word.className='typewriter-word';
           const wordLength=Array.from(wordText).length;
           word.textContent=wordText;
-          word.style.setProperty('--typing-steps',String(wordLength));
-          word.style.setProperty('--typing-duration',(wordLength*characterInterval).toFixed(0)+'ms');
           word.style.setProperty('--typing-delay',(characterIndex*characterInterval).toFixed(0)+'ms');
           characterIndex+=wordLength;
           fragment.append(word);
