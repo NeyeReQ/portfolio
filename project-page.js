@@ -14,7 +14,7 @@
       asideLabel: 'WYBRANA REALIZACJA', asideCopy: 'Każdy projekt ma własną historię. To jej przestrzeń.',
       scroll: 'PRZEWIŃ, ABY ODKRYĆ WIĘCEJ', visualNote: 'WYBRANY PROJEKT / PEŁNA PREZENTACJA',
       overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'O projekcie', overviewAside: '',
-      storyLabel: 'THE IDEA / ZAŁOŻENIE', storyTitle: 'Każdy detal ma znaczenie.', facts: 'INFORMACJE O PROJEKCIE',
+      storyLabel: 'OPIS PROJEKTU', storyTitle: '', facts: 'INFORMACJE O PROJEKCIE',
       relatedKicker: 'KEEP EXPLORING', relatedTitle: 'Podobne projekty', relatedIntro: 'Kontynuuj przeglądanie wybranych realizacji.',
       relatedEmptyTitle: 'To na razie jedyna opublikowana realizacja w tej galerii.',
       relatedEmptyCopy: 'Gdy pojawią się kolejne projekty, automatycznie zobaczysz je właśnie tutaj.',
@@ -33,7 +33,7 @@
       asideLabel: 'SELECTED WORK', asideCopy: 'Every project has a story. This is where it unfolds.',
       scroll: 'SCROLL TO DISCOVER MORE', visualNote: 'SELECTED PROJECT / FULL PRESENTATION',
       overviewKicker: 'PROJECT OVERVIEW', overviewTitle: 'About the project', overviewAside: '',
-      storyLabel: 'THE IDEA / OVERVIEW', storyTitle: 'Every detail matters.', facts: 'PROJECT INFORMATION',
+      storyLabel: 'PROJECT DESCRIPTION', storyTitle: '', facts: 'PROJECT INFORMATION',
       relatedKicker: 'KEEP EXPLORING', relatedTitle: 'Similar projects', relatedIntro: 'Explore more selected work.',
       relatedEmptyTitle: 'This is currently the only published project in this gallery.',
       relatedEmptyCopy: 'New projects will automatically appear here as they are added.',
@@ -73,7 +73,6 @@
     const labels = tr();
     document.title = 'NeyeR — ' + labels.notFound;
     setText('#projectTitle', labels.notFound);
-    setText('#projectDescription', labels.notFoundCopy);
     setText('#caseEyebrow', 'NEYER / PROJECT ARCHIVE');
     setText('#caseBackText', labels.back);
     $('#caseBackLink').href = 'index.html#work';
@@ -177,7 +176,7 @@
 
     // The description field in the admin panel is the only copy shown in this section.
     if (storyCard) storyCard.hidden = !description;
-    if (storyLabel) storyLabel.hidden = true;
+    if (storyLabel) { storyLabel.hidden = !description; storyLabel.textContent = labels.storyLabel; }
     if (storyIntro) storyIntro.hidden = true;
     if (storyRule) storyRule.hidden = true;
     if (overviewAside) overviewAside.hidden = true;
@@ -366,7 +365,6 @@
     setText('#rightsText', labels.rights);
     setText('#copyrightNotice', labels.copyright);
     setText('#projectTitle', text(project.title));
-    setText('#projectDescription', text(project.description || project.longDescription));
     $('#caseBackLink').href = galleryPath();
     $('#relatedGalleryLink').href = galleryPath();
     buildMeta();
@@ -375,6 +373,7 @@
     buildGallery();
     buildRelated();
     $('#caseMain').classList.add('case-loaded');
+    if (window.NeyeR && typeof window.NeyeR.refreshTypewriterTargets === 'function') window.NeyeR.refreshTypewriterTargets();
     refreshReveals();
   }
 
