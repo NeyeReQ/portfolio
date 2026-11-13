@@ -172,21 +172,19 @@
 
   const typewriterTitleSelector=[
     'main h1','main h2','main h3',
-    '.choice-bottom strong','.credential-code',
-    '.project-card-body strong','.case-facts-heading','.case-story-label','.case-section-kicker',
-    '.case-related-empty strong'
+    '.choice-bottom strong','.credential-code','.project-card-body strong',
+    '.case-eyebrow','.case-aside-label','.case-facts-heading','.case-story-label',
+    '.case-section-kicker','.case-related-empty strong'
   ].join(',');
   const typewriterDescriptionSelector=[
     '.hero-description','.about-layout-single .about-paragraph',
     '.credential-label','.language-label','.language-value',
     '.work-intro','.tool-card-copy p','.choice-bottom small','.contact-hint',
     '.subpage-heading p','.project-card-body>span:not(.project-card-cta)',
-    '.project-empty p','.case-aside-copy','.case-project-description',
-    '.case-editorial-copy p','.case-section-aside',
-    '.case-gallery-heading>p','.case-related-topline>p',
-    '.case-related-empty p','.case-fact-copy dt','.case-fact-copy dd',
+    '.project-empty p',
+    '#caseMain p','#caseMain .case-aside-copy',
     '#caseMain .case-visual-note-left','#caseMain .case-visual-note-right',
-    '.case-gallery-item figcaption'
+    '.case-fact-copy dt','.case-fact-copy dd','.case-gallery-item figcaption'
   ].join(',');
   const typewriterSelector=[typewriterTitleSelector,typewriterDescriptionSelector].join(',');
   const typewriterMaxAnimatedCopy=520;
@@ -196,14 +194,9 @@
     if(!('IntersectionObserver' in window)) return null;
     window.__neyerTypewriterObserver=new IntersectionObserver(entries=>{
       entries.forEach(entry=>{
-        const element=entry.target;
-        if(entry.isIntersecting){
-          element.classList.add('typewriter-active');
-        }else{
-          element.classList.remove('typewriter-active');
-        }
+        entry.target.classList.toggle('typewriter-active',entry.isIntersecting);
       });
-    },{threshold:0.04,rootMargin:'0px 0px -8% 0px'});
+    },{threshold:0,rootMargin:'0px 0px -4% 0px'});
     return window.__neyerTypewriterObserver;
   }
 
@@ -229,8 +222,8 @@
 
       element.classList.add('typewriter-target',isTitle?'typewriter-title-target':'typewriter-description-target');
 
-      // Long editorial copy uses the same entrance as a single block to avoid
-      // hundreds of animated spans competing during fast scrolling.
+      // Keep long homepage copy lightweight. Every project-detail paragraph
+      // still uses the same per-character typewriter as its headings.
       const isProjectDetailCopy=!!element.closest('#caseMain');
       if(!isTitle && !isProjectDetailCopy && totalCharacters>typewriterMaxAnimatedCopy){
         element.classList.add('typewriter-block-target');
