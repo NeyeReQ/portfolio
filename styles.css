@@ -345,20 +345,8 @@ body.modal-open{overflow:hidden}
 .tool-card.reveal.reveal-pending.is-visible{
   transform:perspective(850px) translate3d(0,0,0) rotateX(0) scale(1);
 }
-.typewriter-target .typewriter-char{
-  display:inline-block;opacity:0;transform:translate3d(0,.28em,0);
-  filter:blur(2px);white-space:pre;
-}
-.reveal.is-visible .typewriter-target .typewriter-char,
-.reveal.is-visible.typewriter-target .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
-}
-@keyframes neyerTypeChar{
-  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
-}
 @media(prefers-reduced-motion:reduce){
   .ui-metal-sheen:before{display:none}
-  .typewriter-target .typewriter-char{opacity:1;transform:none;filter:none;animation:none!important}
   .reveal.reveal-pending:not(.is-visible),.reveal.reveal-pending.is-visible{
     opacity:1;transform:none;clip-path:none;transition:none
   }
@@ -572,10 +560,6 @@ html[lang="en"] #tools .tools-title-question{display:none}
 .portfolio-choice:hover .choice-background,
 .portfolio-choice:focus-visible .choice-background{opacity:.35}
 
-/* Explicitly keep the hero's two-line heading on the same typewriter entrance. */
-.hero-title.reveal.is-visible.typewriter-target .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
-}
 @media(prefers-reduced-motion:reduce){
   .portfolio-choice .choice-background{transition:none}
 }
@@ -768,11 +752,6 @@ html[lang="en"] #tools .tools-title-question{display:none}
   #home .hero-rgb-layer{transition:none;transform:none}
 }
 
-.case-reveal.is-visible .typewriter-target .typewriter-char,
-.case-reveal.is-visible.typewriter-target .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
-}
-
 /* Keep the Start title's existing outlined first line unchanged. */
 @media(prefers-reduced-motion:reduce){
   .case-reveal .typewriter-target .typewriter-char{
@@ -863,11 +842,6 @@ html[lang="en"] .hero-title-final-line .title-outline,
 html[lang="en"] .hero-title-final-line .title-accent{display:block}
 html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 
-/* Per-letter motion is shared by headings and descriptive copy on every page. */
-.case-reveal.is-visible .typewriter-target .typewriter-char,
-.case-reveal.is-visible.typewriter-target .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
-}
 .project-card.reveal.reveal-pending:not(.is-visible){
   opacity:0;transform:translateY(22px)!important;
 }
@@ -877,12 +851,6 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 .project-card.reveal.reveal-pending.is-visible:hover{
   transform:translateY(-5px)!important;
 }
-@media(prefers-reduced-motion:reduce){
-  .case-reveal.is-visible .typewriter-target .typewriter-char{
-    opacity:1;transform:none;filter:none;animation:none!important;
-  }
-}
-
 
 /* Restored Start backdrop framing: the earlier closer crop, with a safe overscan margin. */
 @media(min-width:721px){
