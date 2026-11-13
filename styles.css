@@ -1009,3 +1009,47 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
     opacity:1!important;animation:none!important
   }
 }
+
+
+/* === Unified text entrance: titles and selected copy === */
+.typewriter-target .typewriter-char{
+  display:inline-block!important;
+  opacity:0;
+  transform:translate3d(0,.28em,0);
+  filter:blur(2px);
+  white-space:pre;
+  will-change:auto;
+  animation:none;
+}
+.typewriter-target.typewriter-active .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
+}
+.typewriter-block-target{
+  opacity:0;
+  transform:translate3d(0,12px,0);
+  filter:blur(1px);
+}
+.typewriter-block-target.typewriter-active{
+  animation:neyerTypeBlockIn .55s cubic-bezier(.2,.75,.25,1) both;
+}
+@keyframes neyerTypeChar{
+  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+@keyframes neyerTypeBlockIn{
+  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+/* "Grafika" stays crisp and clean; the text animation supplies the entrance. */
+.subpage-heading h1[data-i18n="pageGraphics"],
+.choice-bottom strong[data-i18n="graphics"]{
+  text-shadow:none!important;
+  filter:none!important;
+  -webkit-text-stroke:0!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .typewriter-target .typewriter-char{
+    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
+  }
+  .typewriter-block-target{
+    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
+  }
+}
