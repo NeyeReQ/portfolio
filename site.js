@@ -172,7 +172,7 @@
 
   const typewriterTitleSelector=[
     'main h1','main h2','main h3',
-    '.choice-bottom strong','.credential-code','.project-card-body strong',
+    '.choice-bottom strong','.credential-code','.project-card-body strong','.case-related-card-copy strong',
     '.case-eyebrow','.case-aside-label','.case-facts-heading','.case-story-label',
     '.case-section-kicker','.case-related-empty strong'
   ].join(',');
