@@ -739,14 +739,7 @@
 }
 
 
-/* Reuse the homepage letter-by-letter entrance on case-study headings and description. */
-.case-reveal.is-visible .typewriter-target .typewriter-char,
-.case-reveal.is-visible.typewriter-target .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
-}
-
-
-/* Give the admin-entered project description a more editorial reading size. */
+/* Project description typography stays independent from the shared text animation. */
 .case-project-description{
   font-family:Manrope,"Segoe UI Variable","Segoe UI",sans-serif;
   font-size:clamp(21px,2.1vw,26px);
@@ -760,64 +753,5 @@
   .case-project-description{font-size:19px;line-height:1.75}
 }
 
-
-
-/* Project pages use exactly the same letter-by-letter entrance as other titles. */
-.typewriter-target .typewriter-char{
-  display:inline-block!important;
-  opacity:0;
-  transform:translate3d(0,.28em,0)!important;
-  filter:blur(2px)!important;
-  white-space:pre;
-  animation:none;
-}
-.typewriter-target.typewriter-active .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
-}
-.typewriter-block-target{
-  opacity:0;
-  transform:translate3d(0,12px,0);
-  filter:blur(1px);
-}
-.typewriter-block-target.typewriter-active{
-  animation:neyerTypeBlockIn .55s cubic-bezier(.2,.75,.25,1) both!important;
-}
-@media(prefers-reduced-motion:reduce){
-  .typewriter-target .typewriter-char{
-    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
-  }
-  .typewriter-block-target{
-    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
-  }
-}
-
-
-/* The case title's old whole-heading entrance must not compete with the shared per-letter effect. */
+/* Disable the old whole-heading entrance; the shared character animation handles it. */
 .case-title{animation:none!important}
-.typewriter-target .typewriter-char{
-  display:inline-block!important;
-  opacity:0!important;
-  transform:translate3d(0,.28em,0)!important;
-  filter:blur(2px)!important;
-  white-space:pre;
-  animation:none!important;
-}
-.typewriter-target.typewriter-active .typewriter-char{
-  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both!important;
-}
-.typewriter-block-target{
-  opacity:0;
-  transform:translate3d(0,12px,0);
-  filter:blur(1px);
-}
-.typewriter-block-target.typewriter-active{
-  animation:neyerTypeBlockIn .55s cubic-bezier(.2,.75,.25,1) both!important;
-}
-@media(prefers-reduced-motion:reduce){
-  .typewriter-target .typewriter-char{
-    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
-  }
-  .typewriter-block-target{
-    opacity:1!important;transform:none!important;filter:none!important;animation:none!important
-  }
-}
