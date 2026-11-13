@@ -737,3 +737,10 @@
   .case-fact-row{padding:14px 21px}
   .case-fact-row:hover{padding-left:21px}
 }
+
+
+/* Reuse the homepage letter-by-letter entrance on case-study headings and description. */
+.case-reveal.is-visible .typewriter-target .typewriter-char,
+.case-reveal.is-visible.typewriter-target .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
+}
