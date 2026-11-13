@@ -218,7 +218,7 @@
         span.replaceWith(document.createTextNode(span.textContent||''));
       });
       element.querySelectorAll('.typewriter-word').forEach(word=>{
-        word.replaceWith(...word.childNodes);
+        word.replaceWith(document.createTextNode(word.textContent||''));
       });
       element.normalize();
 
@@ -247,37 +247,32 @@
       while(walker.nextNode())textNodes.push(walker.currentNode);
       let characterIndex=0;
       textNodes.forEach(node=>{
-        let accentLetterIndex=0;
         const value=node.nodeValue||'';
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
-        const accent=node.parentElement?.closest('.title-accent');
-        const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
-        let word=null;
+        let wordText='';
+        const appendWord=()=>{
+          if(!wordText)return;
+          const word=document.createElement('span');
+          word.className='typewriter-word';
+          const wordLength=Array.from(wordText).length;
+          word.textContent=wordText;
+          word.style.setProperty('--typing-steps',String(wordLength));
+          word.style.setProperty('--typing-duration',(wordLength*characterInterval).toFixed(0)+'ms');
+          word.style.setProperty('--typing-delay',(characterIndex*characterInterval).toFixed(0)+'ms');
+          characterIndex+=wordLength;
+          fragment.append(word);
+          wordText='';
+        };
         for(const character of value){
           if(character.trim()===''){
-            word=null;
+            appendWord();
             fragment.append(document.createTextNode(character));
-            continue;
+          }else{
+            wordText+=character;
           }
-          // Keep each complete word together so the browser wraps at spaces,
-          // not between the individual animated character spans.
-          if(!word){
-            word=document.createElement('span');
-            word.className='typewriter-word';
-            fragment.append(word);
-          }
-          const span=document.createElement('span');
-          span.className='typewriter-char';
-          if(accent){
-            span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
-            accentLetterIndex++;
-          }
-          span.textContent=character;
-          span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
-          characterIndex++;
-          word.append(span);
         }
+        appendWord();
         node.parentNode?.replaceChild(fragment,node);
       });
 
