@@ -723,48 +723,50 @@ html[lang="en"] #tools .tools-title-question{display:none}
 }
 
 
-/* Cursor-reactive edge glitch: restrained RGB separation and scanline fragments. */
-#home.hero:after{
-  content:"";
+
+/* True RGB channel separation, restrained to the outer edges of the Start image. */
+.visual-filters{position:absolute;width:0;height:0;overflow:hidden}
+#home.hero{isolation:isolate}
+#home.hero:before{z-index:0}
+#home .hero-rgb-layer{
   position:absolute;
-  inset:-10px;
+  inset:-26px;
   z-index:0;
   pointer-events:none;
-  opacity:.34;
+  opacity:.58;
   mix-blend-mode:screen;
   background-image:
-    linear-gradient(90deg,
-      rgba(94,246,226,.34) 0%,
-      rgba(94,246,226,.10) 2.2%,
-      transparent 9%,
-      transparent 91%,
-      rgba(172,119,255,.10) 97.8%,
-      rgba(172,119,255,.30) 100%),
-    repeating-linear-gradient(0deg,
-      transparent 0 21px,
-      rgba(115,240,230,.22) 21px 22px,
-      transparent 22px 43px),
-    linear-gradient(90deg,
-      transparent 3.8%,
-      rgba(255,92,151,.24) 4%,
-      transparent 4.25%,
-      transparent 95.6%,
-      rgba(103,246,231,.24) 95.85%,
-      transparent 96.1%),
-    radial-gradient(230px 170px at var(--glitch-anchor-x,50%) var(--glitch-anchor-y,50%),
-      rgba(102,238,226,.16),
-      transparent 72%);
-  background-size:100% 100%,100% 100%,100% 100%,100% 100%;
+    linear-gradient(90deg,rgba(10,13,20,.78) 0%,rgba(10,13,20,.58) 34%,rgba(10,13,20,.12) 72%,rgba(10,13,20,.14) 100%),
+    linear-gradient(180deg,rgba(10,13,20,.16) 0%,rgba(10,13,20,.03) 57%,rgba(10,13,20,.94) 100%),
+    url("assets/hero-workspace.avif?v=20261113-no-logos");
+  background-size:cover;
   background-position:center;
-  -webkit-mask-image:radial-gradient(ellipse at center,transparent 45%,#000 100%);
-  mask-image:radial-gradient(ellipse at center,transparent 45%,#000 100%);
-  transform:translate3d(var(--glitch-x,0px),var(--glitch-y,0px),0);
-  transition:transform .2s cubic-bezier(.2,.75,.2,1),opacity .2s ease;
-  will-change:transform,background-position;
+  background-repeat:no-repeat;
+  -webkit-mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,transparent 48%,rgba(0,0,0,.22) 70%,#000 100%);
+  mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,transparent 48%,rgba(0,0,0,.22) 70%,#000 100%);
+  transform-origin:50% 45%;
+  will-change:transform;
+  transition:transform .12s cubic-bezier(.2,.75,.2,1),opacity .2s ease;
+}
+#home .hero-rgb-red{
+  filter:url(#rgb-red-channel);
+  transform:perspective(1100px)
+    rotateX(var(--hero-bg-rotate-x,0deg))
+    rotateY(var(--hero-bg-rotate-y,0deg))
+    scale(1.085)
+    translate3d(var(--rgb-red-x,0px),var(--rgb-red-y,0px),0);
+}
+#home .hero-rgb-cyan{
+  filter:url(#rgb-cyan-channel);
+  transform:perspective(1100px)
+    rotateX(var(--hero-bg-rotate-x,0deg))
+    rotateY(var(--hero-bg-rotate-y,0deg))
+    scale(1.085)
+    translate3d(var(--rgb-cyan-x,0px),var(--rgb-cyan-y,0px),0);
 }
 @media(max-width:720px){
-  #home.hero:after{opacity:.18;transform:none;transition:none}
+  #home .hero-rgb-layer{display:none}
 }
 @media(prefers-reduced-motion:reduce){
-  #home.hero:after{transform:none;transition:none}
+  #home .hero-rgb-layer{transition:none;transform:none}
 }
