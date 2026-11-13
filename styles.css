@@ -905,7 +905,10 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   display:inline-block;
   white-space:nowrap;
   vertical-align:baseline;
-  clip-path:inset(0 100% 0 0);
+  overflow:visible;
+  /* Leave room around the glyphs: tight heading line-heights must not crop ascenders or descenders. */
+  clip-path:inset(-.34em 100% -.34em -.06em);
+  -webkit-clip-path:inset(-.34em 100% -.34em -.06em);
 }
 .typewriter-target:not(.typewriter-active) .typewriter-word{
   animation:none!important;
@@ -919,7 +922,10 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   animation-fill-mode:both!important;
 }
 @keyframes neyerTypeWord{
-  to{clip-path:inset(0 0 0 0)}
+  to{
+    clip-path:inset(-.34em -.06em -.34em -.06em);
+    -webkit-clip-path:inset(-.34em -.06em -.34em -.06em);
+  }
 }
 .typewriter-block-target{
   opacity:0;
