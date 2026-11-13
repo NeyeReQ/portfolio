@@ -759,3 +759,22 @@
 @media(max-width:720px){
   .case-project-description{font-size:19px;line-height:1.75}
 }
+
+
+/* Match the lightweight, opacity-only text animation on case-study pages. */
+.case-reveal{transition:opacity .46s var(--ease),transform .46s var(--ease)}
+.case-project-description .typewriter-char{
+  display:inline!important;
+  opacity:0;
+  transform:none!important;
+  filter:none!important;
+  white-space:pre;
+  will-change:auto;
+}
+.case-reveal.is-visible .typewriter-target .typewriter-char,
+.case-reveal.is-visible.typewriter-target .typewriter-char{
+  animation:neyerTypeChar .12s steps(1,end) both!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .case-project-description .typewriter-char{opacity:1!important;animation:none!important}
+}
