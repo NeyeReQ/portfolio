@@ -17,8 +17,8 @@
     frame = 0;
     hero.style.setProperty('--hero-bg-rotate-x', (-targetY * 2.2).toFixed(2) + 'deg');
     hero.style.setProperty('--hero-bg-rotate-y', (targetX * 3.1).toFixed(2) + 'deg');
-    hero.style.setProperty('--rgb-red-x', (targetX * 7).toFixed(2) + 'px');
-    hero.style.setProperty('--rgb-red-y', (targetY * 4).toFixed(2) + 'px');
+    hero.style.setProperty('--rgb-red-x', (targetX * 10).toFixed(2) + 'px');
+    hero.style.setProperty('--rgb-red-y', (targetY * 7).toFixed(2) + 'px');
     hero.style.setProperty('--rgb-cyan-x', (-targetX * 7).toFixed(2) + 'px');
     hero.style.setProperty('--rgb-cyan-y', (-targetY * 4).toFixed(2) + 'px');
   }
