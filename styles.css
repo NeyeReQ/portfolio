@@ -768,11 +768,6 @@ html[lang="en"] #tools .tools-title-question{display:none}
   #home .hero-rgb-layer{transition:none;transform:none}
 }
 
-/* Same per-letter gradient entrance on every editorial and project heading. */
-.typewriter-target.typewriter-gradient .typewriter-char{
-  color:var(--letter-accent,var(--aqua));
-  -webkit-text-fill-color:currentColor;
-}
 .case-reveal.is-visible .typewriter-target .typewriter-char,
 .case-reveal.is-visible.typewriter-target .typewriter-char{
   animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
@@ -783,4 +778,40 @@ html[lang="en"] #tools .tools-title-question{display:none}
   .case-reveal .typewriter-target .typewriter-char{
     opacity:1;transform:none;filter:none;animation:none!important
   }
+}
+
+
+/* Slightly wider view of the Start photograph; bias the crop toward the desk. */
+#home.hero:before{
+  inset:-12px;
+  background-size:100% 100%,100% 100%,96% auto;
+  background-position:center,center,center 100%;
+  transform:perspective(1100px)
+    rotateX(var(--hero-bg-rotate-x,0deg))
+    rotateY(var(--hero-bg-rotate-y,0deg))
+    scale(1.015);
+}
+#home .hero-rgb-layer{
+  inset:-12px;
+  background-size:96% auto;
+  background-position:center bottom;
+}
+#home .hero-rgb-red,
+#home .hero-rgb-cyan{
+  transform:perspective(1100px)
+    rotateX(var(--hero-bg-rotate-x,0deg))
+    rotateY(var(--hero-bg-rotate-y,0deg))
+    scale(1.015)
+    translate3d(var(--rgb-layer-x,0px),var(--rgb-layer-y,0px),0);
+}
+@media(max-width:720px){
+  #home.hero:before{
+    inset:-12px;
+    background-size:100% 100%,100% 100%,auto 100%;
+    background-position:center,center,23% center;
+    transform:none;
+  }
+}
+@media(max-width:440px){
+  #home.hero:before{background-position:center,center,18% center}
 }
