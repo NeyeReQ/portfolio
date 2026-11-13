@@ -27,7 +27,7 @@
     if (!data.categories || !Array.isArray(data.categories[type])) throw new Error('Nieprawidłowy format danych portfolio.');
     if (!Array.isArray(data.projects)) data.projects = [];
   } catch (error) {
-    grid.innerHTML = '<div class="project-empty"><span class="empty-mark">!</span><h2>Nie udało się wczytać portfolio</h2><p>Sprawdź plik portfolio-data.json i uruchom stronę przez GitHub Pages lub serwer lokalny.</p></div>';
+    grid.innerHTML = '<div class="project-empty reveal"><span class="empty-mark">!</span><h2>Nie udało się wczytać portfolio</h2><p>Sprawdź plik portfolio-data.json i uruchom stronę przez GitHub Pages lub serwer lokalny.</p></div>';
     console.error('NeyeR portfolio data:', error);
     return;
   }
@@ -75,7 +75,7 @@
 
     if (!items.length) {
       const category = active === 'all' ? null : categoryMap[active];
-      grid.innerHTML = '<div class="project-empty"><span class="empty-mark">✳</span><h2>' +
+      grid.innerHTML = '<div class="project-empty reveal"><span class="empty-mark">✳</span><h2>' +
         esc(category ? text(category.title) : tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje') +
         '</h2><p>' + esc(tr.emptyText || 'W tej kategorii nie ma jeszcze opublikowanych prac.') + '</p></div>';
       return;
@@ -84,7 +84,7 @@
     grid.innerHTML = '';
     items.forEach(function(project, index){
       const card = document.createElement('a');
-      card.className = 'project-card';
+      card.className = 'project-card reveal';
       card.href = 'project.html?id=' + encodeURIComponent(project.id);
       card.setAttribute('aria-label', (tr.projectOpen || 'Otwórz projekt') + ': ' + text(project.title));
 
@@ -111,8 +111,13 @@
       body.append(heading, meta, action);
       card.append(media, body);
       card.style.setProperty('--card-order', String(index));
+      card.dataset.delay = String(Math.min(index * 85, 425));
       grid.append(card);
     });
+    if (window.NeyeR) {
+      window.NeyeR.refreshTypewriterTargets(grid);
+      window.NeyeR.observeRevealTargets(grid);
+    }
   }
 
   document.addEventListener('contextmenu', function(event){
