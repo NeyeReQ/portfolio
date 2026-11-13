@@ -911,6 +911,9 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 }
 
 /* === One authoritative, low-cost keyboard typewriter === */
+.typewriter-target .typewriter-word{
+  white-space:nowrap;
+}
 .typewriter-target .typewriter-char{
   display:inline;
   opacity:0;
