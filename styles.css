@@ -966,23 +966,6 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 }
 
 
-/* Description copy stays light; titles use the exact pre-optimization typewriter. */
-.typewriter-target:not(.typewriter-title-target) .typewriter-char{
-  display:inline;
-  opacity:0;
-  transform:none!important;
-  filter:none!important;
-  white-space:pre;
-  will-change:auto;
-}
-.reveal.is-visible .typewriter-target:not(.typewriter-title-target) .typewriter-char,
-.reveal.is-visible.typewriter-target:not(.typewriter-title-target) .typewriter-char,
-.case-reveal.is-visible .typewriter-target:not(.typewriter-title-target) .typewriter-char,
-.case-reveal.is-visible.typewriter-target:not(.typewriter-title-target) .typewriter-char{
-  animation:neyerDescriptionReveal .12s steps(1,end) both!important;
-}
-@keyframes neyerDescriptionReveal{to{opacity:1}}
-
 /* Original title animation, unchanged: rise slightly, sharpen, and type letter by letter. */
 .typewriter-title-target .typewriter-char{
   display:inline-block;
