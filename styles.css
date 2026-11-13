@@ -614,3 +614,42 @@ html[lang="en"] #tools .tools-title-question{display:none}
 @media(prefers-reduced-motion:reduce){
   .brand-mark img{transition:none}
 }
+
+
+/* === NeyeR portfolio: photographic Start-section background === */
+#home.hero{
+  min-height:730px;
+  padding:100px 0 26px;
+  background-color:#080a0f;
+  background-image:
+    linear-gradient(90deg,rgba(10,13,20,.78) 0%,rgba(10,13,20,.58) 34%,rgba(10,13,20,.12) 72%,rgba(10,13,20,.14) 100%),
+    linear-gradient(180deg,rgba(10,13,20,.16) 0%,rgba(10,13,20,.03) 57%,rgba(10,13,20,.94) 100%),
+    url("assets/hero-workspace.webp");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+#home.hero:before{display:none}
+#home .hero-grid{grid-template-columns:minmax(0,1fr);gap:0}
+#home .hero-copy{width:min(520px,100%);max-width:520px;padding-bottom:28px}
+#home .hero-art{display:none!important}
+#home .hero-bottom{margin-top:48px}
+@media(max-width:980px){
+  #home.hero{min-height:690px;padding-top:84px}
+  #home .hero-copy{max-width:490px}
+}
+@media(max-width:720px){
+  #home.hero{
+    min-height:calc(100svh - 70px);
+    padding:72px 0 22px;
+    background-size:auto 100%;
+    background-position:23% center;
+  }
+  #home .hero-copy{max-width:470px;padding-bottom:0}
+  #home .hero-title{font-size:clamp(56px,13vw,86px)}
+  #home .hero-bottom{margin-top:32px}
+}
+@media(max-width:440px){
+  #home.hero{background-position:18% center}
+  #home .hero-title{font-size:clamp(56px,14vw,64px)}
+}
