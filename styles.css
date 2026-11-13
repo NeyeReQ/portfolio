@@ -682,3 +682,42 @@ html[lang="en"] #tools .tools-title-question{display:none}
 @media (max-width: 720px) {
   .hero:before, .hero-art-scene { transform: none; transition: none; }
 }
+
+
+/* Cursor-responsive photographic layer for the Start section. */
+#home.hero{
+  background-image:none;
+  background-color:#080a0f;
+}
+#home.hero:before{
+  display:block;
+  content:"";
+  position:absolute;
+  inset:-26px;
+  z-index:0;
+  background-image:
+    linear-gradient(90deg,rgba(10,13,20,.78) 0%,rgba(10,13,20,.58) 34%,rgba(10,13,20,.12) 72%,rgba(10,13,20,.14) 100%),
+    linear-gradient(180deg,rgba(10,13,20,.16) 0%,rgba(10,13,20,.03) 57%,rgba(10,13,20,.94) 100%),
+    url("assets/hero-workspace.avif?v=20261113-no-logos");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  mask-image:none;
+  pointer-events:none;
+  transform-origin:50% 45%;
+  transform:perspective(1100px)
+    rotateX(var(--hero-bg-rotate-x,0deg))
+    rotateY(var(--hero-bg-rotate-y,0deg))
+    scale(1.085);
+  transition:transform .18s cubic-bezier(.2,.75,.2,1);
+  will-change:transform;
+}
+@media(max-width:720px){
+  #home.hero:before{background-size:auto 100%;background-position:23% center;transform:none;transition:none}
+}
+@media(max-width:440px){
+  #home.hero:before{background-position:18% center}
+}
+@media(prefers-reduced-motion:reduce){
+  #home.hero:before{transform:none;transition:none}
+}
