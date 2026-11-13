@@ -834,12 +834,12 @@ html[lang="en"] #tools .tools-title-question{display:none}
   background-repeat:no-repeat;
 }
 #home.hero:before{
-  inset:-88px;
+  inset:-40px;
   background-size:100% 100%,100% 100%,92% auto;
   background-position:center,center,center bottom;
 }
 #home .hero-rgb-layer{
-  inset:-88px;
+  inset:-40px;
   background-size:92% auto;
   background-position:center bottom;
 }
