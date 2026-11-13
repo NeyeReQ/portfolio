@@ -724,32 +724,29 @@ html[lang="en"] #tools .tools-title-question{display:none}
 
 
 
-/* True RGB channel separation, restrained to the outer edges of the Start image. */
-.visual-filters{position:absolute;width:0;height:0;overflow:hidden}
+
+/* Visible chromatic aberration: two tinted copies of the actual hero photograph. */
 #home.hero{isolation:isolate}
 #home.hero:before{z-index:0}
 #home .hero-rgb-layer{
   position:absolute;
-  inset:-26px;
+  inset:-28px;
   z-index:0;
   pointer-events:none;
-  opacity:.58;
-  mix-blend-mode:screen;
-  background-image:
-    linear-gradient(90deg,rgba(10,13,20,.78) 0%,rgba(10,13,20,.58) 34%,rgba(10,13,20,.12) 72%,rgba(10,13,20,.14) 100%),
-    linear-gradient(180deg,rgba(10,13,20,.16) 0%,rgba(10,13,20,.03) 57%,rgba(10,13,20,.94) 100%),
-    url("assets/hero-workspace.avif?v=20261113-no-logos");
+  background-image:url("assets/hero-workspace.avif?v=20261113-no-logos");
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
-  -webkit-mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,transparent 48%,rgba(0,0,0,.22) 70%,#000 100%);
-  mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,transparent 48%,rgba(0,0,0,.22) 70%,#000 100%);
+  opacity:.68;
+  mix-blend-mode:screen;
+  -webkit-mask-image:radial-gradient(ellipse 76% 74% at 50% 50%,transparent 43%,rgba(0,0,0,.28) 70%,#000 100%);
+  mask-image:radial-gradient(ellipse 76% 74% at 50% 50%,transparent 43%,rgba(0,0,0,.28) 70%,#000 100%);
   transform-origin:50% 45%;
   will-change:transform;
   transition:transform .12s cubic-bezier(.2,.75,.2,1),opacity .2s ease;
 }
 #home .hero-rgb-red{
-  filter:url(#rgb-red-channel);
+  filter:grayscale(1) sepia(1) saturate(12) hue-rotate(320deg) contrast(1.25);
   transform:perspective(1100px)
     rotateX(var(--hero-bg-rotate-x,0deg))
     rotateY(var(--hero-bg-rotate-y,0deg))
@@ -757,7 +754,7 @@ html[lang="en"] #tools .tools-title-question{display:none}
     translate3d(var(--rgb-red-x,0px),var(--rgb-red-y,0px),0);
 }
 #home .hero-rgb-cyan{
-  filter:url(#rgb-cyan-channel);
+  filter:grayscale(1) sepia(1) saturate(12) hue-rotate(145deg) contrast(1.25);
   transform:perspective(1100px)
     rotateX(var(--hero-bg-rotate-x,0deg))
     rotateY(var(--hero-bg-rotate-y,0deg))
@@ -769,4 +766,21 @@ html[lang="en"] #tools .tools-title-question{display:none}
 }
 @media(prefers-reduced-motion:reduce){
   #home .hero-rgb-layer{transition:none;transform:none}
+}
+
+/* Same per-letter gradient entrance on every editorial and project heading. */
+.typewriter-target.typewriter-gradient .typewriter-char{
+  color:var(--letter-accent,var(--aqua));
+  -webkit-text-fill-color:currentColor;
+}
+.case-reveal.is-visible .typewriter-target .typewriter-char,
+.case-reveal.is-visible.typewriter-target .typewriter-char{
+  animation:neyerTypeChar .34s cubic-bezier(.2,.75,.25,1) both;
+}
+
+/* Keep the Start title's existing outlined first line unchanged. */
+@media(prefers-reduced-motion:reduce){
+  .case-reveal .typewriter-target .typewriter-char{
+    opacity:1;transform:none;filter:none;animation:none!important
+  }
 }
