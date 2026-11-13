@@ -71,7 +71,6 @@
   letter-spacing: -.09em;
   font-weight: 800;
   overflow-wrap: anywhere;
-  animation: case-title-in .9s var(--ease) both;
 }
 .case-description {
   max-width: 660px;
@@ -403,11 +402,6 @@
   overflow-wrap: normal;
   word-break: normal;
   hyphens: auto;
-  animation: case-title-in .9s var(--ease) both;
-}
-@keyframes case-title-in {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 .case-story-card[hidden], .case-story-label[hidden], .case-story-rule[hidden],
 .case-story-card > p[hidden], .case-section-aside[hidden] {
@@ -746,5 +740,4 @@
   .case-project-description{font-size:19px;line-height:1.75}
 }
 
-/* Disable the old whole-heading entrance; the shared character animation handles it. */
-.case-title{animation:none!important}
+/* Project titles use only the shared typewriter reveal from styles.css. */
