@@ -544,3 +544,92 @@
   .case-fact-copy dd { font-size: 12px; }
   .case-fact-row:hover { padding-left: 19px; }
 }
+
+
+/* Unified editorial treatment for the project overview. */
+.case-overview{
+  padding:clamp(76px,8vw,112px) 0 clamp(82px,8vw,118px);
+  background:
+    radial-gradient(ellipse at 8% 35%,rgba(114,234,217,.045),transparent 38%),
+    linear-gradient(180deg,#0a0d14 0%,#0d131d 100%);
+}
+.case-section-heading{margin-bottom:38px}
+.case-overview-grid{
+  grid-template-columns:minmax(0,1.12fr) minmax(310px,.88fr);
+  gap:20px;
+  align-items:stretch;
+}
+.case-story-card{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:stretch;
+  padding:clamp(30px,4.1vw,52px);
+  border:1px solid rgba(185,208,230,.16);
+  border-radius:3px;
+  background:
+    radial-gradient(ellipse at 100% 0%,rgba(114,234,217,.085),transparent 46%),
+    linear-gradient(145deg,rgba(21,32,46,.98),rgba(13,20,31,.98));
+  box-shadow:0 22px 58px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.case-story-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent,rgba(114,234,217,.82) 24%,rgba(146,124,255,.54) 76%,transparent);
+}
+.case-story-card::after{
+  content:"";
+  position:absolute;
+  right:20px;bottom:10px;
+  width:140px;height:140px;
+  border:1px solid rgba(185,208,230,.055);
+  border-radius:50%;
+  box-shadow:0 0 0 18px rgba(185,208,230,.018),0 0 0 38px rgba(185,208,230,.012);
+  pointer-events:none;
+}
+.case-story-label{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:11px;
+  width:max-content;max-width:100%;
+  color:#8ca2b4;
+  font:600 8px 'DM Mono',monospace;
+  letter-spacing:1.55px;
+  text-transform:uppercase;
+}
+.case-story-label::before{
+  content:"";
+  width:18px;height:1px;
+  background:var(--aqua);
+  box-shadow:0 0 10px rgba(114,234,217,.45);
+}
+.case-project-description{
+  position:relative;z-index:1;
+  max-width:680px;
+  margin:23px 0 0;
+  color:#d9e9ed;
+  font-size:clamp(17px,1.8vw,22px);
+  font-weight:600;
+  line-height:1.8;
+  letter-spacing:-.025em;
+  text-wrap:pretty;
+}
+.case-project-description .typewriter-char{
+  display:inline-block;
+  white-space:pre;
+}
+.case-facts-panel{height:100%;min-width:0}
+.case-facts-heading{gap:12px}
+.case-fact-row{min-width:0}
+.case-fact-copy dd{overflow-wrap:anywhere}
+@media(max-width:900px){
+  .case-overview-grid{grid-template-columns:minmax(0,1fr) minmax(270px,.82fr);gap:14px}
+  .case-story-card{padding:30px}
+}
+@media(max-width:720px){
+  .case-overview{padding:76px 0 82px}
+  .case-overview-grid{grid-template-columns:1fr;gap:14px}
+  .case-story-card{min-height:0;padding:28px 24px}
+  .case-project-description{font-size:16px;line-height:1.8;margin-top:18px}
+}
