@@ -171,52 +171,77 @@
   },true);
 
   const typewriterTitleSelector=[
-    '.hero-title','.section-heading h2','.subpage-heading h1',
-    '.project-card-body strong','.project-empty h2',
-    '.case-title','.case-section-heading h2','.case-gallery-heading h2',
-    '.case-related-topline h2','.case-editorial-copy h2','#storyTitle',
+    'main h1','main h2','main h3',
+    '.choice-bottom strong','.credential-code',
     '.case-facts-heading','.case-story-label','.case-section-kicker',
     '.case-related-empty strong'
   ].join(',');
   const typewriterDescriptionSelector=[
-    '.hero-description','.hero .eyebrow [data-i18n]',
-    '.section-heading .eyebrow [data-i18n]','.section-side-note',
-    '.about-layout-single .about-paragraph','.credential-label','.language-label','.language-value',
+    '.hero-description','.about-layout-single .about-paragraph',
+    '.credential-label','.language-label','.language-value',
     '.work-intro','.tool-card-copy p','.choice-bottom small','.contact-hint',
-    '.subpage-heading p','.subpage-heading .eyebrow [data-i18n]',
-    '.back-link [data-i18n]','.project-card-body>span:not(.project-card-cta)',
-    '.project-empty p','.case-project-description','.case-editorial-copy p',
-    '.case-section-aside','.case-gallery-heading>p','.case-related-topline>p',
-    '.case-fact-copy dt','.case-fact-copy dd',
-    '.case-related-empty p','.case-gallery-item figcaption'
+    '.subpage-heading p','.project-card-body>span:not(.project-card-cta)',
+    '.project-empty p','.case-aside-copy','.case-project-description',
+    '.case-editorial-copy p','.case-section-aside',
+    '.case-gallery-heading>p','.case-related-topline>p',
+    '.case-related-empty p','.case-fact-copy dt','.case-fact-copy dd',
+    '.case-gallery-item figcaption'
   ].join(',');
   const typewriterSelector=[typewriterTitleSelector,typewriterDescriptionSelector].join(',');
+  const typewriterMaxAnimatedCopy=520;
+
+  function getTypewriterObserver(){
+    if(window.__neyerTypewriterObserver) return window.__neyerTypewriterObserver;
+    if(!('IntersectionObserver' in window)) return null;
+    window.__neyerTypewriterObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        const element=entry.target;
+        if(entry.isIntersecting){
+          element.classList.add('typewriter-active');
+        }else{
+          element.classList.remove('typewriter-active');
+        }
+      });
+    },{threshold:0.04,rootMargin:'0px 0px -8% 0px'});
+    return window.__neyerTypewriterObserver;
+  }
 
   function refreshTypewriterTargets(root=document){
     const elements=[];
     if(root instanceof Element && root.matches(typewriterSelector))elements.push(root);
     elements.push(...queryAll(typewriterSelector,root));
+    const reduceMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const observer=reduceMotion?null:getTypewriterObserver();
+
     elements.forEach(element=>{
+      if(observer)observer.unobserve(element);
+      element.classList.remove('typewriter-active','typewriter-target','typewriter-title-target','typewriter-description-target','typewriter-block-target');
       element.querySelectorAll('.typewriter-char').forEach(span=>{
         span.replaceWith(document.createTextNode(span.textContent||''));
       });
       element.normalize();
 
-      const totalCharacters=Array.from(element.textContent||'').filter(character=>character.trim()!=='').length;
       const isTitle=element.matches(typewriterTitleSelector);
-      element.classList.remove('typewriter-target','typewriter-title-target');
+      const text=element.textContent||'';
+      const totalCharacters=Array.from(text).filter(character=>character.trim()!=='').length;
+      if(!totalCharacters) return;
 
-      // Preserve the exact original title cadence. Only descriptive copy uses
-      // the lighter, capped animation workload.
-      if(!totalCharacters || (!isTitle && totalCharacters>110)) return;
+      element.classList.add('typewriter-target',isTitle?'typewriter-title-target':'typewriter-description-target');
 
-      const characterInterval=isTitle
-        ? Math.min(17,Math.max(2.5,1150/totalCharacters))
-        : Math.min(12,850/totalCharacters);
-      let characterIndex=0;
+      // Long editorial copy uses the same entrance as a single block to avoid
+      // hundreds of animated spans competing during fast scrolling.
+      if(!isTitle && totalCharacters>typewriterMaxAnimatedCopy){
+        element.classList.add('typewriter-block-target');
+        if(observer)observer.observe(element);
+        else element.classList.add('typewriter-active');
+        return;
+      }
+
+      const characterInterval=Math.min(17,Math.max(2.5,1150/totalCharacters));
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
       while(walker.nextNode())textNodes.push(walker.currentNode);
+      let characterIndex=0;
       textNodes.forEach(node=>{
         let accentLetterIndex=0;
         const value=node.nodeValue||'';
@@ -225,25 +250,26 @@
         for(const character of value){
           if(character.trim()===''){
             fragment.append(document.createTextNode(character));
-          }else{
-            const span=document.createElement('span');
-            span.className='typewriter-char';
-            const accent=node.parentElement?.closest('.title-accent');
-            if(accent){
-              const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
-              span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
-              accentLetterIndex++;
-            }
-            span.textContent=character;
-            span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
-            characterIndex++;
-            fragment.append(span);
+            continue;
           }
+          const span=document.createElement('span');
+          span.className='typewriter-char';
+          const accent=node.parentElement?.closest('.title-accent');
+          if(accent){
+            const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
+            span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
+            accentLetterIndex++;
+          }
+          span.textContent=character;
+          span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
+          characterIndex++;
+          fragment.append(span);
         }
         node.parentNode?.replaceChild(fragment,node);
       });
-      element.classList.add('typewriter-target');
-      if(element.matches(typewriterTitleSelector))element.classList.add('typewriter-title-target');
+
+      if(observer)observer.observe(element);
+      else element.classList.add('typewriter-active');
     });
   }
   document.addEventListener('neyer:language',()=>refreshTypewriterTargets());
