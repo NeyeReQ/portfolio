@@ -141,7 +141,7 @@
       const roots=new Set();
       records.forEach(record=>record.addedNodes.forEach(node=>{
         if(!(node instanceof Element))return;
-        if(node.classList.contains('typewriter-char')||node.classList.contains('ui-metal-sheen'))return;
+        if(node.classList.contains('typewriter-char')||node.classList.contains('typewriter-word')||node.classList.contains('ui-metal-sheen'))return;
         if(node.matches(metalSurfaceSelector)||(node.childElementCount&&node.querySelector(metalSurfaceSelector)))roots.add(node);
       }));
       roots.forEach(node=>decorateMetalSurfaces(node));
@@ -217,6 +217,9 @@
       element.querySelectorAll('.typewriter-char').forEach(span=>{
         span.replaceWith(document.createTextNode(span.textContent||''));
       });
+      element.querySelectorAll('.typewriter-word').forEach(word=>{
+        word.replaceWith(...word.childNodes);
+      });
       element.normalize();
 
       const isTitle=element.matches(typewriterTitleSelector);
@@ -248,24 +251,32 @@
         const value=node.nodeValue||'';
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
-        for(const character of value){
-          if(character.trim()===''){
-            fragment.append(document.createTextNode(character));
-            continue;
+        const tokens=value.match(/\\s+|[^\\s]+/gu)||[];
+        const accent=node.parentElement?.closest('.title-accent');
+        const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
+        tokens.forEach(token=>{
+          if(/^\\s+$/u.test(token)){
+            fragment.append(document.createTextNode(token));
+            return;
           }
-          const span=document.createElement('span');
-          span.className='typewriter-char';
-          const accent=node.parentElement?.closest('.title-accent');
-          if(accent){
-            const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
-            span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
-            accentLetterIndex++;
+          // Keep each complete word together so the browser wraps at spaces,
+          // not between the individual animated character spans.
+          const word=document.createElement('span');
+          word.className='typewriter-word';
+          for(const character of token){
+            const span=document.createElement('span');
+            span.className='typewriter-char';
+            if(accent){
+              span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
+              accentLetterIndex++;
+            }
+            span.textContent=character;
+            span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
+            characterIndex++;
+            word.append(span);
           }
-          span.textContent=character;
-          span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
-          characterIndex++;
-          fragment.append(span);
-        }
+          fragment.append(word);
+        });
         node.parentNode?.replaceChild(fragment,node);
       });
 
