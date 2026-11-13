@@ -616,8 +616,7 @@
   text-wrap:pretty;
 }
 .case-project-description .typewriter-char{
-  display:inline-block;
-  white-space:pre;
+  display:inline;
 }
 .case-facts-panel{height:100%;min-width:0}
 .case-facts-heading{gap:12px}
