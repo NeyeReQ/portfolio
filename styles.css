@@ -985,10 +985,10 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 
 /* Original title animation, unchanged: rise slightly, sharpen, and type letter by letter. */
 .typewriter-title-target .typewriter-char{
-  display:inline-block!important;
-  opacity:0!important;
-  transform:translate3d(0,.28em,0)!important;
-  filter:blur(2px)!important;
+  display:inline-block;
+  opacity:0;
+  transform:translate3d(0,.28em,0);
+  filter:blur(2px);
   white-space:pre;
   will-change:auto;
 }
