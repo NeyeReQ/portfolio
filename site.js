@@ -214,9 +214,6 @@
     elements.forEach(element=>{
       if(observer)observer.unobserve(element);
       element.classList.remove('typewriter-active','typewriter-target','typewriter-title-target','typewriter-description-target','typewriter-block-target');
-      element.querySelectorAll('.typewriter-char').forEach(span=>{
-        span.replaceWith(document.createTextNode(span.textContent||''));
-      });
       element.querySelectorAll('.typewriter-word').forEach(word=>{
         word.replaceWith(document.createTextNode(word.textContent||''));
       });
@@ -229,8 +226,8 @@
 
       element.classList.add('typewriter-target',isTitle?'typewriter-title-target':'typewriter-description-target');
 
-      // Keep long homepage copy lightweight. Every project-detail paragraph
-      // still uses the same per-character typewriter as its headings.
+      // Keep long general copy lightweight. The about biography and project
+      // descriptions use the same word-mask typing effect as the headings.
       const isProjectDetailCopy=!!element.closest('#caseMain');
       const isPriorityTypingCopy=isProjectDetailCopy||element.matches('.about-layout-single .about-paragraph');
       if(!isTitle && !isPriorityTypingCopy && totalCharacters>typewriterMaxAnimatedCopy){
@@ -240,7 +237,8 @@
         return;
       }
 
-      // Preserve a readable keyboard-like cadence while keeping long copy within ~2 seconds.
+      // Reveal each word with one step per character, without splitting the word
+      // into separate glyph elements or changing font shaping.
       const characterInterval=Math.min(36,Math.max(3,1900/totalCharacters));
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
