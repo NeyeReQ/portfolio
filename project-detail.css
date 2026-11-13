@@ -615,9 +615,7 @@
   letter-spacing:-.025em;
   text-wrap:pretty;
 }
-.case-project-description .typewriter-char{
-  display:inline;
-}
+/* Description text is revealed by complete words in the shared typewriter. */
 .case-facts-panel{height:100%;min-width:0}
 .case-facts-heading{gap:12px}
 .case-fact-row{min-width:0}
@@ -715,11 +713,7 @@
 .case-related-topline h2 .title-accent{
   color:var(--aqua);
 }
-.case-section-heading h2 .title-accent .typewriter-char,
-.case-related-topline h2 .title-accent .typewriter-char{
-  color:var(--aqua)!important;
-  -webkit-text-fill-color:var(--aqua)!important;
-}
+
 @media(max-width:900px){
   .case-overview-panel{grid-template-columns:minmax(0,1fr) minmax(280px,.9fr)}
   .case-story-card{padding:30px}
