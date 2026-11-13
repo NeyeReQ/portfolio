@@ -106,11 +106,22 @@
     values.forEach(function(entry, index){
       const row = document.createElement('div');
       row.className = 'case-fact-row';
+
+      const number = document.createElement('span');
+      number.className = 'case-fact-index';
+      number.textContent = String(index + 1).padStart(2, '0');
+      number.setAttribute('aria-hidden', 'true');
+
+      const copy = document.createElement('div');
+      copy.className = 'case-fact-copy';
+
       const dt = document.createElement('dt');
       dt.textContent = entry[0];
       const dd = document.createElement('dd');
       dd.textContent = entry[1];
-      row.append(dt, dd);
+
+      copy.append(dt, dd);
+      row.append(number, copy);
       facts.append(row);
     });
   }
