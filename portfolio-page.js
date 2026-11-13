@@ -83,9 +83,9 @@
 
     grid.innerHTML = '';
     items.forEach(function(project, index){
-      const card = document.createElement('button');
-      card.type = 'button';
+      const card = document.createElement('a');
       card.className = 'project-card';
+      card.href = 'project.html?id=' + encodeURIComponent(project.id);
       card.setAttribute('aria-label', (tr.projectOpen || 'Otwórz projekt') + ': ' + text(project.title));
 
       const media = document.createElement('div');
@@ -105,13 +105,11 @@
       const meta = document.createElement('span');
       meta.textContent = (text(categoryMap[project.category] && categoryMap[project.category].title) || '') +
         (project.year ? ' · ' + project.year : '');
-      body.append(heading, meta);
+      const action = document.createElement('span');
+      action.className = 'project-card-cta';
+      action.textContent = (tr.projectOpen || 'Otwórz projekt') + ' ↗';
+      body.append(heading, meta, action);
       card.append(media, body);
-
-      card.addEventListener('click', function(){
-        const destination = 'project.html?id=' + encodeURIComponent(project.id);
-        window.location.assign(destination);
-      });
       card.style.setProperty('--card-order', String(index));
       grid.append(card);
     });
