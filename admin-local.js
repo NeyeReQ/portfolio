@@ -7,6 +7,11 @@
   let fileSequence = 0;
   let saving = false;
   let toastTimer = null;
+  let githubToken = null;
+  let stagedFiles = [];
+  const githubOwner = "NeyeReQ";
+  const githubRepo = "portfolio";
+  const githubBranch = "main";
 
   const status = $('status');
   const say = (message, kind = '') => {
@@ -51,6 +56,144 @@
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[c]);
   const cloneData = () => JSON.parse(JSON.stringify(data));
+
+  // Fine-grained token is held in this page's memory only.
+  async function githubApi(path, options = {}, token = githubToken) {
+    const headers = {
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+    if (token) headers.Authorization = "Bearer " + token;
+    const request = { method: options.method || "GET", headers: headers };
+    if (options.body !== undefined) {
+      headers["Content-Type"] = "application/json";
+      request.body = JSON.stringify(options.body);
+    }
+    const response = await fetch("https://api.github.com" + path, request);
+    const raw = await response.text();
+    let payload = {};
+    try { payload = raw ? JSON.parse(raw) : {}; }
+    catch (_) { payload = { message: raw }; }
+    if (!response.ok) {
+      throw new Error(payload.message || ("GitHub API returned HTTP " + response.status));
+    }
+    return payload;
+  }
+
+  function decodeBase64Utf8(value) {
+    const binary = atob(String(value || "").replace(/\s/g, ""));
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+
+  async function fileToBase64(file) {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const chunkSize = 0x8000;
+    let binary = "";
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    return btoa(binary);
+  }
+
+  async function connectGitHub() {
+    const field = $("githubToken");
+    const token = field ? field.value.trim() : "";
+    if (field) field.value = "";
+    if (!token) {
+      say("Wklej Fine-grained token z uprawnieniem Contents: Read and write.", "error");
+      showToast("Brakuje tokenu GitHub.", "error");
+      return;
+    }
+
+    say("Sprawdzam dostęp do NeyeReQ/portfolio…");
+    try {
+      const repo = await githubApi("/repos/" + githubOwner + "/" + githubRepo, {}, token);
+      if (repo.full_name !== githubOwner + "/" + githubRepo) {
+        throw new Error("Token nie wskazuje właściwego repozytorium.");
+      }
+      if (repo.permissions && repo.permissions.push === false) {
+        throw new Error("Token nie ma uprawnienia zapisu do repozytorium.");
+      }
+
+      const file = await githubApi(
+        "/repos/" + githubOwner + "/" + githubRepo + "/contents/portfolio-data.json?ref=" + githubBranch,
+        {},
+        token
+      );
+      const parsed = validateData(JSON.parse(decodeBase64Utf8(file.content)));
+      githubToken = token;
+      root = null;
+      stagedFiles = [];
+      data = parsed;
+      publishedData = cloneData();
+      render();
+      say("Połączono z GitHubem. Nowe prace i zmiany będą publikowane bezpośrednio w gałęzi main.", "ok");
+      showToast("Połączono z GitHubem. Możesz publikować prace.");
+    } catch (error) {
+      githubToken = null;
+      console.error(error);
+      say("Nie udało się połączyć z GitHubem: " + error.message, "error");
+      showToast("Nie udało się połączyć z GitHubem.", "error");
+    }
+  }
+
+  function disconnectGitHub() {
+    githubToken = null;
+    stagedFiles = [];
+    if (publishedData) data = JSON.parse(JSON.stringify(publishedData));
+    render();
+    say("Odłączono GitHub. Połącz ponownie GitHub lub wybierz lokalny folder projektu.");
+    showToast("Odłączono GitHub.");
+  }
+
+  async function publishToGitHub(actionLabel) {
+    const apiRoot = "/repos/" + githubOwner + "/" + githubRepo;
+    const ref = await githubApi(apiRoot + "/git/ref/heads/" + githubBranch);
+    const parentSha = ref.object.sha;
+    const parent = await githubApi(apiRoot + "/git/commits/" + parentSha);
+    const treeEntries = [];
+
+    for (const item of stagedFiles) {
+      const blob = await githubApi(apiRoot + "/git/blobs", {
+        method: "POST",
+        body: { content: await fileToBase64(item.file), encoding: "base64" }
+      });
+      treeEntries.push({ path: item.path, mode: "100644", type: "blob", sha: blob.sha });
+    }
+
+    const dataBlob = await githubApi(apiRoot + "/git/blobs", {
+      method: "POST",
+      body: { content: JSON.stringify(data, null, 2) + "\n", encoding: "utf-8" }
+    });
+    treeEntries.push({ path: "portfolio-data.json", mode: "100644", type: "blob", sha: dataBlob.sha });
+
+    const tree = await githubApi(apiRoot + "/git/trees", {
+      method: "POST",
+      body: { base_tree: parent.tree.sha, tree: treeEntries }
+    });
+    const commit = await githubApi(apiRoot + "/git/commits", {
+      method: "POST",
+      body: {
+        message: "Publish portfolio update: " + (actionLabel || "content"),
+        tree: tree.sha,
+        parents: [parentSha]
+      }
+    });
+
+    // Assets and the manifest become visible together; no partial upload.
+    // force:false prevents overwriting commits pushed while the panel was open.
+    await githubApi(apiRoot + "/git/refs/heads/" + githubBranch, {
+      method: "PATCH",
+      body: { sha: commit.sha, force: false }
+    });
+
+    stagedFiles = [];
+    publishedData = cloneData();
+    return commit;
+  }
+
 
   function validateData(value) {
     if (!value || !value.categories ||
@@ -186,10 +329,18 @@
 
   async function saveFile(file, prefix) {
     if (!file) return '';
-    const folder = await ensureAssetsDir();
     const ext = (file.name.match(/\.[a-z0-9]{1,8}$/i) || [''])[0].toLowerCase() ||
       (file.type.startsWith('video/') ? '.mp4' : '.png');
     const fileName = safeName(prefix) + '-' + Date.now() + '-' + (++fileSequence) + ext;
+    const path = 'assets/projects/' + fileName;
+
+    if (githubToken) {
+      stagedFiles.push({ path: path, file: file });
+      return path;
+    }
+    if (!root) throw new Error('Najpierw połącz GitHub lub wybierz lokalny folder projektu.');
+
+    const folder = await ensureAssetsDir();
     const handle = await folder.getFileHandle(fileName, { create: true });
     const writable = await handle.createWritable();
     try {
@@ -199,13 +350,13 @@
       try { await writable.abort(); } catch (_) {}
       throw error;
     }
-    return 'assets/projects/' + fileName;
+    return path;
   }
 
   async function saveData(actionLabel) {
-    if (!root) {
-      say('Najpierw wybierz folder projektu, aby móc zapisywać zmiany.', 'error');
-      showToast('Nie zapisano — najpierw podłącz folder projektu.', 'error');
+    if (!root && !githubToken) {
+      say('Najpierw połącz GitHub lub wybierz lokalny folder projektu.', 'error');
+      showToast('Najpierw wybierz sposób publikowania.', 'error');
       return false;
     }
 
@@ -213,6 +364,16 @@
     updateEditingControls();
     let writable = null;
     try {
+      if (githubToken) {
+        const commit = await publishToGitHub(actionLabel);
+        render();
+        const message = 'Opublikowano na GitHubie (main), commit ' + commit.sha.slice(0, 7) +
+          '. GitHub Pages rozpocznie automatyczną publikację.';
+        say(message, 'ok');
+        showToast('Praca wysłana na GitHub. Trwa publikacja strony.');
+        return true;
+      }
+
       const handle = await root.getFileHandle('portfolio-data.json', { create: true });
       writable = await handle.createWritable();
       await writable.write(JSON.stringify(data, null, 2) + '\n');
@@ -220,18 +381,21 @@
       writable = null;
 
       render();
-      const message = 'Zapisano zmianę' + (actionLabel ? ' — ' + actionLabel : '') +
-        '. Zmiana jest w lokalnym folderze; aby opublikować ją online, wykonaj Commit i Push w GitHub Desktop.';
+      const message = 'Zapisano lokalnie' + (actionLabel ? ' — ' + actionLabel : '') +
+        '. Aby opublikować, wykonaj Commit i Push w GitHub Desktop.';
       say(message, 'ok');
-      showToast('Zapisano zmianę' + (actionLabel ? ' — ' + actionLabel + '.' : '.'), 'ok');
+      showToast('Zapisano lokalnie. Pamiętaj o Commit i Push.', 'ok');
       return true;
     } catch (error) {
       if (writable) {
         try { await writable.abort(); } catch (_) {}
       }
       console.error(error);
-      say('Nie udało się zapisać plików: ' + error.message, 'error');
-      showToast('Nie udało się zapisać zmiany.', 'error');
+      const hint = /fast.forward|not a fast forward|update is not a fast forward/i.test(error.message)
+        ? ' Gałąź main zmieniła się od połączenia. Odśwież panel i połącz GitHub ponownie.'
+        : '';
+      say('Nie udało się opublikować zmiany: ' + error.message + hint, 'error');
+      showToast('Nie udało się opublikować zmiany.', 'error');
       return false;
     } finally {
       saving = false;
@@ -248,8 +412,7 @@
       publishedData = cloneData();
       render();
       const total = data.categories.graphics.length + data.categories.video.length;
-      say('Wczytano dane opublikowanej strony: ' + total +
-        ' kategorii. Wybierz folder projektu, aby włączyć edycję i zapisywanie.', 'ok');
+      say('Wczytano opublikowane portfolio. Połącz GitHub, aby publikować bezpośrednio, lub wybierz lokalny folder projektu.', 'ok');
     } catch (error) {
       console.error(error);
       say('Nie udało się automatycznie wczytać kategorii ze strony. Wybierz folder projektu, aby wczytać portfolio-data.json. Szczegóły: ' +
@@ -271,10 +434,13 @@
       const parsed = validateData(JSON.parse(await file.text()));
 
       root = selectedRoot;
+      githubToken = null;
+      stagedFiles = [];
+      if ($('githubToken')) $('githubToken').value = '';
       data = parsed;
       render();
-      say('Połączono z folderem „' + root.name +
-        '”. Możesz teraz dodawać i usuwać kategorie oraz prace. Zapis odbywa się lokalnie.', 'ok');
+      say('Połączono lokalny folder „' + root.name +
+        '”. Zmiany zapisują się na komputerze; publikacja wymaga Commit i Push w GitHub Desktop.', 'ok');
       showToast('Połączono folder projektu.');
     } catch (error) {
       root = null;
@@ -290,6 +456,9 @@
     }
   });
 
+  $('connectGitHub').addEventListener('click', connectGitHub);
+  $('disconnectGitHub').addEventListener('click', disconnectGitHub);
+
   $('categoryTitlePl').addEventListener('input', () => {
     $('categoryId').value = slugify($('categoryTitlePl').value);
   });
@@ -297,7 +466,7 @@
 
   $('categoryForm').addEventListener('submit', async event => {
     event.preventDefault();
-    if (!root) {
+    if (!root && !githubToken) {
       say('Najpierw wybierz folder projektu.', 'error');
       showToast('Najpierw podłącz folder projektu.', 'error');
       return;
@@ -339,7 +508,7 @@
 
   $('projectForm').addEventListener('submit', async event => {
     event.preventDefault();
-    if (!root) {
+    if (!root && !githubToken) {
       say('Najpierw wybierz folder projektu.', 'error');
       showToast('Najpierw podłącz folder projektu.', 'error');
       return;
@@ -362,6 +531,7 @@
     }
 
     const previous = cloneData();
+    const previousStagedCount = stagedFiles.length;
     try {
       const title = {
         pl: $('projectTitlePl').value.trim(),
@@ -396,10 +566,12 @@
         fillProjectCategories();
       } else {
         data = previous;
+        stagedFiles.splice(previousStagedCount);
         render();
       }
     } catch (error) {
       data = previous;
+      stagedFiles.splice(previousStagedCount);
       render();
       console.error(error);
       say('Nie udało się dodać pracy: ' + error.message, 'error');
@@ -408,7 +580,7 @@
   });
 
   async function deleteProject(id) {
-    if (!root) {
+    if (!root && !githubToken) {
       say('Najpierw wybierz folder projektu.', 'error');
       return;
     }
@@ -424,7 +596,7 @@
   }
 
   async function deleteCategory(type, id) {
-    if (!root) {
+    if (!root && !githubToken) {
       say('Najpierw wybierz folder projektu.', 'error');
       return;
     }
