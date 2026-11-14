@@ -3,13 +3,49 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#0a0d14">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
-  <title>NeyeR — lokalny panel portfolio</title><link rel="icon" type="image/png" href="assets/favicon.png"><link rel="stylesheet" href="styles.css"><script src="admin-local.js?v=20261114-project-edit-v2" defer></script><script src="site.js?v=20261114-letter-typewriter-v26" defer></script>
+  <title>NeyeR — lokalny panel portfolio</title><link rel="icon" type="image/png" href="assets/favicon.png"><link rel="stylesheet" href="styles.css"><script src="admin-local.js?v=20261114-verified-publish-screen-v1" defer></script><script src="site.js?v=20261114-letter-typewriter-v26" defer></script>
   <style>
+    .publish-screen{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(4,8,14,.94);backdrop-filter:blur(18px);opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}
+    .publish-screen[hidden]{display:none!important}
+    .publish-screen.is-visible{opacity:1;visibility:visible}
+    .publish-screen-panel{width:min(520px,100%);padding:clamp(26px,5vw,42px);border:1px solid rgba(114,234,217,.25);background:linear-gradient(145deg,rgba(20,32,46,.98),rgba(9,15,24,.99));box-shadow:0 30px 100px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.035);text-align:left}
+    .publish-kicker{display:flex;align-items:center;gap:10px;color:#72ead9;font:9px 'DM Mono',monospace;letter-spacing:1.8px;text-transform:uppercase}
+    .publish-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#72ead9;box-shadow:0 0 15px rgba(114,234,217,.8);animation:publishPulse 1.4s ease-in-out infinite}
+    .publish-screen h2{margin:25px 0 9px;color:#f2f7fa;font-size:clamp(25px,5vw,36px);letter-spacing:-1.6px}
+    .publish-message{min-height:42px;margin:0;color:#a8b6c5;font-size:12px;line-height:1.8}
+    .publish-progress-track{position:relative;height:9px;margin:28px 0 13px;overflow:hidden;border:1px solid rgba(213,226,240,.13);border-radius:99px;background:rgba(255,255,255,.055)}
+    .publish-progress-fill{position:relative;width:3%;height:100%;border-radius:99px;background:linear-gradient(90deg,#42bfae,#9affed);box-shadow:0 0 18px rgba(114,234,217,.36);transition:width .45s cubic-bezier(.2,.7,.2,1)}
+    .publish-progress-fill:after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-100%);animation:publishShimmer 1.6s ease-in-out infinite}
+    .publish-meta{display:flex;justify-content:space-between;gap:16px;color:#718294;font:9px 'DM Mono',monospace;letter-spacing:.5px}
+    .publish-meta strong{color:#72ead9;font-size:11px}
+    .publish-actions{display:flex;gap:9px;margin-top:24px}
+    .publish-screen.is-complete .publish-progress-fill{background:linear-gradient(90deg,#48d8b7,#b0ffe7)}
+    .publish-screen.is-error .publish-progress-fill{background:linear-gradient(90deg,#b96b74,#ff9ba2);box-shadow:0 0 16px rgba(255,120,130,.25)}
+    .publish-screen.is-error .publish-kicker{color:#ff9ba2}
+    .publish-screen.is-error .publish-kicker:before{background:#ff9ba2;box-shadow:0 0 15px rgba(255,120,130,.6);animation:none}
+    @keyframes publishShimmer{to{transform:translateX(100%)}}
+    @keyframes publishPulse{50%{opacity:.35;transform:scale(.75)}}
+    @media(prefers-reduced-motion:reduce){.publish-screen,.publish-progress-fill{transition:none}.publish-progress-fill:after,.publish-kicker:before{animation:none}}
     .admin-shell{min-height:100vh;padding:52px 0 90px;background:radial-gradient(ellipse at 85% 8%,rgba(114,234,217,.08),transparent 35%),#0a0d14}.admin-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:30px}.admin-head h1{font-size:clamp(34px,5vw,58px);letter-spacing:-.06em;margin:14px 0 8px}.admin-head p{max-width:760px;color:#97a6b6;font-size:12px;line-height:1.9;margin:0}.admin-panel{border:1px solid rgba(213,226,240,.16);background:rgba(15,23,34,.94);padding:24px;margin:18px 0}.admin-panel h2{font-size:19px;letter-spacing:-.5px;margin:0 0 18px}.admin-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.admin-field{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}.admin-field label{font:9px 'DM Mono',monospace;letter-spacing:1.1px;color:#9aa9b9;text-transform:uppercase}.admin-field input,.admin-field select,.admin-field textarea{width:100%;min-width:0;padding:13px 14px;border:1px solid rgba(213,226,240,.18);background:#0b121c;color:#edf4f6;font:12px Manrope,Arial,sans-serif;outline:none}.admin-field textarea{min-height:74px;resize:vertical}.admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{border-color:rgba(114,234,217,.7)}.admin-button{position:relative;isolation:isolate;overflow:hidden;border:1px solid rgba(114,234,217,.6);background:rgba(114,234,217,.12);color:#a6fff1;padding:12px 16px;font:700 10px 'DM Mono',monospace;letter-spacing:.6px;cursor:pointer;transition:background .2s}.admin-button:hover{background:rgba(114,234,217,.22)}.admin-button:not(:disabled)::before{content:"";position:absolute;z-index:-1;top:-85%;left:-90%;width:72%;height:270%;pointer-events:none;opacity:0;background:linear-gradient(112deg,transparent 12%,rgba(114,234,217,.025) 32%,rgba(114,234,217,.16) 49%,rgba(226,255,250,.18) 56%,transparent 82%);transform:translate3d(-20%,0,0) skewX(-18deg);transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .25s ease}.admin-button:not(:disabled):hover::before{opacity:1;transform:translate3d(260%,0,0) skewX(-18deg)}@media(prefers-reduced-motion:reduce){.admin-button::before{transition:none}}.admin-button.primary{background:#72ead9;color:#081414}.admin-button.danger{border-color:rgba(255,120,130,.4);background:rgba(255,120,130,.07);color:#ff9ba2}.admin-button:disabled{opacity:.4;cursor:not-allowed}.admin-status{padding:13px 15px;margin:15px 0;border:1px solid rgba(114,234,217,.22);background:rgba(114,234,217,.06);color:#a6c5c8;font-size:11px;line-height:1.7}.admin-status.error{border-color:rgba(255,120,130,.35);background:rgba(255,120,130,.06);color:#ffb0b5}.admin-status.ok{color:#a6fff1}.admin-list{display:grid;gap:8px}.admin-list-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;background:#0c1420;border:1px solid rgba(213,226,240,.1)}.admin-list-item strong{display:block;font-size:12px}.admin-list-item small{display:block;color:#8392a3;font:9px 'DM Mono',monospace;margin-top:5px}.admin-list-actions{display:flex;gap:7px;flex:0 0 auto}.admin-list-actions button{padding:8px 10px;font-size:9px}.admin-muted{color:#8392a3;font-size:11px;line-height:1.8}.admin-upload-hint{color:#8192a4;font-size:10px;line-height:1.7;margin-top:5px}.admin-top-actions{display:flex;gap:10px;flex-wrap:wrap}.admin-counts{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.admin-count{padding:12px 15px;background:#121e2b;border:1px solid rgba(213,226,240,.12);min-width:120px}.admin-count strong{display:block;font-size:23px}.admin-count span{color:#8292a3;font:8px 'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px}.admin-warning{border-left:2px solid #72ead9;padding:12px 15px;background:rgba(114,234,217,.06);color:#b7c8d2;font-size:11px;line-height:1.8;margin:20px 0}.admin-link{color:#72ead9;text-decoration:underline}.admin-hidden{display:none!important}@media(max-width:650px){.admin-panel{padding:17px}.admin-row{grid-template-columns:1fr}.admin-head{flex-direction:column}.admin-list-item{align-items:flex-start;flex-direction:column}.admin-list-actions{width:100%}.admin-list-actions button{flex:1}}
   </style>
 </head>
 <body data-admin-page>
   <div class="noise" aria-hidden="true"></div>
+  <div class="publish-screen" id="publishScreen" role="status" aria-live="polite" aria-atomic="true" hidden>
+    <div class="publish-screen-panel">
+      <div class="publish-kicker">NEYER / PUBLISHING</div>
+      <h2 id="publishTitle">Zapisujemy zmiany</h2>
+      <p class="publish-message" id="publishMessage">Przygotowujemy zmiany do zapisu…</p>
+      <div class="publish-progress-track" id="publishProgressBar" role="progressbar" aria-label="Postęp zapisywania i publikacji" aria-valuemin="0" aria-valuemax="100" aria-valuenow="3">
+        <div class="publish-progress-fill" id="publishBarFill"></div>
+      </div>
+      <div class="publish-meta"><strong id="publishPercent">3%</strong><span id="publishStage">Przygotowanie</span></div>
+      <div class="publish-actions">
+        <button class="admin-button primary" id="publishRetry" type="button" hidden>Sprawdź ponownie</button>
+        <button class="admin-button" id="publishClose" type="button" hidden>Zamknij</button>
+      </div>
+    </div>
+  </div>
   <header class="site-header"><div class="header-inner wrap"><a class="brand" href="index.html"><span class="brand-mark"><img src="assets/logo-mark.png" alt=""></span><span class="brand-word">NeyeR</span></a><a href="index.html" class="header-cta">Wróć na stronę <span>↗</span></a></div></header>
   <main class="admin-shell"><div class="wrap">
     <div class="admin-head"><div><div class="eyebrow"><span class="eyebrow-line"></span><span>LOCAL CONTENT MANAGER</span></div><h1>Panel <span class="title-accent">administracyjny.</span></h1><p>Zarządzaj kategoriami i realizacjami bez edytowania kodu. Panel zapisuje dane i multimedia wyłącznie w wybranym folderze projektu na Twoim komputerze.</p></div></div>

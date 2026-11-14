@@ -10,6 +10,8 @@
   let githubToken = null;
   let stagedFiles = [];
   let editingProjectId = null;
+  let publishScreenTimer = null;
+  let pendingPublishCheck = null;
   const githubOwner = "NeyeReQ";
   const githubRepo = "portfolio";
   const githubBranch = "main";
@@ -43,6 +45,125 @@
     }, 2800);
   }
 
+  function setPublishProgress(value, message, detail) {
+    const percent = Math.max(0, Math.min(100, Math.round(value)));
+    const fill = $('publishBarFill');
+    const label = $('publishPercent');
+    const copy = $('publishMessage');
+    const stage = $('publishStage');
+    const bar = $('publishProgressBar');
+    if (fill) fill.style.width = percent + '%';
+    if (label) label.textContent = percent + '%';
+    if (copy && message) copy.textContent = message;
+    if (stage && detail !== undefined) stage.textContent = detail;
+    if (bar) bar.setAttribute('aria-valuenow', String(percent));
+  }
+
+  function showPublishScreen(actionLabel) {
+    if (publishScreenTimer) window.clearTimeout(publishScreenTimer);
+    const screen = $('publishScreen');
+    screen.hidden = false;
+    screen.classList.remove('is-complete', 'is-error');
+    $('publishTitle').textContent = 'Zapisujemy zmiany';
+    $('publishRetry').hidden = true;
+    $('publishRetry').disabled = false;
+    $('publishClose').hidden = true;
+    setPublishProgress(3, 'Przygotowujemy zmiany do zapisu…', actionLabel || 'Przygotowanie');
+    requestAnimationFrame(() => screen.classList.add('is-visible'));
+  }
+
+  function hidePublishScreen() {
+    if (publishScreenTimer) {
+      window.clearTimeout(publishScreenTimer);
+      publishScreenTimer = null;
+    }
+    const screen = $('publishScreen');
+    screen.classList.remove('is-visible', 'is-complete', 'is-error');
+    screen.hidden = true;
+    pendingPublishCheck = null;
+  }
+
+  function completePublishScreen(message, detail) {
+    $('publishScreen').classList.remove('is-error');
+    $('publishScreen').classList.add('is-complete');
+    $('publishTitle').textContent = 'Gotowe!';
+    setPublishProgress(100, message || 'Wszystkie zmiany są już dostępne.', detail || 'Zakończono');
+    $('publishRetry').hidden = true;
+    $('publishClose').hidden = false;
+    $('publishClose').textContent = 'Zamknij';
+    pendingPublishCheck = null;
+    publishScreenTimer = window.setTimeout(hidePublishScreen, 1300);
+  }
+
+  function failPublishScreen(message, canRetry) {
+    $('publishScreen').classList.add('is-error');
+    $('publishTitle').textContent = canRetry ? 'Publikacja jeszcze trwa' : 'Nie udało się zapisać zmian';
+    $('publishMessage').textContent = message;
+    $('publishStage').textContent = canRetry
+      ? 'Zmiany są zapisane w GitHubie. Strona jeszcze ich nie udostępniła.'
+      : 'Możesz zamknąć to okno i sprawdzić komunikat w panelu.';
+    $('publishRetry').hidden = !canRetry;
+    $('publishRetry').disabled = false;
+    $('publishClose').hidden = false;
+    $('publishClose').textContent = 'Zamknij';
+  }
+
+  async function verifyPublicPortfolio(commitSha, assetPaths) {
+    const expected = JSON.stringify(data);
+    const query = 'publish-check=' + encodeURIComponent(commitSha);
+    const response = await fetch('portfolio-data.json?' + query, { cache: 'no-store' });
+    if (!response.ok) return false;
+    let liveData;
+    try { liveData = await response.json(); }
+    catch (_) { return false; }
+    if (JSON.stringify(liveData) !== expected) return false;
+    for (const path of assetPaths || []) {
+      const assetResponse = await fetch(path + '?' + query, { method: 'HEAD', cache: 'no-store' });
+      if (!assetResponse.ok) return false;
+    }
+    return true;
+  }
+
+  async function waitForPublicPortfolio(commitSha, assetPaths) {
+    const maxAttempts = 60;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      setPublishProgress(
+        Math.min(96, 80 + Math.round((attempt / maxAttempts) * 16)),
+        'Czekamy, aż strona udostępni najnowszą wersję…',
+        'Weryfikacja publikacji ' + (attempt + 1) + '/' + maxAttempts
+      );
+      try {
+        if (await verifyPublicPortfolio(commitSha, assetPaths)) {
+          setPublishProgress(98, 'Sprawdzamy dostępność wszystkich plików…', 'Kontrola danych i multimediów');
+          return true;
+        }
+      } catch (error) {
+        console.warn('Portfolio publication check:', error);
+      }
+      await new Promise(resolve => window.setTimeout(resolve, 2000));
+    }
+    const error = new Error('Zmiany zapisano w GitHubie, ale publiczna strona nie udostępniła ich jeszcze w ciągu 2 minut. Możesz ponowić sprawdzanie.');
+    error.commitPushed = true;
+    throw error;
+  }
+
+  $('publishRetry').addEventListener('click', async () => {
+    if (!pendingPublishCheck) return;
+    const check = pendingPublishCheck;
+    $('publishRetry').disabled = true;
+    $('publishScreen').classList.remove('is-error');
+    $('publishTitle').textContent = 'Sprawdzamy publikację';
+    setPublishProgress(96, 'Ponownie sprawdzamy publiczną wersję strony…', 'Weryfikacja');
+    try {
+      await check();
+      completePublishScreen('Wszystkie zmiany są już dostępne na stronie.', 'Opublikowano i zweryfikowano');
+      say('Potwierdzono: zmiany i pliki są już dostępne na publicznej stronie.', 'ok');
+    } catch (error) {
+      failPublishScreen(error.message, true);
+    }
+  });
+
+  $('publishClose').addEventListener('click', hidePublishScreen);
   const slugify = value => String(value || '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -156,13 +277,18 @@
     const parent = await githubApi(apiRoot + "/git/commits/" + parentSha);
     const treeEntries = [];
 
-    for (const item of stagedFiles) {
+    for (let index = 0; index < stagedFiles.length; index++) {
+      const item = stagedFiles[index];
+      const uploadProgress = 20 + Math.round(((index + 1) / stagedFiles.length) * 38);
+      setPublishProgress(uploadProgress, 'Wysyłamy multimedia do GitHuba…',
+        'Przesyłanie pliku ' + (index + 1) + '/' + stagedFiles.length);
       const blob = await githubApi(apiRoot + "/git/blobs", {
         method: "POST",
         body: { content: await fileToBase64(item.file), encoding: "base64" }
       });
       treeEntries.push({ path: item.path, mode: "100644", type: "blob", sha: blob.sha });
     }
+    setPublishProgress(62, 'Zapisujemy listę realizacji…', 'Przygotowanie danych portfolio');
 
     const dataBlob = await githubApi(apiRoot + "/git/blobs", {
       method: "POST",
@@ -170,10 +296,12 @@
     });
     treeEntries.push({ path: "portfolio-data.json", mode: "100644", type: "blob", sha: dataBlob.sha });
 
+    setPublishProgress(68, 'Przygotowujemy kompletną wersję portfolio…', 'Budowanie zestawu plików');
     const tree = await githubApi(apiRoot + "/git/trees", {
       method: "POST",
       body: { base_tree: parent.tree.sha, tree: treeEntries }
     });
+    setPublishProgress(72, 'Zapisujemy wersję portfolio…', 'Tworzenie commita');
     const commit = await githubApi(apiRoot + "/git/commits", {
       method: "POST",
       body: {
@@ -183,16 +311,18 @@
       }
     });
 
-    // Assets and the manifest become visible together; no partial upload.
-    // force:false prevents overwriting commits pushed while the panel was open.
+    // The manifest and media files are committed together.
+    // force:false prevents overwriting concurrent changes.
+    setPublishProgress(76, 'Wysyłamy gotową wersję do publikacji…', 'Aktualizacja gałęzi main');
     await githubApi(apiRoot + "/git/refs/heads/" + githubBranch, {
       method: "PATCH",
       body: { sha: commit.sha, force: false }
     });
 
+    const assetPaths = stagedFiles.map(item => item.path);
     stagedFiles = [];
     publishedData = cloneData();
-    return commit;
+    return { ...commit, assetPaths };
   }
 
 
@@ -414,29 +544,50 @@
 
     saving = true;
     updateEditingControls();
+    showPublishScreen(actionLabel || 'Zapisywanie');
     let writable = null;
     try {
       if (githubToken) {
+        setPublishProgress(12, 'Łączymy się z GitHubem…', 'Połączenie z repozytorium');
         const commit = await publishToGitHub(actionLabel);
-        render();
-        const message = 'Opublikowano na GitHubie (main), commit ' + commit.sha.slice(0, 7) +
-          '. GitHub Pages rozpocznie automatyczną publikację.';
-        say(message, 'ok');
-        showToast('Praca wysłana na GitHub. Trwa publikacja strony.');
+        setPublishProgress(78, 'Pliki wysłane. Czekamy na publikację strony…', 'Commit ' + commit.sha.slice(0, 7));
+        const check = () => waitForPublicPortfolio(commit.sha, commit.assetPaths);
+        try {
+          await check();
+          completePublishScreen('Praca i wszystkie zmiany są już widoczne na stronie.', 'Opublikowano i zweryfikowano');
+          say('Potwierdzono: zmiany i pliki są już dostępne na publicznej stronie.', 'ok');
+          showToast('Zmiany opublikowane i sprawdzone na stronie.');
+        } catch (error) {
+          if (!error.commitPushed) throw error;
+          pendingPublishCheck = check;
+          failPublishScreen(error.message, true);
+          say(error.message, 'error');
+          showToast('Zmiany zapisane w GitHubie; strona jeszcze je publikuje.');
+        }
         return true;
       }
 
+      setPublishProgress(30, 'Zapisujemy plik portfolio-data.json…', 'Zapis lokalny');
       const handle = await root.getFileHandle('portfolio-data.json', { create: true });
       writable = await handle.createWritable();
       await writable.write(JSON.stringify(data, null, 2) + '\n');
       await writable.close();
       writable = null;
 
-      render();
-      const message = 'Zapisano lokalnie' + (actionLabel ? ' — ' + actionLabel : '') +
-        '. Aby opublikować, wykonaj Commit i Push w GitHub Desktop.';
-      say(message, 'ok');
-      showToast('Zapisano lokalnie. Pamiętaj o Commit i Push.', 'ok');
+      setPublishProgress(82, 'Weryfikujemy zapisane dane…', 'Kontrola pliku na komputerze');
+      const savedFile = await handle.getFile();
+      const savedData = JSON.parse(await savedFile.text());
+      if (JSON.stringify(savedData) !== JSON.stringify(data)) {
+        throw new Error('Zapisany plik różni się od danych w panelu.');
+      }
+
+      completePublishScreen(
+        'Zmiany zostały zapisane w wybranym folderze.',
+        'Zapis lokalny — publikacja online wymaga Commit i Push'
+      );
+      say('Zapisano lokalnie' + (actionLabel ? ' — ' + actionLabel : '') +
+        '. Aby opublikować, wykonaj Commit i Push w GitHub Desktop.', 'ok');
+      showToast('Zmiany zapisane lokalnie. Pamiętaj o Commit i Push.');
       return true;
     } catch (error) {
       if (writable) {
@@ -446,6 +597,7 @@
       const hint = /fast.forward|not a fast forward|update is not a fast forward/i.test(error.message)
         ? ' Gałąź main zmieniła się od połączenia. Odśwież panel i połącz GitHub ponownie.'
         : '';
+      failPublishScreen(error.message + hint, false);
       say('Nie udało się opublikować zmiany: ' + error.message + hint, 'error');
       showToast('Nie udało się opublikować zmiany.', 'error');
       return false;
