@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "886f45ed-7273-436e-a5e5-26bfb22f9247",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Broń",
+        "en": "Gun"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia broń.",
+        "en": "The work depicts a weapon."
+      },
+      "year": "2024",
+      "image": "assets/projects/bron-1794675395623-6.png",
+      "publishedAt": "2026-11-14T16:56:38.173Z"
+    },
+    {
       "id": "140ea5a8-2a01-41ba-858d-51341f1c4943",
       "type": "graphics",
       "category": "3d",
