@@ -5,9 +5,14 @@
   const filters = $('#categoryFilters');
   const grid = $('#projectGrid');
   const count = $('#projectCount');
+  const searchInput = $('#portfolioSearch');
+  const searchClear = $('#portfolioSearchClear');
+  const searchLabel = $('#portfolioSearchLabel');
+  const searchHint = $('#portfolioSearchHint');
   let data = { categories: { graphics: [], video: [] }, projects: [] };
   // Empty selection means that all categories are visible.
   let activeCategories = new Set();
+  let searchQuery = '';
 
   const text = function(value){
     if (typeof value === 'string') return value;
@@ -25,6 +30,56 @@
       ? project.categories
       : (project.category ? [project.category] : []);
   };
+  const normalizeSearch = function(value){
+    return String(value == null ? '' : value)
+      .normalize('NFD')
+      .replace(/[\\u0300-\\u036f]/g, '')
+      .replace(/ł/g, 'l')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  };
+  const searchableTextFor = function(project, categoryMap){
+    const parts = [];
+    const collect = function(value, key){
+      if (value == null || key === 'id' || key === 'publishedAt') return;
+      if (Array.isArray(value)) {
+        value.forEach(function(item){ collect(item, key); });
+      } else if (typeof value === 'object') {
+        Object.keys(value).forEach(function(childKey){
+          collect(value[childKey], childKey);
+        });
+      } else {
+        parts.push(String(value));
+      }
+    };
+    collect(project, '');
+    categoryIdsFor(project).forEach(function(categoryId){
+      const category = categoryMap[categoryId];
+      parts.push(categoryId);
+      if (category) {
+        collect(category.title, 'title');
+        collect(category.description, 'description');
+      }
+    });
+    return normalizeSearch(parts.join(' '));
+  };
+  function updateSearchLanguage(){
+    if (!searchInput) return;
+    const english = lang() === 'en';
+    if (searchLabel) searchLabel.textContent = english ? 'SEARCH PROJECTS' : 'SZUKAJ REALIZACJI';
+    if (searchHint) searchHint.textContent = english
+      ? 'Search titles, descriptions and categories'
+      : 'Szukaj w tytułach, opisach i kategoriach';
+    searchInput.placeholder = english
+      ? 'Search by topic, e.g. Minecraft, panda, logo...'
+      : 'Wpisz temat, np. Minecraft, panda, logo...';
+    searchInput.setAttribute('aria-label', english ? 'Search projects by topic' : 'Szukaj realizacji według tematu');
+    if (searchClear) {
+      searchClear.setAttribute('aria-label', english ? 'Clear search' : 'Wyczyść wyszukiwanie');
+      searchClear.title = english ? 'Clear search' : 'Wyczyść wyszukiwanie';
+    }
+  }
 
   try {
     const response = await fetch('portfolio-data.json', { cache: 'no-store' });
@@ -81,27 +136,39 @@
     const tr = translations();
     const categories = data.categories[type] || [];
     const categoryMap = Object.fromEntries(categories.map(function(category){ return [category.id, category]; }));
+    const searchTokens = normalizeSearch(searchQuery).split(' ').filter(Boolean);
     const items = data.projects.filter(function(project){
-      return project.type === type && (
-        activeCategories.size === 0 ||
+      if (project.type !== type) return false;
+      const matchesCategory = activeCategories.size === 0 ||
         Array.from(activeCategories).some(function(categoryId){
           return categoryIdsFor(project).includes(categoryId);
-        })
-      );
+        });
+      if (!matchesCategory) return false;
+      if (!searchTokens.length) return true;
+      const searchable = searchableTextFor(project, categoryMap);
+      return searchTokens.every(function(token){ return searchable.includes(token); });
     });
 
     count.textContent = String(items.length).padStart(2, '0') + ' / ' + String(categories.length).padStart(2, '0');
 
     if (!items.length) {
       const selectedIds = Array.from(activeCategories);
-      const emptyHeading = selectedIds.length === 1
-        ? text(categoryMap[selectedIds[0]] && categoryMap[selectedIds[0]].title)
-        : (selectedIds.length > 1
-          ? (lang() === 'en' ? 'Selected categories' : 'Wybrane kategorie')
-          : (tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje'));
+      const hasSearch = Boolean(normalizeSearch(searchQuery));
+      const emptyHeading = hasSearch
+        ? (lang() === 'en' ? 'No matching projects found' : 'Brak wyników wyszukiwania')
+        : (selectedIds.length === 1
+          ? text(categoryMap[selectedIds[0]] && categoryMap[selectedIds[0]].title)
+          : (selectedIds.length > 1
+            ? (lang() === 'en' ? 'Selected categories' : 'Wybrane kategorie')
+            : (tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje')));
+      const emptyCopy = hasSearch
+        ? (lang() === 'en'
+          ? 'No projects match “' + searchQuery.trim() + '”. Try another phrase or change the category filters.'
+          : 'Nie znaleziono prac pasujących do „' + searchQuery.trim() + '”. Spróbuj innej frazy lub zmień filtry kategorii.')
+        : (tr.emptyText || 'W tej kategorii nie ma jeszcze opublikowanych prac.');
       grid.innerHTML = '<div class="project-empty reveal"><span class="empty-mark">✳</span><h2>' +
         esc(emptyHeading) +
-        '</h2><p>' + esc(tr.emptyText || 'W tej kategorii nie ma jeszcze opublikowanych prac.') + '</p></div>';
+        '</h2><p>' + esc(emptyCopy) + '</p></div>';
       if (window.NeyeR) {
         window.NeyeR.refreshTypewriterTargets(grid);
         window.NeyeR.observeRevealTargets(grid);
@@ -151,6 +218,23 @@
     }
   }
 
+  if (searchInput) {
+    searchInput.addEventListener('input', function(){
+      searchQuery = searchInput.value;
+      if (searchClear) searchClear.hidden = !searchQuery;
+      renderProjects();
+    });
+  }
+  if (searchClear) {
+    searchClear.addEventListener('click', function(){
+      searchInput.value = '';
+      searchQuery = '';
+      searchClear.hidden = true;
+      searchInput.focus();
+      renderProjects();
+    });
+  }
+
   document.addEventListener('contextmenu', function(event){
     if (event.target.closest('.project-card-media img')) event.preventDefault();
   });
@@ -158,9 +242,11 @@
     if (event.target.closest('.project-card-media img')) event.preventDefault();
   });
 
+  updateSearchLanguage();
   renderFilters();
   renderProjects();
   document.addEventListener('neyer:language', function(){
+    updateSearchLanguage();
     renderFilters();
     renderProjects();
   });
