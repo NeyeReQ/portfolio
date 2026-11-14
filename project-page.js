@@ -5,7 +5,6 @@
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let data = { categories: { graphics: [], video: [] }, projects: [] };
   let project = null;
-  let category = null;
 
   const lang = function(){ return window.NeyeR ? window.NeyeR.lang : (document.documentElement.lang || 'pl'); };
   const copy = {
@@ -60,6 +59,18 @@
     });
   };
   const asset = function(value){ return value ? String(value).replace(/^\.\//, '') : ''; };
+  const categoryIdsFor = function(item){
+    return Array.isArray(item.categories) && item.categories.length
+      ? item.categories
+      : (item.category ? [item.category] : []);
+  };
+  const categoryNamesFor = function(item){
+    const available = data.categories && data.categories[item.type] || [];
+    return categoryIdsFor(item).map(function(categoryId){
+      const match = available.find(function(entry){ return entry.id === categoryId; });
+      return match ? text(match.title) : '';
+    }).filter(Boolean);
+  };
   const setText = function(selector, value){
     const element = $(selector);
     if (element) element.textContent = value == null ? '' : value;
@@ -88,7 +99,7 @@
   function buildMeta(){
     const labels = tr();
     const typeName = project.type === 'video' ? labels.motionFilm : labels.visualDesign;
-    const categoryName = category ? text(category.title) : (project.category || '—');
+    const categoryName = categoryNamesFor(project).join(' / ') || '—';
     const values = [
       [labels.discipline, typeName],
       [labels.category, categoryName],
@@ -279,11 +290,13 @@
   function buildRelated(){
     const labels = tr();
     // Related work must belong to the same portfolio category as the current project.
+    const projectCategories = categoryIdsFor(project);
     const all = data.projects.filter(function(item){
       return item.id !== project.id &&
         item.type === project.type &&
-        Boolean(project.category) &&
-        item.category === project.category;
+        projectCategories.some(function(categoryId){
+          return categoryIdsFor(item).includes(categoryId);
+        });
     });
 
     const related = all.slice(0, 3);
@@ -346,9 +359,7 @@
   }
 
   function categoryNameFor(item){
-    const list = data.categories[item.type] || [];
-    const match = list.find(function(entry){ return entry.id === item.category; });
-    return match ? text(match.title) : '';
+    return categoryNamesFor(item).join(' / ');
   }
 
   function applyLanguage(){
@@ -433,8 +444,6 @@
       document.addEventListener('neyer:language', showError);
       return;
     }
-    const list = data.categories && data.categories[project.type] || [];
-    category = list.find(function(item){ return item.id === project.category; }) || null;
     buildVisual();
     applyLanguage();
     setupVisualInteraction();

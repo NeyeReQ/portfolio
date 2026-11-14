@@ -380,8 +380,10 @@
       ? '03 / Edytuj realizację'
       : '03 / Dodaj realizację';
 
-    const categorySelect = $('projectCategory');
-    if (categorySelect) categorySelect.disabled = !projectCategories.length;
+    const categoryOptions = $('projectCategoryOptions');
+    if (categoryOptions) categoryOptions.querySelectorAll('input[name="projectCategories"]').forEach(input => {
+      input.disabled = saving || !projectCategories.length;
+    });
 
     document.querySelectorAll('.admin-list-actions button').forEach(button => {
       button.disabled = saving;
@@ -395,28 +397,58 @@
     $('projectCount').textContent = data.projects.length;
   }
 
-  function fillProjectCategories() {
-    const type = $('projectType').value;
-    const select = $('projectCategory');
-    const previous = select.value;
-    const categories = data.categories[type] || [];
-    select.innerHTML = '';
+  function selectedProjectCategoryIds() {
+    return Array.from(document.querySelectorAll('#projectCategoryOptions input[name="projectCategories"]:checked'))
+      .map(input => input.value);
+  }
 
-    if (categories.length) {
-      categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat.id;
-        option.textContent = txt(cat.title) || cat.id;
-        select.append(option);
-      });
-      select.value = categories.some(cat => cat.id === previous) ? previous : categories[0].id;
+  function projectCategoryIds(project) {
+    return Array.isArray(project.categories) && project.categories.length
+      ? project.categories
+      : (project.category ? [project.category] : []);
+  }
+
+  function projectCategoryNames(project) {
+    const list = data.categories[project.type] || [];
+    return projectCategoryIds(project)
+      .map(id => list.find(category => category.id === id))
+      .filter(Boolean)
+      .map(category => txt(category.title) || category.id);
+  }
+
+  function fillProjectCategories(selectedIds) {
+    const type = $('projectType').value;
+    const container = $('projectCategoryOptions');
+    const categories = data.categories[type] || [];
+    const previous = selectedIds === undefined ? selectedProjectCategoryIds() : selectedIds;
+    const valid = (Array.isArray(previous) ? previous : []).filter(id =>
+      categories.some(category => category.id === id)
+    );
+    const selected = valid.length ? [...new Set(valid)] : (categories.length ? [categories[0].id] : []);
+
+    container.innerHTML = '';
+    if (!categories.length) {
+      const empty = document.createElement('p');
+      empty.className = 'admin-muted';
+      empty.textContent = type === 'graphics'
+        ? 'Brak kategorii w sekcji Grafika. Najpierw dodaj kategorię.'
+        : 'Brak kategorii w sekcji Montaż. Najpierw dodaj kategorię.';
+      container.append(empty);
     } else {
-      const option = document.createElement('option');
-      option.value = '';
-      option.textContent = type === 'graphics'
-        ? 'Brak kategorii w sekcji Grafika'
-        : 'Brak kategorii w sekcji Montaż';
-      select.append(option);
+      categories.forEach(category => {
+        const label = document.createElement('label');
+        label.className = 'admin-category-option';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'projectCategories';
+        checkbox.value = category.id;
+        checkbox.checked = selected.includes(category.id);
+        checkbox.addEventListener('change', updateEditingControls);
+        const name = document.createElement('span');
+        name.textContent = txt(category.title) || category.id;
+        label.append(checkbox, name);
+        container.append(label);
+      });
     }
     updateEditingControls();
   }
@@ -426,6 +458,7 @@
     $('projectForm').reset();
     $('projectYear').value = String(new Date().getFullYear());
     $('projectCurrentMedia').textContent = 'Nie wybrano pracy do edycji.';
+    fillProjectCategories();
     updateEditingControls();
   }
 
@@ -437,8 +470,7 @@
     }
     editingProjectId = id;
     $('projectType').value = project.type;
-    fillProjectCategories();
-    $('projectCategory').value = project.category;
+    fillProjectCategories(projectCategoryIds(project));
     $('projectTitlePl').value = project.title && (project.title.pl || project.title.en) || '';
     $('projectTitleEn').value = project.title && (project.title.en || project.title.pl) || '';
     $('projectDescPl').value = project.description && (project.description.pl || project.description.en) || '';
@@ -490,13 +522,13 @@
     const projectList = $('projectList');
     projectList.innerHTML = '';
     data.projects.forEach(project => {
-      const category = data.categories[project.type] && data.categories[project.type].find(c => c.id === project.category);
+      const categoryNames = projectCategoryNames(project);
       const row = document.createElement('div');
       row.className = 'admin-list-item';
       const info = document.createElement('div');
       info.innerHTML = '<strong>' + escapeHtml(txt(project.title)) + '</strong><small>' +
         (project.type === 'graphics' ? 'GRAFIKA' : 'MONTAŻ') + ' / ' +
-        escapeHtml(txt(category && category.title) || project.category) +
+        escapeHtml(categoryNames.join(', ') || project.category || '—') +
         (project.year ? ' / ' + escapeHtml(project.year) : '') + '</small>' +
         '<small class="admin-published-at">OPUBLIKOWANO / ' +
         escapeHtml(formatPublishedAt(project.publishedAt)) + '</small>';
@@ -753,10 +785,10 @@
     }
 
     const type = $('projectType').value;
-    const category = $('projectCategory').value;
-    if (!category) {
-      say('W wybranej sekcji nie ma jeszcze kategorii. Dodaj kategorię w tej samej sekcji.', 'error');
-      showToast('Wybierz istniejącą kategorię.', 'error');
+    const selectedCategories = selectedProjectCategoryIds();
+    if (!selectedCategories.length) {
+      say('Zaznacz co najmniej jedną kategorię dla tej realizacji.', 'error');
+      showToast('Zaznacz co najmniej jedną kategorię.', 'error');
       return;
     }
 
@@ -787,7 +819,8 @@
       const project = existing ? {
         ...existing,
         type: type,
-        category: category,
+        category: selectedCategories[0],
+        categories: selectedCategories,
         title: title,
         description: {
           pl: $('projectDescPl').value.trim(),
@@ -798,7 +831,8 @@
         id: window.crypto && crypto.randomUUID ? crypto.randomUUID() :
           'project-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9),
         type: type,
-        category: category,
+        category: selectedCategories[0],
+        categories: selectedCategories,
         title: title,
         description: {
           pl: $('projectDescPl').value.trim(),
@@ -874,13 +908,24 @@
     }
     const cat = data.categories[type].find(item => item.id === id);
     if (!cat) return;
-    const number = data.projects.filter(project => project.type === type && project.category === id).length;
-    if (!confirm('Usunąć kategorię „' + txt(cat.title) + '” oraz ' + number +
-        ' przypisanych prac? Pliki multimedialne pozostaną w folderze.')) return;
+    const affected = data.projects.filter(project =>
+      project.type === type && projectCategoryIds(project).includes(id)
+    );
+    const removedCompletely = affected.filter(project =>
+      projectCategoryIds(project).filter(categoryId => categoryId !== id).length === 0
+    ).length;
+    if (!confirm('Usunąć kategorię „' + txt(cat.title) + '”? Zostanie ona odpięta od ' +
+        affected.length + ' realizacji, a całkowicie usuniętych zostanie ' + removedCompletely +
+        '. Pozostałe przypisania kategorii zostaną zachowane. Pliki multimedialne pozostaną w folderze.')) return;
 
     const previous = cloneData();
     data.categories[type] = data.categories[type].filter(item => item.id !== id);
-    data.projects = data.projects.filter(project => !(project.type === type && project.category === id));
+    data.projects = data.projects.flatMap(project => {
+      if (project.type !== type) return [project];
+      const remaining = projectCategoryIds(project).filter(categoryId => categoryId !== id);
+      if (!remaining.length) return [];
+      return [{ ...project, categories: remaining, category: remaining[0] }];
+    });
     const saved = await saveData('usunięto kategorię');
     if (!saved) {
       data = previous;

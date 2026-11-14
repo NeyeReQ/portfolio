@@ -19,6 +19,11 @@
     });
   };
   const asset = function(source){ return source ? String(source).replace(/^\.\//, '') : ''; };
+  const categoryIdsFor = function(project){
+    return Array.isArray(project.categories) && project.categories.length
+      ? project.categories
+      : (project.category ? [project.category] : []);
+  };
 
   try {
     const response = await fetch('portfolio-data.json', { cache: 'no-store' });
@@ -68,7 +73,7 @@
     const categories = data.categories[type] || [];
     const categoryMap = Object.fromEntries(categories.map(function(category){ return [category.id, category]; }));
     const items = data.projects.filter(function(project){
-      return project.type === type && (active === 'all' || project.category === active);
+      return project.type === type && (active === 'all' || categoryIdsFor(project).includes(active));
     });
 
     count.textContent = String(items.length).padStart(2, '0') + ' / ' + String(categories.length).padStart(2, '0');
@@ -107,7 +112,10 @@
       const heading = document.createElement('strong');
       heading.textContent = text(project.title);
       const meta = document.createElement('span');
-      meta.textContent = (text(categoryMap[project.category] && categoryMap[project.category].title) || '') +
+      const projectCategoryNames = categoryIdsFor(project)
+        .map(function(categoryId){ return text(categoryMap[categoryId] && categoryMap[categoryId].title); })
+        .filter(Boolean);
+      meta.textContent = projectCategoryNames.join(' / ') +
         (project.year ? ' · ' + project.year : '');
       const action = document.createElement('span');
       action.className = 'project-card-cta';
