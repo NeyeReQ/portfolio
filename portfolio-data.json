@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "857e0f33-c5b1-485f-b6e3-b85917200538",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Miecze",
+        "en": "Swords"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia dwa warianty mieczy",
+        "en": "The project presents two variants of swords."
+      },
+      "year": "2025",
+      "image": "assets/projects/miecze-1794675006643-4.png",
+      "publishedAt": "2026-11-14T16:50:08.844Z"
+    },
+    {
       "id": "12263d86-2342-4deb-a924-92a357fda152",
       "type": "graphics",
       "category": "3d",
