@@ -150,6 +150,25 @@
   },
   "projects": [
     {
+      "id": "855d6186-4bb5-4ac2-bb19-78d0ee9921bd",
+      "type": "graphics",
+      "category": "thumbnails",
+      "categories": [
+        "thumbnails"
+      ],
+      "title": {
+        "pl": "Ulotka",
+        "en": "Leaflet"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia ulotkę dla wydarzenia związanego z grami wideo.",
+        "en": "This project features a flyer for a video game-related event."
+      },
+      "year": "2023",
+      "image": "assets/projects/ulotka-1794676300050-11.png",
+      "publishedAt": "2026-11-14T17:11:41.803Z"
+    },
+    {
       "id": "ae286ac3-8db6-4696-941e-f7114b137d71",
       "type": "graphics",
       "category": "thumbnails",
