@@ -740,3 +740,57 @@
 }
 
 /* Project titles use only the shared typewriter reveal from styles.css. */
+
+
+/* Clear hierarchy and readable copy in the project overview and empty related state. */
+.case-story-card .case-story-label{
+  display:inline-block;
+  width:max-content;
+  max-width:100%;
+  padding:9px 13px;
+  border:1px solid rgba(114,234,217,.34);
+  border-left:3px solid var(--aqua);
+  border-radius:6px;
+  background:linear-gradient(110deg,rgba(114,234,217,.12),rgba(114,234,217,.035));
+  color:#c5e5e3;
+  font:700 11px/1.25 'DM Mono',monospace;
+  letter-spacing:1.25px;
+  text-shadow:none;
+}
+.case-story-card .case-story-label::before{
+  content:none;
+  display:none;
+}
+.case-story-card .case-project-description{
+  margin-top:22px;
+  color:#f0f6f7;
+  font-size:clamp(24px,2.5vw,31px);
+  font-weight:650;
+  line-height:1.55;
+  letter-spacing:-.03em;
+}
+.case-related-empty strong{
+  display:block;
+  color:#f0f5f7;
+  font-size:clamp(16px,1.45vw,19px);
+  font-weight:700;
+  line-height:1.5;
+}
+.case-related-empty p{
+  margin-top:10px;
+  color:#b9c7d1;
+  font-family:Manrope,"Segoe UI Variable","Segoe UI",sans-serif;
+  font-size:clamp(14px,1.2vw,16px);
+  font-weight:500;
+  line-height:1.7;
+  letter-spacing:0;
+}
+@media(max-width:720px){
+  .case-story-card .case-project-description{
+    margin-top:18px;
+    font-size:clamp(21px,5.1vw,24px);
+    line-height:1.6;
+  }
+  .case-related-empty strong{font-size:17px}
+  .case-related-empty p{font-size:14px;line-height:1.65}
+}
