@@ -69,11 +69,11 @@
     const english = lang() === 'en';
     if (searchLabel) searchLabel.textContent = english ? 'SEARCH PROJECTS' : 'SZUKAJ REALIZACJI';
     if (searchHint) searchHint.textContent = english
-      ? 'Search titles, descriptions and categories'
-      : 'Szukaj w tytułach, opisach i kategoriach';
+      ? 'Search titles, descriptions and assigned categories'
+      : 'Przeszukuje tytuły, opisy i przypisane kategorie.';
     searchInput.placeholder = english
-      ? 'Search by topic, e.g. Minecraft, panda, logo...'
-      : 'Wpisz temat, np. Minecraft, panda, logo...';
+      ? 'Search for a topic, project or keyword...'
+      : 'Wyszukaj temat, projekt lub słowo kluczowe...';
     searchInput.setAttribute('aria-label', english ? 'Search projects by topic' : 'Szukaj realizacji według tematu');
     if (searchClear) {
       searchClear.setAttribute('aria-label', english ? 'Clear search' : 'Wyczyść wyszukiwanie');
