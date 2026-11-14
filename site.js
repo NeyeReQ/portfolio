@@ -181,18 +181,22 @@
     '.case-section-kicker','.case-related-empty strong'
   ].join(',');
   const typewriterDescriptionSelector=[
-    '.hero-description','.section-side-note','.about-layout-single .about-paragraph',
-    '.credential-label','.language-label','.language-value',
-    '.work-intro','.tool-card-copy p','.choice-bottom small','.contact-hint',
-    '.subpage-heading p','.project-card-body>span:not(.project-card-cta)',
-    '.project-empty p','.case-description',
-    '#caseMain p','#caseMain .case-aside-copy','#caseMain .case-section-aside',
-    '#caseMain .case-visual-note-left','#caseMain .case-visual-note-right',
-    '.case-fact-copy dt','.case-fact-copy dd','.case-gallery-item figcaption'
+    'main p','main li','main small','main dt','main dd','main figcaption',
+    '.site-footer p','.footer-copyright-note',
+    '.gallery-toolbar-label','.gallery-result-count',
+    '.project-card-body>span:not(.project-card-cta)',
+    '.case-reference','.case-eyebrow','.case-aside-label','.case-aside-copy',
+    '.case-facts-heading','.case-facts-code','.case-fact-index',
+    '.case-story-label','.case-section-kicker',
+    '.case-visual-topline span','.case-visual-bottomline span',
+    '.case-visual-note-left','.case-visual-note-right',
+    '.case-fact-copy dt','.case-fact-copy dd','.case-gallery-item figcaption',
+    '.choice-bottom small','.credential-label','.language-label','.language-value',
+    '.work-intro','.tool-card-copy p','.contact-hint',
+    '.subpage-heading p','.project-empty p','.case-description',
+    '.admin-field label','.admin-button','.admin-status','.admin-count span','.admin-upload-hint'
   ].join(',');
   const typewriterSelector=[typewriterTitleSelector,typewriterDescriptionSelector].join(',');
-  const typewriterMaxAnimatedCopy=520;
-
   function getTypewriterObserver(){
     if(window.__neyerTypewriterObserver) return window.__neyerTypewriterObserver;
     if(!('IntersectionObserver' in window)) return null;
@@ -229,16 +233,8 @@
 
       element.classList.add('typewriter-target',isTitle?'typewriter-title-target':'typewriter-description-target');
 
-      // Keep long general copy lightweight. The about biography and project
-      // descriptions use the same word-mask typing effect as the headings.
-      const isProjectDetailCopy=!!element.closest('#caseMain');
-      const isPriorityTypingCopy=isProjectDetailCopy||element.matches('.about-layout-single .about-paragraph');
-      if(!isTitle && !isPriorityTypingCopy && totalCharacters>typewriterMaxAnimatedCopy){
-        element.classList.add('typewriter-block-target');
-        if(observer)observer.observe(element);
-        else element.classList.add('typewriter-active');
-        return;
-      }
+      // Use the same letter-by-letter entrance for all meaningful page copy,
+      // including long paragraphs and dynamically loaded project descriptions.
 
       // Restore the original letter-by-letter entrance. Character spans stay
       // inline, so they preserve normal word wrapping and do not change line width.
@@ -313,7 +309,7 @@
     document.documentElement.lang=lang;
     const pageType=document.body?.dataset.portfolioType;
     const title=$('title');
-    if(title && !document.body?.hasAttribute('data-project-page')){
+    if(title && !document.body?.hasAttribute('data-project-page') && !document.body?.hasAttribute('data-admin-page')){
       title.textContent=pageType
         ? 'NeyeR — '+(pageType==='graphics'?t.pageGraphics:t.pageEditing)
         : 'NeyeR — Visual Designer & Video Editor';
