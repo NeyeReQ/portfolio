@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "12263d86-2342-4deb-a924-92a357fda152",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Teczki",
+        "en": "Folders"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia 3 teczki wybranych firm",
+        "en": "The project showcases 3 portfolios of selected companies."
+      },
+      "year": "2025",
+      "image": "assets/projects/teczki-1794674718722-3.png",
+      "publishedAt": "2026-11-14T16:45:21.863Z"
+    },
+    {
       "id": "4de20e47-0f75-4039-8a19-3561984c5e1d",
       "type": "graphics",
       "category": "3d",
