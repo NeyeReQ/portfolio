@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "3c2b168f-a782-4e95-ae36-653380a192f9",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Postać do Gry",
+        "en": "Game Character"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia postać do gry",
+        "en": "The project features a game character."
+      },
+      "year": "2023",
+      "image": "assets/projects/postac_do_gry-1794675480067-7.png",
+      "publishedAt": "2026-11-14T16:58:01.619Z"
+    },
+    {
       "id": "886f45ed-7273-436e-a5e5-26bfb22f9247",
       "type": "graphics",
       "category": "3d",
