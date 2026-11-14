@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "64785baa-63fd-4f89-9b05-49da045ee523",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Panda",
+        "en": "Panda"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia Pandę, siedzącą na trawie w ciemności.",
+        "en": "The piece depicts a panda sitting on the grass in the darkness."
+      },
+      "year": "2025",
+      "image": "assets/projects/panda-1794674416434-1.png",
+      "publishedAt": "2026-11-14T16:40:19.103Z"
+    },
+    {
       "id": "240a9a74-a153-41b3-8fe1-3ccc7025c4ee",
       "type": "graphics",
       "category": "3d",
