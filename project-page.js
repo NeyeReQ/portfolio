@@ -16,7 +16,7 @@
       overviewKicker: 'PROJECT OVERVIEW', overviewPrefix: 'O ', overviewAccent: 'projekcie', overviewAside: '',
       storyLabel: 'OPIS PROJEKTU', storyTitle: '', facts: 'INFORMACJE O PROJEKCIE',
       relatedKicker: 'KEEP EXPLORING', relatedPrefix: 'Podobne ', relatedAccent: 'projekty', relatedIntro: 'Kontynuuj przeglądanie wybranych realizacji.',
-      relatedEmptyTitle: 'To na razie jedyna opublikowana realizacja w tej galerii.',
+      relatedEmptyTitle: 'To jedyna opublikowana realizacja w tej kategorii.',
       relatedEmptyCopy: 'Gdy pojawią się kolejne projekty, automatycznie zobaczysz je właśnie tutaj.',
       relatedLink: 'Zobacz całą galerię', galleryKicker: 'VISUAL DETAILS', galleryTitle: 'Detale',
       galleryDescription: 'Dodatkowe kadry i ujęcia projektu.', category: 'Kategoria', discipline: 'Obszar',
@@ -26,7 +26,7 @@
       copyright: 'Projekty ukazane na stronie objęte są prawami autorskimi i nie zezwalam na wykorzystywanie ich we wszelkich projektach.',
       notFound: 'Nie znaleziono projektu', notFoundCopy: 'Ten projekt nie istnieje lub nie jest już dostępny w portfolio.',
       visualDesign: 'GRAFIKA / VISUAL DESIGN', motionFilm: 'MONTAŻ / MOTION & FILM',
-      viewProject: 'Otwórz projekt', noOther: 'Nie ma jeszcze innych opublikowanych projektów w tej galerii.'
+      viewProject: 'Otwórz projekt', noOther: 'Nie ma jeszcze innych opublikowanych projektów w tej kategorii.'
     },
     en: {
       back: 'Back to gallery', headerBack: 'Back to portfolio', eyebrow: 'SELECTED PROJECT',
@@ -35,7 +35,7 @@
       overviewKicker: 'PROJECT OVERVIEW', overviewPrefix: 'About the ', overviewAccent: 'project', overviewAside: '',
       storyLabel: 'PROJECT DESCRIPTION', storyTitle: '', facts: 'PROJECT INFORMATION',
       relatedKicker: 'KEEP EXPLORING', relatedPrefix: 'Similar ', relatedAccent: 'projects', relatedIntro: 'Explore more selected work.',
-      relatedEmptyTitle: 'This is currently the only published project in this gallery.',
+      relatedEmptyTitle: 'This is currently the only published project in this category.',
       relatedEmptyCopy: 'New projects will automatically appear here as they are added.',
       relatedLink: 'Explore the full gallery', galleryKicker: 'VISUAL DETAILS', galleryTitle: 'Details',
       galleryDescription: 'Additional views and details from the project.', category: 'Category', discipline: 'Discipline',
@@ -45,7 +45,7 @@
       copyright: 'Projects displayed on this website are protected by copyright. Their use in any other project is not permitted.',
       notFound: 'Project not found', notFoundCopy: 'This project does not exist or is no longer available in the portfolio.',
       visualDesign: 'GRAPHICS / VISUAL DESIGN', motionFilm: 'VIDEO / MOTION & FILM',
-      viewProject: 'Open project', noOther: 'There are no other published projects in this gallery yet.'
+      viewProject: 'Open project', noOther: 'There are no other published projects in this category yet.'
     }
   };
 
@@ -278,13 +278,12 @@
 
   function buildRelated(){
     const labels = tr();
+    // Related work must belong to the same portfolio category as the current project.
     const all = data.projects.filter(function(item){
-      return item.id !== project.id && item.type === project.type;
-    });
-    all.sort(function(first, second){
-      const firstMatch = first.category === project.category ? 0 : 1;
-      const secondMatch = second.category === project.category ? 0 : 1;
-      return firstMatch - secondMatch;
+      return item.id !== project.id &&
+        item.type === project.type &&
+        Boolean(project.category) &&
+        item.category === project.category;
     });
 
     const related = all.slice(0, 3);
