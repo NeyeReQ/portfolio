@@ -202,14 +202,7 @@
     if(!('IntersectionObserver' in window)) return null;
     window.__neyerTypewriterObserver=new IntersectionObserver(entries=>{
       entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          entry.target.classList.add('typewriter-active');
-          // The About section keeps its completed reveal instead of restarting
-          // hundreds of individual glyph animations on every scroll pass.
-          if(entry.target.closest('#about'))window.__neyerTypewriterObserver.unobserve(entry.target);
-        }else if(!entry.target.closest('#about')){
-          entry.target.classList.remove('typewriter-active');
-        }
+        entry.target.classList.toggle('typewriter-active',entry.isIntersecting);
       });
     },{threshold:0,rootMargin:'0px 0px -4% 0px'});
     return window.__neyerTypewriterObserver;
@@ -300,14 +293,8 @@
     if(!window.__neyerRevealObserver){
       window.__neyerRevealObserver=new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
-          if(entry.isIntersecting){
-            entry.target.classList.add('is-visible');
-            // Keep About's entrance animation one-shot; re-triggering the
-            // nested cards while scrolling back through the section is costly.
-            if(entry.target.closest('#about'))window.__neyerRevealObserver.unobserve(entry.target);
-          }else if(!entry.target.closest('#about')){
-            entry.target.classList.remove('is-visible');
-          }
+          if(entry.isIntersecting)entry.target.classList.add('is-visible');
+          else entry.target.classList.remove('is-visible');
         });
       },{threshold:0,rootMargin:'10% 0px 10% 0px'});
     }
