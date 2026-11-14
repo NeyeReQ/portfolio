@@ -10,6 +10,7 @@
   let githubToken = null;
   let stagedFiles = [];
   let editingProjectId = null;
+  let pendingNewProjectId = null;
   let publishScreenTimer = null;
   let pendingPublishCheck = null;
   const githubOwner = "NeyeReQ";
@@ -174,6 +175,20 @@
     .slice(0, 48) || 'nowa-kategoria';
   const safeName = value => slugify(value).replace(/-/g, '_');
   const txt = value => typeof value === 'string' ? value : (value && (value.pl || value.en)) || '';
+  const formatPublishedAt = value => {
+    if (!value) return 'Data publikacji nieznana';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Data publikacji nieznana';
+    return new Intl.DateTimeFormat('pl-PL', {
+      timeZone: 'Europe/Warsaw',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23'
+    }).format(date);
+  };
   const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[c]);
@@ -287,6 +302,10 @@
         body: { content: await fileToBase64(item.file), encoding: "base64" }
       });
       treeEntries.push({ path: item.path, mode: "100644", type: "blob", sha: blob.sha });
+    }
+    if (pendingNewProjectId) {
+      const pendingProject = data.projects.find(item => item.id === pendingNewProjectId);
+      if (pendingProject && !pendingProject.publishedAt) pendingProject.publishedAt = new Date().toISOString();
     }
     setPublishProgress(62, 'Zapisujemy listę realizacji…', 'Przygotowanie danych portfolio');
 
@@ -478,7 +497,9 @@
       info.innerHTML = '<strong>' + escapeHtml(txt(project.title)) + '</strong><small>' +
         (project.type === 'graphics' ? 'GRAFIKA' : 'MONTAŻ') + ' / ' +
         escapeHtml(txt(category && category.title) || project.category) +
-        (project.year ? ' / ' + escapeHtml(project.year) : '') + '</small>';
+        (project.year ? ' / ' + escapeHtml(project.year) : '') + '</small>' +
+        '<small class="admin-published-at">OPUBLIKOWANO / ' +
+        escapeHtml(formatPublishedAt(project.publishedAt)) + '</small>';
       const actions = document.createElement('div');
       actions.className = 'admin-list-actions';
       const edit = document.createElement('button');
@@ -567,6 +588,10 @@
         return true;
       }
 
+      if (pendingNewProjectId) {
+        const pendingProject = data.projects.find(item => item.id === pendingNewProjectId);
+        if (pendingProject && !pendingProject.publishedAt) pendingProject.publishedAt = new Date().toISOString();
+      }
       setPublishProgress(30, 'Zapisujemy plik portfolio-data.json…', 'Zapis lokalny');
       const handle = await root.getFileHandle('portfolio-data.json', { create: true });
       writable = await handle.createWritable();
@@ -581,6 +606,7 @@
         throw new Error('Zapisany plik różni się od danych w panelu.');
       }
 
+      pendingNewProjectId = null;
       completePublishScreen(
         'Zmiany zostały zapisane w wybranym folderze.',
         'Zapis lokalny — publikacja online wymaga Commit i Push'
@@ -798,19 +824,23 @@
         data.projects[index] = project;
       } else {
         data.projects.unshift(project);
+        pendingNewProjectId = project.id;
       }
 
       const saved = await saveData(wasEditing ? 'zaktualizowano projekt' : 'dodano projekt');
       if (saved) {
+        pendingNewProjectId = null;
         resetProjectForm();
         render();
         say(wasEditing ? 'Zapisano i opublikowano zmiany pracy.' : 'Dodano i opublikowano nową pracę.', 'ok');
       } else {
+        pendingNewProjectId = null;
         data = previous;
         stagedFiles.splice(previousStagedCount);
         render();
       }
     } catch (error) {
+      pendingNewProjectId = null;
       data = previous;
       stagedFiles.splice(previousStagedCount);
       render();

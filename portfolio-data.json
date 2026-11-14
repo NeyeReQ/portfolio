@@ -151,7 +151,8 @@
         "en": "The project involves transforming a photograph into an image. The client wanted to cut out a portion of the image. Hence the pure white in some areas."
       },
       "year": "2024",
-      "image": "assets/projects/przerobka_zdjecia_na_ilustracje-1794671648997-2.png"
+      "image": "assets/projects/przerobka_zdjecia_na_ilustracje-1794671648997-2.png",
+      "publishedAt": "2026-11-14T15:54:14Z"
     },
     {
       "id": "e027d495-e7e9-40f0-9105-c28ef9596601",
@@ -166,7 +167,8 @@
         "en": "The project involved transforming photographs into illustrations. The client wanted to cut out a portion of the image. Hence the pure white in some areas."
       },
       "year": "2024",
-      "image": "assets/projects/przerobka_zdjecia_na_ilustracje-1794671361193-1.png"
+      "image": "assets/projects/przerobka_zdjecia_na_ilustracje-1794671361193-1.png",
+      "publishedAt": "2026-11-14T15:37:15Z"
     },
     {
       "id": "9a26ce0c-e9a3-42df-8d23-18aa2cd36fa5",
@@ -181,7 +183,8 @@
         "en": "The project presents several logo designs."
       },
       "year": "2023",
-      "image": "assets/projects/logo-1794409039857-1.png"
+      "image": "assets/projects/logo-1794409039857-1.png",
+      "publishedAt": "2026-11-11T15:43:08Z"
     }
   ]
 }
