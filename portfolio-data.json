@@ -150,6 +150,25 @@
   },
   "projects": [
     {
+      "id": "aec1fdc9-0b89-44aa-b2e3-4205b440b9e9",
+      "type": "graphics",
+      "category": "thumbnails",
+      "categories": [
+        "thumbnails"
+      ],
+      "title": {
+        "pl": "Katalog",
+        "en": "Katalog"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia katalog związany z motoryzacją",
+        "en": "The project features a catalog related to the automotive industry."
+      },
+      "year": "2026",
+      "image": "assets/projects/katalog-1794678075725-1.png",
+      "publishedAt": "2026-11-14T17:41:17.979Z"
+    },
+    {
       "id": "855d6186-4bb5-4ac2-bb19-78d0ee9921bd",
       "type": "graphics",
       "category": "thumbnails",
