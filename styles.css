@@ -1008,12 +1008,14 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   margin:14px 0 10px;
   padding:20px 22px 19px;
   overflow:hidden;
-  border:1px solid rgba(173,198,219,.14);
-  border-radius:3px;
+  border:1px solid transparent;
+  border-radius:4px;
   background:
-    radial-gradient(ellipse at 100% 0%,rgba(114,234,217,.075),transparent 42%),
-    linear-gradient(112deg,rgba(19,29,43,.96),rgba(13,20,31,.96) 68%,rgba(17,26,39,.94));
-  box-shadow:0 16px 42px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.025);
+    radial-gradient(ellipse at 94% 0%,rgba(146,124,255,.14),transparent 38%) padding-box,
+    radial-gradient(ellipse at 0% 100%,rgba(114,234,217,.105),transparent 45%) padding-box,
+    linear-gradient(112deg,rgba(19,29,43,.98),rgba(13,20,31,.97) 68%,rgba(17,26,39,.97)) padding-box,
+    linear-gradient(118deg,rgba(114,234,217,.52) 0%,rgba(114,234,217,.2) 34%,rgba(146,124,255,.5) 72%,rgba(114,234,217,.26) 100%) border-box;
+  box-shadow:0 18px 48px rgba(0,0,0,.16),0 0 28px rgba(114,234,217,.035),inset 0 1px 0 rgba(255,255,255,.035);
 }
 .gallery-search:before{
   content:"";
@@ -1023,7 +1025,7 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   left:5%;
   right:5%;
   height:1px;
-  background:linear-gradient(90deg,transparent,rgba(114,234,217,.36),transparent);
+  background:linear-gradient(90deg,transparent,rgba(114,234,217,.72) 28%,rgba(146,124,255,.72) 72%,transparent);
   pointer-events:none;
 }
 .gallery-search-label{
@@ -1042,8 +1044,8 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   height:6px;
   flex:0 0 6px;
   border-radius:50%;
-  background:var(--aqua);
-  box-shadow:0 0 12px rgba(114,234,217,.62);
+  background:linear-gradient(135deg,#9af2e5 0%,#72ead9 48%,#a897ff 100%);
+  box-shadow:0 0 13px rgba(114,234,217,.52),0 0 18px rgba(146,124,255,.24);
 }
 .gallery-search-hint{
   grid-area:hint;
@@ -1088,9 +1090,11 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
   font-weight:400;
 }
 .gallery-search-control input:focus{
-  border-color:rgba(114,234,217,.62);
-  background:rgba(7,15,22,.88);
-  box-shadow:0 0 0 3px rgba(114,234,217,.075),inset 0 1px 3px rgba(0,0,0,.2);
+  border-color:transparent;
+  background:
+    linear-gradient(rgba(7,15,22,.92),rgba(7,15,22,.92)) padding-box,
+    linear-gradient(108deg,rgba(114,234,217,.8),rgba(146,124,255,.78)) border-box;
+  box-shadow:0 0 0 3px rgba(114,234,217,.07),0 0 22px rgba(146,124,255,.07),inset 0 1px 3px rgba(0,0,0,.2);
 }
 .gallery-search-control input::-webkit-search-cancel-button{
   -webkit-appearance:none;
