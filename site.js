@@ -202,7 +202,14 @@
     if(!('IntersectionObserver' in window)) return null;
     window.__neyerTypewriterObserver=new IntersectionObserver(entries=>{
       entries.forEach(entry=>{
-        entry.target.classList.toggle('typewriter-active',entry.isIntersecting);
+        if(entry.isIntersecting){
+          entry.target.classList.add('typewriter-active');
+          // The About section keeps its completed reveal instead of restarting
+          // hundreds of individual glyph animations on every scroll pass.
+          if(entry.target.closest('#about'))window.__neyerTypewriterObserver.unobserve(entry.target);
+        }else if(!entry.target.closest('#about')){
+          entry.target.classList.remove('typewriter-active');
+        }
       });
     },{threshold:0,rootMargin:'0px 0px -4% 0px'});
     return window.__neyerTypewriterObserver;
@@ -238,7 +245,12 @@
 
       // Restore the original letter-by-letter entrance. Character spans stay
       // inline, so they preserve normal word wrapping and do not change line width.
-      const characterInterval=Math.min(17,Math.max(2.5,1150/totalCharacters));
+      const isAboutCopy=!!element.closest('#about');
+      const characterInterval=isAboutCopy
+        ?Math.min(12,Math.max(4,1600/totalCharacters))
+        :Math.min(17,Math.max(2.5,1150/totalCharacters));
+      if(isAboutCopy)element.style.setProperty('--typewriter-duration','.24s');
+      else element.style.removeProperty('--typewriter-duration');
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
       while(walker.nextNode())textNodes.push(walker.currentNode);
@@ -288,8 +300,14 @@
     if(!window.__neyerRevealObserver){
       window.__neyerRevealObserver=new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
-          if(entry.isIntersecting)entry.target.classList.add('is-visible');
-          else entry.target.classList.remove('is-visible');
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            // Keep About's entrance animation one-shot; re-triggering the
+            // nested cards while scrolling back through the section is costly.
+            if(entry.target.closest('#about'))window.__neyerRevealObserver.unobserve(entry.target);
+          }else if(!entry.target.closest('#about')){
+            entry.target.classList.remove('is-visible');
+          }
         });
       },{threshold:0,rootMargin:'10% 0px 10% 0px'});
     }

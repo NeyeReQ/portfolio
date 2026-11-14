@@ -919,7 +919,7 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
 }
 .typewriter-target.typewriter-active .typewriter-char{
   animation-name:neyerTypeChar!important;
-  animation-duration:.34s!important;
+  animation-duration:var(--typewriter-duration,.34s)!important;
   animation-timing-function:cubic-bezier(.2,.75,.25,1)!important;
   animation-iteration-count:1!important;
   animation-fill-mode:both!important;
