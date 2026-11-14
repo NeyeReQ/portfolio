@@ -150,6 +150,25 @@
   },
   "projects": [
     {
+      "id": "ae286ac3-8db6-4696-941e-f7114b137d71",
+      "type": "graphics",
+      "category": "thumbnails",
+      "categories": [
+        "thumbnails"
+      ],
+      "title": {
+        "pl": "Ulotka",
+        "en": "Leaflet"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia ulotkę Aqua Parku.",
+        "en": "The project features a leaflet for an Aqua Park."
+      },
+      "year": "2023",
+      "image": "assets/projects/ulotka-1794675923776-9.png",
+      "publishedAt": "2026-11-14T17:05:25.386Z"
+    },
+    {
       "id": "8a6dc0fa-b514-425c-9066-fe13d16e5d76",
       "type": "graphics",
       "category": "3d",
