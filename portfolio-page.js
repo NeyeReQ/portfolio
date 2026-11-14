@@ -6,7 +6,8 @@
   const grid = $('#projectGrid');
   const count = $('#projectCount');
   let data = { categories: { graphics: [], video: [] }, projects: [] };
-  let active = 'all';
+  // Empty selection means that all categories are visible.
+  let activeCategories = new Set();
 
   const text = function(value){
     if (typeof value === 'string') return value;
@@ -49,11 +50,19 @@
     list.forEach(function(item){
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = 'gallery-filter' + (active === item.id ? ' active' : '');
+      const selected = item.id === 'all'
+        ? activeCategories.size === 0
+        : activeCategories.has(item.id);
+      button.className = 'gallery-filter' + (selected ? ' active' : '');
       button.textContent = item.title;
-      button.setAttribute('aria-pressed', String(active === item.id));
+      button.setAttribute('aria-pressed', String(selected));
       button.addEventListener('click', function(){
-        active = item.id;
+        if (item.id === 'all') {
+          activeCategories.clear();
+        } else {
+          if (activeCategories.has(item.id)) activeCategories.delete(item.id);
+          else activeCategories.add(item.id);
+        }
         renderFilters();
         renderProjects();
       });
@@ -73,15 +82,25 @@
     const categories = data.categories[type] || [];
     const categoryMap = Object.fromEntries(categories.map(function(category){ return [category.id, category]; }));
     const items = data.projects.filter(function(project){
-      return project.type === type && (active === 'all' || categoryIdsFor(project).includes(active));
+      return project.type === type && (
+        activeCategories.size === 0 ||
+        Array.from(activeCategories).some(function(categoryId){
+          return categoryIdsFor(project).includes(categoryId);
+        })
+      );
     });
 
     count.textContent = String(items.length).padStart(2, '0') + ' / ' + String(categories.length).padStart(2, '0');
 
     if (!items.length) {
-      const category = active === 'all' ? null : categoryMap[active];
+      const selectedIds = Array.from(activeCategories);
+      const emptyHeading = selectedIds.length === 1
+        ? text(categoryMap[selectedIds[0]] && categoryMap[selectedIds[0]].title)
+        : (selectedIds.length > 1
+          ? (lang() === 'en' ? 'Selected categories' : 'Wybrane kategorie')
+          : (tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje'));
       grid.innerHTML = '<div class="project-empty reveal"><span class="empty-mark">✳</span><h2>' +
-        esc(category ? text(category.title) : tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje') +
+        esc(emptyHeading) +
         '</h2><p>' + esc(tr.emptyText || 'W tej kategorii nie ma jeszcze opublikowanych prac.') + '</p></div>';
       if (window.NeyeR) {
         window.NeyeR.refreshTypewriterTargets(grid);
