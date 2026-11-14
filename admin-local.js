@@ -384,6 +384,8 @@
     if (categoryOptions) categoryOptions.querySelectorAll('input[name="projectCategories"]').forEach(input => {
       input.disabled = saving || !projectCategories.length;
     });
+    const galleryInput = $('projectGallery');
+    if (galleryInput) galleryInput.disabled = saving;
 
     document.querySelectorAll('.admin-list-actions button').forEach(button => {
       button.disabled = saving;
@@ -458,6 +460,7 @@
     $('projectForm').reset();
     $('projectYear').value = String(new Date().getFullYear());
     $('projectCurrentMedia').textContent = 'Nie wybrano pracy do edycji.';
+    $('projectGallerySelection').textContent = 'Nie wybrano nowych zdjęć.';
     fillProjectCategories();
     updateEditingControls();
   }
@@ -478,12 +481,19 @@
     $('projectYear').value = project.year || '';
     $('projectMedia').value = '';
     $('projectThumbnail').value = '';
+    $('projectGallery').value = '';
+    $('projectGallerySelection').textContent = 'Nie wybrano nowych zdjęć.';
     const current = [];
     if (project.video) current.push('Wideo: ' + project.video);
-    if (project.image) current.push('Grafika / miniatura: ' + project.image);
+    if (project.image) current.push('Plik główny: ' + project.image);
+    const existingGallery = Array.isArray(project.gallery) ? project.gallery : [];
+    const existingGalleryCount = existingGallery.filter(item =>
+      typeof item === 'string' ? Boolean(item) : Boolean(item && (item.image || item.src))
+    ).length;
+    if (existingGalleryCount) current.push('Dodatkowa galeria: ' + existingGalleryCount + (existingGalleryCount === 1 ? ' zdjęcie' : ' zdjęć'));
     $('projectCurrentMedia').textContent = current.length
-      ? 'Aktualne pliki: ' + current.join(' · ') + '. Wybierz nowy plik tylko wtedy, gdy chcesz go zastąpić; puste pole pozostawi obecny plik.'
-      : 'Ta praca nie ma przypisanego pliku. Wybierz plik, aby go dodać.';
+      ? 'Aktualne pliki: ' + current.join(' · ') + '. Główny plik możesz zastąpić osobnym polem; nowe zdjęcia galerii zostaną dopisane do obecnych.'
+      : 'Ta praca nie ma jeszcze przypisanych mediów. Wybierz plik główny lub dodaj zdjęcia do galerii.';
     updateEditingControls();
     $('projectPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
     $('projectTitlePl').focus({ preventScroll: true });
@@ -776,6 +786,19 @@
     say('Anulowano edycję. Żadna zmiana nie została opublikowana.');
   });
 
+  $('projectGallery').addEventListener('change', () => {
+    const files = Array.from($('projectGallery').files || []);
+    const selection = $('projectGallerySelection');
+    if (!files.length) {
+      selection.textContent = 'Nie wybrano nowych zdjęć.';
+      return;
+    }
+    const names = files.slice(0, 3).map(file => file.name);
+    const extra = files.length > names.length ? ' i ' + (files.length - names.length) + ' kolejnych' : '';
+    selection.textContent = 'Wybrano ' + files.length + (files.length === 1 ? ' zdjęcie: ' : ' zdjęć: ') +
+      names.join(', ') + extra + '.';
+  });
+
   $('projectForm').addEventListener('submit', async event => {
     event.preventDefault();
     if (!root && !githubToken) {
@@ -794,10 +817,16 @@
 
     const media = $('projectMedia').files[0];
     const thumbnail = $('projectThumbnail').files[0];
-    if ((media && media.size > 100 * 1024 * 1024) ||
-        (thumbnail && thumbnail.size > 100 * 1024 * 1024)) {
+    const galleryFiles = Array.from($('projectGallery').files || []);
+    const selectedMediaFiles = [media, thumbnail].filter(Boolean).concat(galleryFiles);
+    if (selectedMediaFiles.some(file => file.size > 100 * 1024 * 1024)) {
       say('Jeden z wybranych plików przekracza 100 MB. Zmniejsz go przed dodaniem.', 'error');
       showToast('Plik przekracza limit 100 MB.', 'error');
+      return;
+    }
+    if (galleryFiles.some(file => file.type && !file.type.startsWith('image/'))) {
+      say('W galerii można dodawać wyłącznie pliki graficzne.', 'error');
+      showToast('Galeria przyjmuje wyłącznie zdjęcia.', 'error');
       return;
     }
 
@@ -852,6 +881,15 @@
         }
       }
       if (thumbnail) project.image = await saveFile(thumbnail, prefix + '-thumbnail');
+      if (galleryFiles.length) {
+        const existingGallery = Array.isArray(project.gallery) ? project.gallery.slice() : [];
+        const newGalleryFiles = [];
+        for (let index = 0; index < galleryFiles.length; index++) {
+          const path = await saveFile(galleryFiles[index], prefix + '-detail-' + (index + 1));
+          newGalleryFiles.push(path);
+        }
+        project.gallery = existingGallery.concat(newGalleryFiles);
+      }
 
       if (existing) {
         const index = data.projects.findIndex(item => item.id === existing.id);
