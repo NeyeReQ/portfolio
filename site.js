@@ -214,6 +214,9 @@
     elements.forEach(element=>{
       if(observer)observer.unobserve(element);
       element.classList.remove('typewriter-active','typewriter-target','typewriter-title-target','typewriter-description-target','typewriter-block-target');
+      element.querySelectorAll('.typewriter-char').forEach(span=>{
+        span.replaceWith(document.createTextNode(span.textContent||''));
+      });
       element.querySelectorAll('.typewriter-word').forEach(word=>{
         word.replaceWith(document.createTextNode(word.textContent||''));
       });
@@ -237,9 +240,9 @@
         return;
       }
 
-      // Reveal each word with one step per character, without splitting the word
-      // into separate glyph elements or changing font shaping.
-      const characterInterval=Math.min(36,Math.max(3,1900/totalCharacters));
+      // Restore the original letter-by-letter entrance. Character spans stay
+      // inline, so they preserve normal word wrapping and do not change line width.
+      const characterInterval=Math.min(17,Math.max(2.5,1150/totalCharacters));
       const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
       const textNodes=[];
       while(walker.nextNode())textNodes.push(walker.currentNode);
@@ -248,27 +251,25 @@
         const value=node.nodeValue||'';
         if(!value.trim())return;
         const fragment=document.createDocumentFragment();
-        let wordText='';
-        const appendWord=()=>{
-          if(!wordText)return;
-          const word=document.createElement('span');
-          word.className='typewriter-word';
-          const wordLength=Array.from(wordText).length;
-          word.textContent=wordText;
-          word.style.setProperty('--typing-delay',(characterIndex*characterInterval).toFixed(0)+'ms');
-          characterIndex+=wordLength;
-          fragment.append(word);
-          wordText='';
-        };
+        let accentLetterIndex=0;
+        const accent=node.parentElement?.closest('.title-accent');
+        const shades=['#a5f4e8','#93eee2','#78e7dc','#84dfe2','#91d5eb','#a0c9f5','#b2b7ff'];
         for(const character of value){
           if(character.trim()===''){
-            appendWord();
             fragment.append(document.createTextNode(character));
-          }else{
-            wordText+=character;
+            continue;
           }
+          const span=document.createElement('span');
+          span.className='typewriter-char';
+          if(accent){
+            span.style.setProperty('--letter-accent',shades[accentLetterIndex%shades.length]);
+            accentLetterIndex++;
+          }
+          span.textContent=character;
+          span.style.animationDelay=(characterIndex*characterInterval).toFixed(0)+'ms';
+          characterIndex++;
+          fragment.append(span);
         }
-        appendWord();
         node.parentNode?.replaceChild(fragment,node);
       });
 
