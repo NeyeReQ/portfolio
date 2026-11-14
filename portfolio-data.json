@@ -139,6 +139,21 @@
   },
   "projects": [
     {
+      "id": "e027d495-e7e9-40f0-9105-c28ef9596601",
+      "type": "graphics",
+      "category": "photo",
+      "title": {
+        "pl": "Przeróbka zdjęcia na ilustrację",
+        "en": "Converting a photo into an illustration"
+      },
+      "description": {
+        "pl": "Realizacja przedstawiła przerobienie zdjęć na ilustrację. Klient chce wypuścić fragment zdjęć, czysty biel w niektórych miejscach",
+        "en": "The project involved transforming photographs into illustrations. The client wants to feature a selection of these images, with certain areas rendered in pure white."
+      },
+      "year": "2024",
+      "image": "assets/projects/przerobka_zdjecia_na_ilustracje-1794670629834-1.png"
+    },
+    {
       "id": "9a26ce0c-e9a3-42df-8d23-18aa2cd36fa5",
       "type": "graphics",
       "category": "logo",
