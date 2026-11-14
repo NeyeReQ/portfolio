@@ -150,6 +150,25 @@
   },
   "projects": [
     {
+      "id": "1076c49c-a53a-42f5-89d6-ea6c057d1d59",
+      "type": "graphics",
+      "category": "avatars",
+      "categories": [
+        "avatars"
+      ],
+      "title": {
+        "pl": "McSurvivia",
+        "en": "McSurvivia"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia płonące logo drugiego sezonu serwera Minecraft - McSurvivia",
+        "en": "The project features a burning logo for the second season of the Minecraft server, McSurvivia."
+      },
+      "year": "2024",
+      "image": "assets/projects/mcsurvivia-1794678522271-2.png",
+      "publishedAt": "2026-11-14T17:48:45.335Z"
+    },
+    {
       "id": "aec1fdc9-0b89-44aa-b2e3-4205b440b9e9",
       "type": "graphics",
       "category": "thumbnails",
