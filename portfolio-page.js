@@ -160,7 +160,7 @@
           ? text(categoryMap[selectedIds[0]] && categoryMap[selectedIds[0]].title)
           : (selectedIds.length > 1
             ? (lang() === 'en' ? 'Selected categories' : 'Wybrane kategorie')
-            : (tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje')));
+            : (type === 'video' ? (tr.emptyTitleEditing || 'Realizacje wkrótce się tutaj pojawią') : (tr.emptyTitle || 'Ta galeria czeka na Twoje realizacje'))));
       const emptyCopy = hasSearch
         ? (lang() === 'en'
           ? 'No projects match “' + searchQuery.trim() + '”. Try another phrase or change the category filters.'
