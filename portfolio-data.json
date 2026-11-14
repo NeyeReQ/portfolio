@@ -88,6 +88,17 @@
           "pl": "Znaki graficzne i identyfikacja",
           "en": "Graphic marks and visual identity"
         }
+      },
+      {
+        "id": "zasoby-do-gier",
+        "title": {
+          "pl": "Zasoby do gier",
+          "en": "Game Assets"
+        },
+        "description": {
+          "pl": "Znajdują się tutaj realizacje stworzone dla gier.",
+          "en": "Featured here are projects created for games."
+        }
       }
     ],
     "video": [
