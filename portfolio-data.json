@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "8a6dc0fa-b514-425c-9066-fe13d16e5d76",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Scena do gry",
+        "en": "Game scene"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia scenę do gry",
+        "en": "The project depicts a game scene."
+      },
+      "year": "2020",
+      "image": "assets/projects/scena_do_gry-1794675596156-8.png",
+      "publishedAt": "2026-11-14T17:00:01.354Z"
+    },
+    {
       "id": "3c2b168f-a782-4e95-ae36-653380a192f9",
       "type": "graphics",
       "category": "3d",
