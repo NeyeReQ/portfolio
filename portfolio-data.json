@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "240a9a74-a153-41b3-8fe1-3ccc7025c4ee",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "szafka nocna",
+        "en": "night stand"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia szafkę nocną, którą można wykorzystać w projektach gier komputerowych, wizualizacjach wnętrz, i nie tylko.",
+        "en": "This asset features a bedside table that can be used in computer game projects, interior visualizations, and more."
+      },
+      "year": "2026",
+      "image": "assets/projects/szafka_nocna-1794672989243-1.png",
+      "publishedAt": "2026-11-14T16:16:33.239Z"
+    },
+    {
       "id": "cf361c12-80eb-4c02-84be-bd0845e82be0",
       "type": "graphics",
       "category": "photo",
