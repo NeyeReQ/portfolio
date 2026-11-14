@@ -408,6 +408,8 @@
       const response = await fetch('portfolio-data.json', { cache: 'no-store' });
       if (!response.ok) throw new Error('HTTP ' + response.status);
       const parsed = validateData(await response.json());
+      // The initial public-page fetch must not overwrite a newer folder or GitHub connection.
+      if (githubToken || root) return;
       data = parsed;
       publishedData = cloneData();
       render();
