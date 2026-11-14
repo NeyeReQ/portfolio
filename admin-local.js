@@ -9,6 +9,7 @@
   let toastTimer = null;
   let githubToken = null;
   let stagedFiles = [];
+  let editingProjectId = null;
   const githubOwner = "NeyeReQ";
   const githubRepo = "portfolio";
   const githubBranch = "main";
@@ -218,10 +219,17 @@
     }
     if (projectSubmit) {
       projectSubmit.disabled = saving || !projectCategories.length;
+      projectSubmit.textContent = editingProjectId ? 'Zapisz zmiany pracy' : '+ Dodaj pracę i zapisz';
       projectSubmit.title = !projectCategories.length
         ? 'Najpierw dodaj kategorię w wybranej sekcji.'
         : (saving ? 'Trwa zapisywanie zmian.' : '');
     }
+    const cancelEdit = $('cancelProjectEdit');
+    if (cancelEdit) cancelEdit.hidden = !editingProjectId;
+    const projectHeading = $('projectFormHeading');
+    if (projectHeading) projectHeading.textContent = editingProjectId
+      ? '03 / Edytuj realizację'
+      : '03 / Dodaj realizację';
 
     const categorySelect = $('projectCategory');
     if (categorySelect) categorySelect.disabled = !projectCategories.length;
@@ -262,6 +270,44 @@
       select.append(option);
     }
     updateEditingControls();
+  }
+
+  function resetProjectForm() {
+    editingProjectId = null;
+    $('projectForm').reset();
+    $('projectYear').value = String(new Date().getFullYear());
+    $('projectCurrentMedia').textContent = 'Nie wybrano pracy do edycji.';
+    updateEditingControls();
+  }
+
+  function editProject(id) {
+    const project = data.projects.find(item => item.id === id);
+    if (!project) {
+      say('Nie znaleziono tej pracy. Odśwież listę i spróbuj ponownie.', 'error');
+      return;
+    }
+    editingProjectId = id;
+    $('projectType').value = project.type;
+    fillProjectCategories();
+    $('projectCategory').value = project.category;
+    $('projectTitlePl').value = project.title && (project.title.pl || project.title.en) || '';
+    $('projectTitleEn').value = project.title && (project.title.en || project.title.pl) || '';
+    $('projectDescPl').value = project.description && (project.description.pl || project.description.en) || '';
+    $('projectDescEn').value = project.description && (project.description.en || project.description.pl) || '';
+    $('projectYear').value = project.year || '';
+    $('projectMedia').value = '';
+    $('projectThumbnail').value = '';
+    const current = [];
+    if (project.video) current.push('Wideo: ' + project.video);
+    if (project.image) current.push('Grafika / miniatura: ' + project.image);
+    $('projectCurrentMedia').textContent = current.length
+      ? 'Aktualne pliki: ' + current.join(' · ') + '. Wybierz nowy plik tylko wtedy, gdy chcesz go zastąpić; puste pole pozostawi obecny plik.'
+      : 'Ta praca nie ma przypisanego pliku. Wybierz plik, aby go dodać.';
+    updateEditingControls();
+    $('projectPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('projectTitlePl').focus({ preventScroll: true });
+    say('Edytujesz „' + (project.title && (project.title.pl || project.title.en) || 'pracę') +
+      '”. Zmiany zostaną opublikowane po kliknięciu Zapisz zmiany pracy.', 'ok');
   }
 
   function render() {
@@ -305,12 +351,18 @@
         (project.year ? ' / ' + escapeHtml(project.year) : '') + '</small>';
       const actions = document.createElement('div');
       actions.className = 'admin-list-actions';
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'admin-button';
+      edit.textContent = editingProjectId === project.id ? 'Edytujesz' : 'Edytuj';
+      edit.addEventListener('click', () => editProject(project.id));
+
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'admin-button danger';
       del.textContent = 'Usuń pracę';
       del.addEventListener('click', () => deleteProject(project.id));
-      actions.append(del);
+      actions.append(edit, del);
       row.append(info, actions);
       projectList.append(row);
     });
@@ -508,6 +560,12 @@
     }
   });
 
+  $('cancelProjectEdit').addEventListener('click', () => {
+    resetProjectForm();
+    render();
+    say('Anulowano edycję. Żadna zmiana nie została opublikowana.');
+  });
+
   $('projectForm').addEventListener('submit', async event => {
     event.preventDefault();
     if (!root && !githubToken) {
@@ -526,21 +584,39 @@
 
     const media = $('projectMedia').files[0];
     const thumbnail = $('projectThumbnail').files[0];
-    if (media && media.size > 100 * 1024 * 1024) {
-      say('Ten plik ma ponad 100 MB. Zmniejsz go przed dodaniem — duże filmy szybko powiększają repozytorium i mogą utrudniać publikację.', 'error');
+    if ((media && media.size > 100 * 1024 * 1024) ||
+        (thumbnail && thumbnail.size > 100 * 1024 * 1024)) {
+      say('Jeden z wybranych plików przekracza 100 MB. Zmniejsz go przed dodaniem.', 'error');
       showToast('Plik przekracza limit 100 MB.', 'error');
       return;
     }
 
     const previous = cloneData();
     const previousStagedCount = stagedFiles.length;
+    const wasEditing = Boolean(editingProjectId);
     try {
+      const existing = wasEditing
+        ? data.projects.find(item => item.id === editingProjectId)
+        : null;
+      if (wasEditing && !existing) {
+        throw new Error('Nie znaleziono edytowanej pracy. Odśwież panel i spróbuj ponownie.');
+      }
+
       const title = {
         pl: $('projectTitlePl').value.trim(),
         en: $('projectTitleEn').value.trim()
       };
-      const prefix = title.pl || title.en || 'project';
-      const project = {
+      const project = existing ? {
+        ...existing,
+        type: type,
+        category: category,
+        title: title,
+        description: {
+          pl: $('projectDescPl').value.trim(),
+          en: $('projectDescEn').value.trim()
+        },
+        year: $('projectYear').value.trim()
+      } : {
         id: window.crypto && crypto.randomUUID ? crypto.randomUUID() :
           'project-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9),
         type: type,
@@ -553,19 +629,30 @@
         year: $('projectYear').value.trim()
       };
 
+      const prefix = title.pl || title.en || 'project';
       if (media) {
         const path = await saveFile(media, prefix);
-        if (media.type.startsWith('video/')) project.video = path;
-        else project.image = path;
+        if (media.type.startsWith('video/')) {
+          project.video = path;
+        } else {
+          project.image = path;
+          delete project.video;
+        }
       }
       if (thumbnail) project.image = await saveFile(thumbnail, prefix + '-thumbnail');
 
-      data.projects.unshift(project);
-      const saved = await saveData('dodano projekt');
+      if (existing) {
+        const index = data.projects.findIndex(item => item.id === existing.id);
+        data.projects[index] = project;
+      } else {
+        data.projects.unshift(project);
+      }
+
+      const saved = await saveData(wasEditing ? 'zaktualizowano projekt' : 'dodano projekt');
       if (saved) {
-        event.target.reset();
-        $('projectYear').value = String(new Date().getFullYear());
-        fillProjectCategories();
+        resetProjectForm();
+        render();
+        say(wasEditing ? 'Zapisano i opublikowano zmiany pracy.' : 'Dodano i opublikowano nową pracę.', 'ok');
       } else {
         data = previous;
         stagedFiles.splice(previousStagedCount);
@@ -576,8 +663,8 @@
       stagedFiles.splice(previousStagedCount);
       render();
       console.error(error);
-      say('Nie udało się dodać pracy: ' + error.message, 'error');
-      showToast('Nie udało się dodać projektu.', 'error');
+      say('Nie udało się zapisać pracy: ' + error.message, 'error');
+      showToast('Nie udało się zapisać pracy.', 'error');
     }
   });
 
@@ -587,6 +674,7 @@
       return;
     }
     const project = data.projects.find(item => item.id === id);
+    if (editingProjectId === id) resetProjectForm();
     if (!project || !confirm('Usunąć tę pracę z portfolio? Plik multimedialny pozostanie w folderze assets/projects.')) return;
     const previous = cloneData();
     data.projects = data.projects.filter(item => item.id !== id);
