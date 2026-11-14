@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "4de20e47-0f75-4039-8a19-3561984c5e1d",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Mysza",
+        "en": "Mouse"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia zieloną myszę szamankę.",
+        "en": "The piece depicts a green shaman mouse."
+      },
+      "year": "2024",
+      "image": "assets/projects/mysza-1794674619082-2.png",
+      "publishedAt": "2026-11-14T16:43:41.634Z"
+    },
+    {
       "id": "64785baa-63fd-4f89-9b05-49da045ee523",
       "type": "graphics",
       "category": "3d",
