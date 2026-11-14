@@ -150,6 +150,26 @@
   },
   "projects": [
     {
+      "id": "140ea5a8-2a01-41ba-858d-51341f1c4943",
+      "type": "graphics",
+      "category": "3d",
+      "categories": [
+        "3d",
+        "zasoby-do-gier"
+      ],
+      "title": {
+        "pl": "Miecz zabawkowy",
+        "en": "Toy Sword"
+      },
+      "description": {
+        "pl": "Realizacja przedstawia miecz zabawkowy.",
+        "en": "The piece depicts a toy sword."
+      },
+      "year": "2026",
+      "image": "assets/projects/miecz_zabawkowy-1794675135806-5.png",
+      "publishedAt": "2026-11-14T16:52:20.622Z"
+    },
+    {
       "id": "857e0f33-c5b1-485f-b6e3-b85917200538",
       "type": "graphics",
       "category": "3d",
