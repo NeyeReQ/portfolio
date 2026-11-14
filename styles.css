@@ -954,3 +954,29 @@ html[lang="en"] .hero-title-final-line .title-accent{margin-top:.02em}
     opacity:1!important;transform:none!important;filter:none!important;animation:none!important
   }
 }
+
+
+/* About: keep the main heading and biography on the original letter reveal,
+   while qualification and language panels enter as complete surfaces. */
+#about .credential-card.reveal{
+  transition:opacity .68s cubic-bezier(.2,.75,.25,1),
+             transform .78s cubic-bezier(.16,1,.3,1),
+             border-color .3s;
+}
+#about .credential-card.reveal.reveal-pending:not(.is-visible),
+#about .language-level.reveal.reveal-pending:not(.is-visible){
+  opacity:0;
+  transform:translate3d(0,34px,0) scale(.985);
+  transition-delay:var(--delay,0ms);
+  will-change:opacity,transform;
+}
+#about .credential-card.reveal.reveal-pending.is-visible,
+#about .language-level.reveal.reveal-pending.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1);
+  will-change:auto;
+}
+#about .credential-card.reveal.reveal-pending.is-visible:hover,
+#about .credential-card.reveal.reveal-pending.is-visible:focus-within{
+  transform:translate3d(0,-3px,0) scale(1);
+}

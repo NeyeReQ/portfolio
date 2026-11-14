@@ -176,7 +176,7 @@
 
   const typewriterTitleSelector=[
     'main h1','main h2','main h3','main h4',
-    '.choice-bottom strong','.credential-code','.project-card-body strong','.case-related-card-copy strong',
+    '.choice-bottom strong','.project-card-body strong','.case-related-card-copy strong',
     '.case-eyebrow','.case-aside-label','.case-facts-heading','.case-story-label',
     '.case-section-kicker','.case-related-empty strong'
   ].join(',');
@@ -191,7 +191,7 @@
     '.case-visual-topline span','.case-visual-bottomline span',
     '.case-visual-note-left','.case-visual-note-right',
     '.case-fact-copy dt','.case-fact-copy dd','.case-gallery-item figcaption',
-    '.choice-bottom small','.credential-label','.language-label','.language-value',
+    '.choice-bottom small',
     '.work-intro','.tool-card-copy p','.contact-hint',
     '.subpage-heading p','.project-empty p','.case-description',
     '.admin-field label','.admin-button','.admin-status','.admin-count span','.admin-upload-hint'
@@ -379,7 +379,7 @@
     refreshTypewriterTargets,
     observeRevealTargets
   };
-  ['#about .credential-card','#tools .tool-card','#contact .contact-card'].forEach(selector=>{
+  ['#about .credential-card, #about .language-level','#tools .tool-card','#contact .contact-card'].forEach(selector=>{
     queryAll(selector).forEach((el,index)=>{
       if(!el.classList.contains('reveal'))el.classList.add('reveal');
       if(!el.dataset.delay)el.dataset.delay=String(65+index*105);
